@@ -5,7 +5,7 @@
 \title{P-Hacking function for multiple dependent variables}
 \usage{
 .multDVhack(df, dvs, group, ambitious = FALSE,
-  alternative = "two.sided")
+  alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame with one group variable and multiple dependent variables}
@@ -17,6 +17,8 @@
 \item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+
+\item{alpha}{Significance level of the t-test}
 }
 \description{
 Outputs a p-hacked p-value and a vector of all p-values that were computed in the process

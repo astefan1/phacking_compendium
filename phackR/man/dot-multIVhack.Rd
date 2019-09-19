@@ -4,19 +4,19 @@
 \alias{.multIVhack}
 \title{P-Hacking function for multiple independent variables}
 \usage{
-.multIVhack(df, ivs, control, ambitious = FALSE,
-  alternative = "two.sided")
+.multIVhack(ivs, control, ambitious = FALSE, alternative = "two.sided",
+  alpha = 0.05)
 }
 \arguments{
-\item{df}{Data frame with one group variable and multiple dependent variables}
+\item{ivs}{Data frame or matrix containing the independent variables as columns}
 
-\item{ivs}{Vector defining the IV columns (will be checked in given order)}
-
-\item{control}{Scalar defining location of control group variable}
+\item{control}{Vector containing the control variable}
 
 \item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+
+\item{alpha}{Significance level of the t-test (default: 0.05)}
 }
 \description{
 Outputs a p-hacked p-value and a vector of all p-values that were computed in the process

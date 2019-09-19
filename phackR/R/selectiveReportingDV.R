@@ -10,6 +10,9 @@
 
 .sim.multDV <- function(nobs.group, nvar, r){
 
+  # Observations per group
+  if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
+
   # Generate group vector
   group <- rep(1:length(nobs.group), nobs.group)
 
@@ -29,9 +32,10 @@
 #' @param group Scalar defining grouping column
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alpha Significance level of the t-test
 #' @importFrom stats t.test
 
-.multDVhack <- function(df, dvs, group, ambitious = FALSE, alternative = "two.sided"){
+.multDVhack <- function(df, dvs, group, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
 
   # Prepare data frame
   colnames(df)[group] <- "group"
@@ -51,7 +55,7 @@
   # select p-value ambitious
   if(ambitious == TRUE){
 
-    if(min(ps) < 0.05){
+    if(min(ps) < alpha){
       p.final <- min(ps)
     } else {
       p.final <- ps[1]
@@ -60,10 +64,10 @@
   # select p-value "normal" p-hacking
   } else if (ambitious == FALSE) {
 
-    if(!any(ps < 0.05)){
-      p.final <- ps[1]
+    if(min(ps) < alpha){
+      p.final <- ps[which(ps < alpha)[1]]
     } else {
-      p.final <- ps[which(ps < 0.05)[1]]
+      p.final <- ps[1]
     }
   }
 
@@ -80,10 +84,11 @@
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alpha Significance level of the t-test (default: 0.05)
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.multDVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, alternative = "two.sided", seed = 1234){
+sim.multDVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -94,7 +99,7 @@ sim.multDVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, 
 
   # Apply p-hacking procedure to each dataset
   res <- lapply(dat, .multDVhack, dvs = c(2:(nvar+1)), group = 1,
-                ambitious = ambitious, alternative = alternative)
+                ambitious = ambitious, alternative = alternative, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL
   for(i in 1:iter){

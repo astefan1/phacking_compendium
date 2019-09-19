@@ -4,18 +4,21 @@
 \alias{.roundhack}
 \title{P-Hacking function for incorrect rounding}
 \usage{
-.roundhack(df, g1, g2, roundinglevel, alternative = "two.sided")
+.roundhack(df, group, y, roundinglevel, alternative = "two.sided",
+  alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame}
 
-\item{g1}{Scalar defining location of first group in the data frame}
+\item{group}{Scalar defining location group vector in the data frame}
 
-\item{g2}{Scalar defining location of second group in the data frame}
+\item{y}{Scalar defining location of dependent variable in the data frame}
 
 \item{roundinglevel}{Highest p-value that is rounded down to 0.05}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+
+\item{alpha}{Significance level of the t-test (default: 0.05)}
 }
 \description{
 Outputs a p-hacked p-value and the non-p-hacked-p-value

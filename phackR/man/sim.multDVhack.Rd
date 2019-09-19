@@ -5,7 +5,7 @@
 \title{Simulate p-Hacking with multiple dependent variables}
 \usage{
 sim.multDVhack(nobs.group, nvar, r, ambitious = FALSE, iter = 1000,
-  alternative = "two.sided", seed = 1234)
+  alternative = "two.sided", alpha = 0.05, seed = 1234)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
@@ -19,6 +19,8 @@ sim.multDVhack(nobs.group, nvar, r, ambitious = FALSE, iter = 1000,
 \item{iter}{Number of simulation iterations}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+
+\item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{seed}{Initial seed for the random process}
 }

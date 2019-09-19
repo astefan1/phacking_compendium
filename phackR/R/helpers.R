@@ -38,3 +38,69 @@
   return(X)
 
 }
+
+#' Generic sampling function
+#' @description Outputs a data frame with two columns
+#' @param nobs.group Number of observations per group. Either a scalar or a vector with two elements.
+#' @importFrom stats rnorm
+
+.sim.data <- function(nobs.group){
+
+  if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
+  V1 <- stats::rnorm(nobs.group[1], 0, 1)
+  V2 <- stats::rnorm(nobs.group[2], 0, 1)
+  group <- c(rep(1, nobs.group[1]), rep(2, nobs.group[2]))
+
+  res <- cbind(group, c(V1, V2))
+  return(res)
+
+}
+
+#' Create data frames without outliers
+#' @description Inputs data frame and two sets of outlier values, outputs list with three data frames
+#' @param x Original vector of x values
+#' @param y Original vector of y values
+#' @param outsx Outlier values to be removed from x
+#' @param outsy Outlier values to be removed from y
+
+
+.extractoutlier <- function(x, y, outsx, outsy){
+
+  # Remove x outliers from x and y
+  if(length(outsx) > 0){
+    x1 <- x[!x %in% outsx]
+    y1 <- y[!x %in% outsx]
+  } else {
+    x1 <- x
+    y1 <- y
+  }
+  xy1 <- unname(cbind(x1, y1))
+
+  # Remove y outliers from x and y
+  if(length(outsy) > 0){
+    x2 <- x[!y %in% outsy]
+    y2 <- y[!y %in% outsy]
+  } else {
+    x2 <- x
+    y2 <- y
+  }
+  xy2 <- unname(cbind(x2, y2))
+
+  # Remove x and y outliers from x and y
+  if(length(outsx) > 0 && length(outsy) > 0){
+    x3 <- x[!x %in% outsx & !y %in% outsy]
+    y3 <- y[!x %in% outsx & !y %in% outsy]
+  } else {
+    x3 <- x
+    y3 <- y
+  }
+  xy3 <- unname(cbind(x3, y3))
+
+  # Combine results
+  res <- unname(list(xy1, xy2, xy3))
+  res <- unique(res)
+
+  return(res)
+
+}
+

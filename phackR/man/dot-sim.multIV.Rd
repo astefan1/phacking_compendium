@@ -7,7 +7,7 @@
 .sim.multIV(nobs.group, nvar, r)
 }
 \arguments{
-\item{nobs.group}{Scalar defining number of observations per group}
+\item{nobs.group}{Scalar defining number of observations per group (if length = 2, the first element will be the size of the control group that stays the same)}
 
 \item{nvar}{Number of independent variables in the data frame}
 

@@ -3,9 +3,10 @@ Title: Simulate p-Hacking
 Version: 0.0.0.9000
 Authors@R: person("Angelika M.", "Stefan", email = "a.m.stefan@uva.nl", role = c("aut", "cre"))
 Description: Many different questionable research practices have been described in the literature. This package contains functions to simulate different sorts p-hacking and allows to analyze their impact on the distributions of p-values. 
-Depends: R (>= 3.5.1)
+Depends: R (>= 3.6.0)
+Imports: aplpack, R.devices, car, mvoutlier
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
