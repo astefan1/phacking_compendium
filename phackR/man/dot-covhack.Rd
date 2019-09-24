@@ -4,7 +4,7 @@
 \alias{.covhack}
 \title{P-Hacking function for multiple covariates}
 \usage{
-.covhack(df, dv, group, covs, interactions = TRUE, ambitious = FALSE,
+.covhack(df, dv, group, covs, interactions = FALSE, ambitious = FALSE,
   alpha = 0.05)
 }
 \arguments{

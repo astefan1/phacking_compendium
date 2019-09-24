@@ -14,5 +14,5 @@
 \item{r}{Desired correlation between the independent variables (scalar)}
 }
 \description{
-Outputs data frame
+Outputs data frame with multiple independent variables
 }

@@ -3,7 +3,7 @@
 # ==============================================================================
 
 #' Simulate dataset with multiple independent variables
-#' @description Outputs data frame
+#' @description Outputs data frame with multiple independent variables
 #' @param nobs.group Scalar defining number of observations per group (if length = 2, the first element will be the size of the control group that stays the same)
 #' @param nvar Number of independent variables in the data frame
 #' @param r Desired correlation between the independent variables (scalar)
