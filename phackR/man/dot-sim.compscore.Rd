@@ -11,7 +11,7 @@
 
 \item{ncompv}{Integer giving number of variables to build the composite score}
 
-\item{rcomp}{Integer giving correlation between the composite score variables}
+\item{rcomp}{Correlation between the composite score variables}
 }
 \description{
 Simulate data: Correlated composite score raw variables and one non-correlated dependent variable

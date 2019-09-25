@@ -5,7 +5,7 @@
 #' Simulate data: Correlated composite score raw variables and one non-correlated dependent variable
 #' @param nobs Integer giving number of observations
 #' @param ncompv Integer giving number of variables to build the composite score
-#' @param rcomp Integer giving correlation between the composite score variables
+#' @param rcomp Correlation between the composite score variables
 
 .sim.compscore <- function(nobs, ncompv, rcomp){
 
@@ -96,7 +96,7 @@
 #' Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs Integer giving number of observations
 #' @param ncompv Integer giving number of variables to build the composite score
-#' @param rcomp Integer giving correlation between the composite score variables
+#' @param rcomp Correlation between the composite score variables
 #' @param ndelete How many items should be deleted from the scale at maximum?
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param alpha Significance level of the t-test (default: 0.05)

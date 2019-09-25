@@ -106,3 +106,15 @@ test_that("Scale Redefinition works", {
   expect_gt(length(which(scaledef1[,1] <= 0.05)), length(which(scaledef1[,2] <= 0.05)))
 
 })
+
+test_that("Selective reporting of effects works", {
+
+  selR1 <- sim.selectEffects(nobs = 30, niv = 3, riv = 0.1, interactions = TRUE, ambitious = FALSE, alpha = 0.05, iter = 500, seed = 1234)
+  selR2 <- sim.selectEffects(nobs = 30, niv = 3, riv = 0.1, interactions = TRUE, ambitious = TRUE, alpha = 0.05, iter = 500, seed = 1234)
+
+  expect_equal(nrow(selR1), 500)
+  expect_equal(selR1[,2], selR2[,2])
+  expect_equal(length(which(selR1[,1] <= 0.05)), length(which(selR2[,1] <= 0.05)))
+  expect_gt(length(which(selR1[,1] <= 0.05)), length(which(selR1[,2] <= 0.05)))
+
+})
