@@ -94,3 +94,15 @@ test_that("Subgroup Analyses work", {
   expect_gt(length(which(subgrhack1[,1] <= 0.05)), length(which(subgrhack1[,2] <= 0.05)))
 
 })
+
+test_that("Scale Redefinition works", {
+
+  scaledef1 <- sim.compscoreHack(nobs = 30, ncompv = 10, rcomp = 0.5, ndelete = 5, ambitious = FALSE, alpha = 0.05, iter = 500, seed = 1234)
+  scaledef2 <- sim.compscoreHack(nobs = 30, ncompv = 10, rcomp = 0.5, ndelete = 5, ambitious = TRUE, alpha = 0.05, iter = 500, seed = 1234)
+
+  expect_equal(nrow(scaledef1), 500)
+  expect_equal(scaledef1[,2], scaledef2[,2])
+  expect_equal(length(which(scaledef1[,1] <= 0.05)), length(which(scaledef2[,1] <= 0.05)))
+  expect_gt(length(which(scaledef1[,1] <= 0.05)), length(which(scaledef1[,2] <= 0.05)))
+
+})

@@ -577,7 +577,7 @@
 
 #' Simulate p-Hacking with different sorts of outlier definition
 #' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
-#' @param nobs Vector giving number of observations
+#' @param nobs Integer giving number of observations
 #' @param which Which outlier detection methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param alpha Significance level of the t-test (default: 0.05)
