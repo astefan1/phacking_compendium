@@ -129,7 +129,6 @@ test_that("Exploiting arbitraray cutoffs works", {
   expect_equal(length(which(arbitCutoff1[,1] <= 0.05)), length(which(arbitCutoff2[,1] <= 0.05)))
   expect_gt(length(which(arbitCutoff1[,1] <= 0.05)), length(which(arbitCutoff1[,2] <= 0.05)))
 
-
 })
 
 test_that("Exploiting statistical analysis options works", {
@@ -142,5 +141,16 @@ test_that("Exploiting statistical analysis options works", {
   expect_equal(length(which(arbitStats1[,1] <= 0.05)), length(which(arbitStats2[,1] <= 0.05)))
   expect_gt(length(which(arbitStats1[,1] <= 0.05)), length(which(arbitStats1[,2] <= 0.05)))
 
+})
+
+test_that("Exploiting variable transformations works", {
+
+  varT1 <- sim.varTransHack(nobs = 30, transvar = "xy", ambitious = FALSE, alpha = 0.05, iter = 500, seed = 1234)
+  varT2 <- sim.varTransHack(nobs = 30, transvar = "xy", ambitious = TRUE, alpha = 0.05, iter = 500, seed = 1234)
+
+  expect_equal(nrow(varT1), 500)
+  expect_equal(varT1[,2], varT2[,2])
+  expect_equal(length(which(varT1[,1] <= 0.05)), length(which(varT2[,1] <= 0.05)))
+  expect_gt(length(which(varT1[,1] <= 0.05)), length(which(varT1[,2] <= 0.05)))
 
 })
