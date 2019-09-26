@@ -118,3 +118,29 @@ test_that("Selective reporting of effects works", {
   expect_gt(length(which(selR1[,1] <= 0.05)), length(which(selR1[,2] <= 0.05)))
 
 })
+
+test_that("Exploiting arbitraray cutoffs works", {
+
+  arbitCutoff1 <- sim.cutoffHack(nobs = 30, ambitious = FALSE, alpha = 0.05, iter = 500, seed = 1234)
+  arbitCutoff2 <- sim.cutoffHack(nobs = 30, ambitious = TRUE, alpha = 0.05, iter = 500, seed = 1234)
+
+  expect_equal(nrow(arbitCutoff1), 500)
+  expect_equal(arbitCutoff1[,2], arbitCutoff2[,2])
+  expect_equal(length(which(arbitCutoff1[,1] <= 0.05)), length(which(arbitCutoff2[,1] <= 0.05)))
+  expect_gt(length(which(arbitCutoff1[,1] <= 0.05)), length(which(arbitCutoff1[,2] <= 0.05)))
+
+
+})
+
+test_that("Exploiting statistical analysis options works", {
+
+  arbitStats1 <- sim.statAnalysisHack(nobs.group = 30, ambitious = FALSE, alternative = "two.sided", alpha = 0.05, iter = 500, seed = 1234)
+  arbitStats2 <- sim.statAnalysisHack(nobs = 30, ambitious = TRUE, alternative = "two.sided", alpha = 0.05, iter = 500, seed = 1234)
+
+  expect_equal(nrow(arbitStats1), 500)
+  expect_equal(arbitStats1[,2], arbitStats2[,2])
+  expect_equal(length(which(arbitStats1[,1] <= 0.05)), length(which(arbitStats2[,1] <= 0.05)))
+  expect_gt(length(which(arbitStats1[,1] <= 0.05)), length(which(arbitStats1[,2] <= 0.05)))
+
+
+})
