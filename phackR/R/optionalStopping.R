@@ -8,7 +8,7 @@
 #' @description Outputs a p-hacked p-value and a non-p-hacked p-value based on the maximum sample size
 #' @param df Data frame
 #' @param group group Scalar defining grouping column
-#' @param y Scalar defining location of dependent variable in the data frame
+#' @param dv Scalar defining location of dependent variable in the data frame
 #' @param n.min Minimum sample size
 #' @param n.max Maximum sample size
 #' @param step Step size of the optional stopping (default is 1)
@@ -17,11 +17,11 @@
 #' @importFrom stats t.test
 #' @importFrom utils tail
 
-.optstop <- function(df, group, y, n.min, n.max, step = 1, alternative = "two.sided", alpha = 0.05){
+.optstop <- function(df, group, dv, n.min, n.max, step = 1, alternative = "two.sided", alpha = 0.05){
 
   # Extract group variables
-  g1 <- df[df[,group] == unique(df[,group])[1], y]
-  g2 <- df[df[,group] == unique(df[,group])[2], y]
+  g1 <- df[df[,group] == unique(df[,group])[1], dv]
+  g2 <- df[df[,group] == unique(df[,group])[2], dv]
 
   # Sanity check: Enough data?
   stopifnot(length(g1) >= n.max && length(g2) >= n.max)
@@ -68,7 +68,7 @@ sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter 
   }
 
   # Apply p-hacking procedure to each dataset
-  res <- lapply(dat, .optstop, group = 1, y = 2,
+  res <- lapply(dat, .optstop, group = 1, dv = 2,
                 n.min = n.min, n.max = n.max, step = step,
                 alternative = alternative, alpha = alpha)
 

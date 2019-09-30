@@ -147,7 +147,7 @@
   } else if (ambitious == FALSE) {
 
     if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
+      p.final <- sample(ps[which(ps < alpha)], 1)
     } else {
       p.final <- ps[1]
     }

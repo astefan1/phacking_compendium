@@ -4,7 +4,7 @@
 \alias{.optstop}
 \title{Optional Stopping based on existing dataset}
 \usage{
-.optstop(df, group, y, n.min, n.max, step = 1,
+.optstop(df, group, dv, n.min, n.max, step = 1,
   alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
@@ -12,7 +12,7 @@
 
 \item{group}{group Scalar defining grouping column}
 
-\item{y}{Scalar defining location of dependent variable in the data frame}
+\item{dv}{Scalar defining location of dependent variable in the data frame}
 
 \item{n.min}{Minimum sample size}
 

@@ -59,7 +59,7 @@
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.selectEffects <- function(nobs, niv, riv, interactions = TRUE, ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.selectEffects <- function(nobs, niv, riv, interactions = FALSE, ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()

@@ -8,5 +8,9 @@ Imports: aplpack, R.devices, car, mvoutlier, dplyr, performance, WRS2, mice
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr

@@ -4,13 +4,15 @@
 \alias{.multIVhack}
 \title{P-Hacking function for multiple independent variables}
 \usage{
-.multIVhack(ivs, control, ambitious = FALSE, alternative = "two.sided",
-  alpha = 0.05)
+.multIVhack(df, ivs, control, ambitious = FALSE,
+  alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
-\item{ivs}{Data frame or matrix containing the independent variables as columns}
+\item{df}{Data frame (wide format) containing a control group variable and multiple treatment group variables}
 
-\item{control}{Vector containing the control variable}
+\item{ivs}{Location of the independent variables (treatment groups) in the (wide) data frame}
+
+\item{control}{Location of the control group in the (wide) data frame}
 
 \item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
 

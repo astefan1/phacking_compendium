@@ -10,7 +10,7 @@ sim.multIVhack(nobs.group, nvar, r, ambitious = FALSE, iter = 1000,
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
 
-\item{nvar}{Number of dependent variables (columns) in the data frame}
+\item{nvar}{Number of independent variables (columns) in the data frame}
 
 \item{r}{Desired correlation between the dependent variables (scalar)}
 

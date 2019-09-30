@@ -4,7 +4,7 @@
 
 #' Simulate dataset with multiple independent variables
 #' @description Outputs data frame with multiple independent variables
-#' @param nobs.group Scalar defining number of observations per group (if length = 2, the first element will be the size of the control group that stays the same)
+#' @param nobs.group Scalar defining number of observations per group
 #' @param nvar Number of independent variables in the data frame
 #' @param r Desired correlation between the independent variables (scalar)
 
@@ -20,7 +20,7 @@
   ivs <- .sim.multcor(nobs = nobs.group[2], nvar = nvar, r = r)
 
   # Generate data frame
-  res <- list(ivs = ivs, control = control)
+  res <- cbind(control, ivs)
 
   return(res)
 
@@ -28,21 +28,25 @@
 
 #' P-Hacking function for multiple independent variables
 #' @description Outputs a p-hacked p-value and a vector of all p-values that were computed in the process
-#' @param ivs Data frame or matrix containing the independent variables as columns
-#' @param control Vector containing the control variable
+#' @param df Data frame (wide format) containing a control group variable and multiple treatment group variables
+#' @param ivs Location of the independent variables (treatment groups) in the (wide) data frame
+#' @param control Location of the control group in the (wide) data frame
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
-.multIVhack <- function(ivs, control, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
+.multIVhack <- function(df, ivs, control, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
+
+  treatm <- df[, ivs]
+  control <- df[, control]
 
   # Prepare dataset
   ps <- NULL
 
   # Compute t-tests
   for(i in 1:length(ivs)){
-    ps[i] <- stats::t.test(control, ivs[,i], var.equal = TRUE, alternative = alternative)$p.value
+    ps[i] <- stats::t.test(control, treatm[,i], var.equal = TRUE, alternative = alternative)$p.value
   }
 
   # Select p-value "ambitious" p-hacking
@@ -72,7 +76,7 @@
 #' Simulate p-Hacking with multiple independent variables
 #' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs.group Vector giving number of observations per group
-#' @param nvar Number of dependent variables (columns) in the data frame
+#' @param nvar Number of independent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
 #' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
 #' @param iter Number of simulation iterations
@@ -93,7 +97,8 @@ sim.multIVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, 
   # Apply p-hacking procedure to each dataset
 
   .multIVhacklist <- function(x){
-    .multIVhack(ivs = x[[1]], control = x[[2]], ambitious = ambitious, alternative = alternative, alpha = alpha)
+    .multIVhack(df = x, ivs = c(2:(nvar+1)), control = 1,
+                ambitious = ambitious, alternative = alternative, alpha = alpha)
   }
 
   res <- lapply(dat, .multIVhacklist)

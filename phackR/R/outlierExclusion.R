@@ -569,9 +569,10 @@
 
   }
 
+  ps <- c(p.orig, psc)
+
   return(list(p.final = p.final,
-              p.orig = p.orig,
-              ps = psc))
+              ps = ps))
 
 }
 
@@ -605,7 +606,7 @@ sim.outHack <- function(nobs, which = c(1:12), ambitious = FALSE, alpha = 0.05, 
   ps.all <- list()
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["p.orig"]]
+    ps.orig[i] <- res[[i]][["ps"]][1]
     #ps.all[[i]] <- res[[i]][["ps"]]
   }
 

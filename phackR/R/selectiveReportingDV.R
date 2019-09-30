@@ -38,15 +38,14 @@
 .multDVhack <- function(df, dvs, group, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
 
   # Prepare data frame
-  colnames(df)[group] <- "group"
-  g1 <- unique(df$group)[1]
-  g2 <- unique(df$group)[2]
+  dvs <- df[, dvs]
+  group <- df[, group]
   ps <- NULL
 
   # Compute t-tests
   for(i in 1:length(dvs)){
 
-    ps[i] <- stats::t.test(df[df$group == g1, dvs[i]], df[df$group == g2, dvs[i]],
+    ps[i] <- stats::t.test(dvs[, i] ~ group,
                            var.equal = TRUE, alternative = alternative)$p.value
   }
 

@@ -7,24 +7,18 @@
 #' P-Hacking function for incorrect rounding
 #' @description Outputs a p-hacked p-value and the non-p-hacked-p-value
 #' @param df Data frame
-#' @param group Scalar defining location group vector in the data frame
-#' @param y Scalar defining location of dependent variable in the data frame
+#' @param group Scalar defining location of the group vector in the data frame
+#' @param dv Scalar defining location of dependent variable in the data frame
 #' @param roundinglevel Highest p-value that is rounded down to 0.05
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
-.roundhack <- function(df, group, y, roundinglevel, alternative = "two.sided", alpha = 0.05){
-
-  # Prepare dataset
-  df <- as.data.frame(df)
-  colnames(df)[y] <- "y"
-  colnames(df)[group] <- "group"
-  g1 <- unique(df$group)[1]
-  g2 <- unique(df$group)[2]
+.roundhack <- function(df, group, dv, roundinglevel, alternative = "two.sided", alpha = 0.05){
 
   # Compute t-test
-  pval <- stats::t.test(df[df$group == g1,"y"], df[df$group == g2,"y"], var.equal = TRUE, alternative = alternative)$p.value
+  pval <- stats::t.test(df[,dv] ~ df[,group],
+                        var.equal = TRUE, alternative = alternative)$p.value
 
   # P-hack p-value
   if(pval > alpha && pval < roundinglevel){
@@ -33,8 +27,10 @@
     p.final <- pval
   }
 
+  ps <- c(pval, p.final)
+
   return(list(p.final = p.final,
-              ps = pval))
+              ps = ps))
 
 }
 
@@ -56,7 +52,7 @@ sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided",
   }
 
   # Apply p-hacking procedure to each dataset
-  res <- lapply(dat, .roundhack, group = 1, y = 2,
+  res <- lapply(dat, .roundhack, group = 1, dv = 2,
                 roundinglevel = roundinglevel, alternative = alternative, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL

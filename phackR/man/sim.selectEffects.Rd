@@ -5,7 +5,7 @@
 \title{Simulate p-hacking with selective reporting of effects
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.selectEffects(nobs, niv, riv, interactions = TRUE,
+sim.selectEffects(nobs, niv, riv, interactions = FALSE,
   ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234)
 }
 \arguments{
