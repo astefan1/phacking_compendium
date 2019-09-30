@@ -384,7 +384,7 @@
 
 .outHack <- function(df, x, y, which = c(1:12), ambitious = FALSE, alpha = 0.05, seed = 1234){
 
-  # select one or more outlier exclusions strategies
+  # Stop if outlier exclusion methods are not defined
   stopifnot(any(c(1:12) %in% which))
 
   # define x and y for regression in dataframe
