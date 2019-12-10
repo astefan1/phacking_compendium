@@ -4,7 +4,7 @@
 \alias{.varTransHack}
 \title{P-Hacking function variable transformation in univariate linear regression}
 \usage{
-.varTransHack(df, x, y, transvar, ambitious = FALSE, alpha = 0.05)
+.varTransHack(df, x, y, transvar, strategy = "firstsig", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -15,7 +15,7 @@
 
 \item{transvar}{Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }

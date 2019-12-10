@@ -4,7 +4,7 @@
 \alias{.multIVhack}
 \title{P-Hacking function for multiple independent variables}
 \usage{
-.multIVhack(df, ivs, control, ambitious = FALSE,
+.multIVhack(df, ivs, control, strategy = "firstsig",
   alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
@@ -14,7 +14,7 @@
 
 \item{control}{Location of the control group in the (wide) data frame}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 

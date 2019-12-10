@@ -377,12 +377,12 @@
 #' @param df Data frame containing x and y variables as columns
 #' @param x Location of x variable (predictor) in the data frame
 #' @param y Location of y variable (criterion) in the data frame
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param seed Initial seed for the random process
 #' @param which Which outlier definition methods? A numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)
 
-.outHack <- function(df, x, y, which = c(1:12), ambitious = FALSE, alpha = 0.05, seed = 1234){
+.outHack <- function(df, x, y, which = c(1:12), strategy = "firstsig", alpha = 0.05, seed = 1234){
 
   # Stop if outlier exclusion methods are not defined
   stopifnot(any(c(1:12) %in% which))
@@ -548,26 +548,8 @@
   psc <- unlist(ps)
   psc <- psc[!is.na(psc)]
 
-  # Select a p-hacked p value either with ambitious or with "normal" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(psc) < alpha){
-      p.final <- min(psc)
-    } else {
-      p.final <- p.orig
-    }
-
-  }
-
-  if(ambitious == FALSE){
-
-    if(min(psc) < alpha){
-      p.final <- sample(psc[which(psc < alpha)], 1)
-    } else {
-      p.final <- p.orig
-    }
-
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = psc, strategy = strategy, alpha = alpha, p.orig = p.orig)
 
   ps <- c(p.orig, psc)
 
@@ -580,13 +562,13 @@
 #' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs Integer giving number of observations
 #' @param which Which outlier detection methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.outHack <- function(nobs, which = c(1:12), ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -600,7 +582,7 @@ sim.outHack <- function(nobs, which = c(1:12), ambitious = FALSE, alpha = 0.05, 
 
   # Apply p-hacking procedure to each dataset
   res <- lapply(dat, x = 1, y = 2, .outHack, which = which,
-                ambitious = ambitious, alpha = alpha, seed = seed)
+                strategy = strategy, alpha = alpha, seed = seed)
   ps.hack <- NULL
   ps.orig <- NULL
   ps.all <- list()

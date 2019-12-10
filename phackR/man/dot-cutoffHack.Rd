@@ -4,7 +4,7 @@
 \alias{.cutoffHack}
 \title{P-Hacking function for exploiting cutoff values}
 \usage{
-.cutoffHack(df, iv, dv, ambitious = FALSE, alpha = 0.05)
+.cutoffHack(df, iv, dv, strategy = "firstsig", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame with one continuous independent variable and one continuous dependent variable}
@@ -13,7 +13,7 @@
 
 \item{dv}{Location of the dependent variable in the data frame}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test}
 }

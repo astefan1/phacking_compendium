@@ -24,12 +24,12 @@
 #' @param dv Location of dependent variable in the data frame
 #' @param compv Location of composite score variables in the data frame
 #' @param ndelete How many items should be deleted from the scale at maximum?
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats lm
 #' @importFrom performance item_reliability
 
-.compscoreHack <- function(df, dv, compv, ndelete, ambitious = FALSE, alpha = 0.05){
+.compscoreHack <- function(df, dv, compv, ndelete, strategy = "firstsig", alpha = 0.05){
 
   stopifnot(length(compv)-ndelete >= 2)
 
@@ -68,24 +68,8 @@
 
   ps <- c(p.orig, unique(unlist(ps)))
 
-  # Select p-value "ambitious" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-    # Select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -98,13 +82,13 @@
 #' @param ncompv Integer giving number of variables to build the composite score
 #' @param rcomp Correlation between the composite score variables
 #' @param ndelete How many items should be deleted from the scale at maximum?
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -116,7 +100,7 @@ sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, ambitious = FALSE, a
   # Apply p-hacking procedure to each dataset
   .compscoreHackList <- function(x){
     .compscoreHack(df = x, dv = 1, compv = c(2:(ncompv+1)), ndelete = ndelete,
-                  ambitious = ambitious, alpha = alpha)
+                  strategy = strategy, alpha = alpha)
   }
 
   res <- lapply(dat, .compscoreHackList)

@@ -4,7 +4,7 @@
 \alias{sim.impHack}
 \title{Simulate p-Hacking with different sorts of outlier definition missing value imputation}
 \usage{
-sim.impHack(nobs, missing, which = c(1:10), ambitious = FALSE,
+sim.impHack(nobs, missing, which = c(1:10), strategy = "firstsig",
   alpha = 0.05, iter = 1000, seed = 1234)
 }
 \arguments{
@@ -14,7 +14,7 @@ sim.impHack(nobs, missing, which = c(1:10), ambitious = FALSE,
 
 \item{which}{Which imputation methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

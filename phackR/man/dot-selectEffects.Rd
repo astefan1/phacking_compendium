@@ -4,7 +4,7 @@
 \alias{.selectEffects}
 \title{P-Hacking function for selective reporting of effects}
 \usage{
-.selectEffects(df, dv, ivs, interactions = TRUE, ambitious = FALSE,
+.selectEffects(df, dv, ivs, interactions = TRUE, strategy = "firstsig",
   alpha = 0.05)
 }
 \arguments{
@@ -16,7 +16,7 @@
 
 \item{interactions}{Should the model take interactions into account?}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }

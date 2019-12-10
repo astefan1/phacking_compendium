@@ -30,12 +30,12 @@
 #' @param df Data frame with one group variable and multiple dependent variables
 #' @param dvs Vector defining the DV columns (will be checked in given order)
 #' @param group Scalar defining grouping column
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test
 #' @importFrom stats t.test
 
-.multDVhack <- function(df, dvs, group, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
+.multDVhack <- function(df, dvs, group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05){
 
   # Prepare data frame
   dvs <- df[, dvs]
@@ -51,24 +51,8 @@
 
   ps <- unlist(ps)
 
-  # select p-value ambitious
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-  # select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -80,14 +64,14 @@
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of dependent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.multDVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
+sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -98,7 +82,7 @@ sim.multDVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, 
 
   # Apply p-hacking procedure to each dataset
   res <- lapply(dat, .multDVhack, dvs = c(2:(nvar+1)), group = 1,
-                ambitious = ambitious, alternative = alternative, alpha = alpha)
+                strategy = strategy, alternative = alternative, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL
   for(i in 1:iter){

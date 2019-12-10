@@ -33,13 +33,13 @@
 #' @param dv Integer specifying the location of the dependent variable in the data frame
 #' @param subvars Vector specifying the location of the subgroup variables in the data frame
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test
 #' @importFrom dplyr group_by_at do
 #' @importFrom stats t.test
 #' @importFrom dplyr "%>%"
 
-.subgroupHack <- function(df, iv, dv, subvars, alternative = "two.sided", ambitious = FALSE, alpha = 0.05){
+.subgroupHack <- function(df, iv, dv, subvars, alternative = "two.sided", strategy = "firstsig", alpha = 0.05){
 
   # Prepare data frame
   ttest.df <- cbind(df[,iv], df[,dv])
@@ -65,24 +65,8 @@
 
   ps <- c(p.orig, unlist(ps))
 
-  # Select p-value "ambitious" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-    # Select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -94,13 +78,13 @@
 #' @param nobs.group Vector giving number of observations per group
 #' @param nsubvars Integer specifying number of variables for potential subgroups
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -112,7 +96,7 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", am
   # Apply p-hacking procedure to each dataset
   .subgroupHackList <- function(x){
     .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+length(nsubvars))),
-                  alternative = alternative, ambitious = ambitious, alpha = alpha)
+                  alternative = alternative, strategy = strategy, alpha = alpha)
   }
 
   res <- lapply(dat, .subgroupHackList)

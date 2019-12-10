@@ -4,7 +4,8 @@
 \alias{.compscoreHack}
 \title{P-Hacking function for scale redefinition / Composite Scores}
 \usage{
-.compscoreHack(df, dv, compv, ndelete, ambitious = FALSE, alpha = 0.05)
+.compscoreHack(df, dv, compv, ndelete, strategy = "firstsig",
+  alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing dependent variable and composite score items as columns}
@@ -15,7 +16,7 @@
 
 \item{ndelete}{How many items should be deleted from the scale at maximum?}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }

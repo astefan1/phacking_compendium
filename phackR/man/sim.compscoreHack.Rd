@@ -5,7 +5,7 @@
 \title{Simulate p-hacking with composite scores
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.compscoreHack(nobs, ncompv, rcomp, ndelete, ambitious = FALSE,
+sim.compscoreHack(nobs, ncompv, rcomp, ndelete, strategy = "firstsig",
   alpha = 0.05, iter = 1000, seed = 1234)
 }
 \arguments{
@@ -17,7 +17,7 @@ sim.compscoreHack(nobs, ncompv, rcomp, ndelete, ambitious = FALSE,
 
 \item{ndelete}{How many items should be deleted from the scale at maximum?}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

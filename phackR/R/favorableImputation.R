@@ -51,14 +51,14 @@
 #' @param x Location of x variable (predictor) in the data frame
 #' @param y Location of y variable (criterion) in the data frame
 #' @param which Which missing value handling method? 1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param seed Random seed for imputation processes that require a random process
 #' @importFrom stats median lm
 #' @importFrom mice complete
 
 
-.impHack <- function(df, x, y, which = c(1:10), ambitious = FALSE, alpha = 0.05, seed = 1234){
+.impHack <- function(df, x, y, which = c(1:10), strategy = "firstsig", alpha = 0.05, seed = 1234){
 
   x <- df[,x]
   y <- df[,y]
@@ -134,24 +134,8 @@
 
   ps <- ps[!is.na(ps)]
 
-  # Select p-value "ambitious" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-    # Select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- sample(ps[which(ps < alpha)], 1)
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -163,13 +147,13 @@
 #' @param nobs Integer giving number of observations
 #' @param missing Percentage of missing values (e.g., 0.1 for 10 percent)
 #' @param which Which imputation methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for random processes
 #' @export
 
-sim.impHack <- function(nobs, missing, which = c(1:10), ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -184,7 +168,7 @@ sim.impHack <- function(nobs, missing, which = c(1:10), ambitious = FALSE, alpha
   # Apply p-hacking procedure to each dataset
   .impHackList <- function(x){
     .impHack(df = x, x = 1, y = 2,
-             which = which, ambitious = ambitious, alpha = alpha, seed = seed)
+             which = which, strategy = strategy, alpha = alpha, seed = seed)
   }
 
   res <- lapply(dat, .impHackList)

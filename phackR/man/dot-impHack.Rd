@@ -4,8 +4,8 @@
 \alias{.impHack}
 \title{P-Hacking function favorable imputation in univariate linear regression}
 \usage{
-.impHack(df, x, y, which = c(1:10), ambitious = FALSE, alpha = 0.05,
-  seed = 1234)
+.impHack(df, x, y, which = c(1:10), strategy = "firstsig",
+  alpha = 0.05, seed = 1234)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -16,7 +16,7 @@
 
 \item{which}{Which missing value handling method? 1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

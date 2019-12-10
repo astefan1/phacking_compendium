@@ -6,7 +6,7 @@
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
 sim.covhack(nobs.group, ncov, rcov, rcovdv, interactions = FALSE,
-  ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234)
+  strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234)
 }
 \arguments{
 \item{nobs.group}{Vector with number of observations per group}
@@ -19,7 +19,7 @@ sim.covhack(nobs.group, ncov, rcov, rcovdv, interactions = FALSE,
 
 \item{interactions}{Should interaction terms be added to the ANCOVA models? TRUE/FALSE}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test}
 

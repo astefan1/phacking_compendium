@@ -4,8 +4,8 @@
 \alias{.outHack}
 \title{P-Hacking function for outlier exclusion in univariate linear regression}
 \usage{
-.outHack(df, x, y, which = c(1:12), ambitious = FALSE, alpha = 0.05,
-  seed = 1234)
+.outHack(df, x, y, which = c(1:12), strategy = "firstsig",
+  alpha = 0.05, seed = 1234)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -16,7 +16,7 @@
 
 \item{which}{Which outlier definition methods? A numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

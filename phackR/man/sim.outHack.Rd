@@ -4,15 +4,15 @@
 \alias{sim.outHack}
 \title{Simulate p-Hacking with different sorts of outlier definition}
 \usage{
-sim.outHack(nobs, which = c(1:12), ambitious = FALSE, alpha = 0.05,
-  iter = 1000, seed = 1234)
+sim.outHack(nobs, which = c(1:12), strategy = "firstsig",
+  alpha = 0.05, iter = 1000, seed = 1234)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}
 
 \item{which}{Which outlier detection methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

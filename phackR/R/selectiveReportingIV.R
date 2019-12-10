@@ -31,12 +31,12 @@
 #' @param df Data frame (wide format) containing a control group variable and multiple treatment group variables
 #' @param ivs Location of the independent variables (treatment groups) in the (wide) data frame
 #' @param control Location of the control group in the (wide) data frame
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
-.multIVhack <- function(df, ivs, control, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
+.multIVhack <- function(df, ivs, control, strategy = "firstsig", alternative = "two.sided", alpha = 0.05){
 
   treatm <- df[, ivs]
   control <- df[, control]
@@ -49,24 +49,8 @@
     ps[i] <- stats::t.test(control, treatm[,i], var.equal = TRUE, alternative = alternative)$p.value
   }
 
-  # Select p-value "ambitious" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-  # Select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -78,14 +62,14 @@
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of independent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.multIVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
+sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -98,7 +82,7 @@ sim.multIVhack <- function(nobs.group, nvar, r, ambitious = FALSE, iter = 1000, 
 
   .multIVhacklist <- function(x){
     .multIVhack(df = x, ivs = c(2:(nvar+1)), control = 1,
-                ambitious = ambitious, alternative = alternative, alpha = alpha)
+                strategy = strategy, alternative = alternative, alpha = alpha)
   }
 
   res <- lapply(dat, .multIVhacklist)

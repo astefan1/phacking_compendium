@@ -4,7 +4,7 @@
 \alias{.multDVhack}
 \title{P-Hacking function for multiple dependent variables}
 \usage{
-.multDVhack(df, dvs, group, ambitious = FALSE,
+.multDVhack(df, dvs, group, strategy = "firstsig",
   alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
@@ -14,7 +14,7 @@
 
 \item{group}{Scalar defining grouping column}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 

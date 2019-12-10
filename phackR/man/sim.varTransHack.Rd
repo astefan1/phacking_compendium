@@ -5,7 +5,7 @@
 \title{Simulate p-hacking with variable transformations
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.varTransHack(nobs, transvar, ambitious = FALSE, alpha = 0.05,
+sim.varTransHack(nobs, transvar, strategy = "firstsig", alpha = 0.05,
   iter = 1000, seed = 1234)
 }
 \arguments{
@@ -13,7 +13,7 @@ sim.varTransHack(nobs, transvar, ambitious = FALSE, alpha = 0.05,
 
 \item{transvar}{Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 

@@ -4,7 +4,7 @@
 \alias{sim.multIVhack}
 \title{Simulate p-Hacking with multiple independent variables}
 \usage{
-sim.multIVhack(nobs.group, nvar, r, ambitious = FALSE, iter = 1000,
+sim.multIVhack(nobs.group, nvar, r, strategy = "firstsig", iter = 1000,
   alternative = "two.sided", alpha = 0.05, seed = 1234)
 }
 \arguments{
@@ -14,7 +14,7 @@ sim.multIVhack(nobs.group, nvar, r, ambitious = FALSE, iter = 1000,
 
 \item{r}{Desired correlation between the dependent variables (scalar)}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{iter}{Number of simulation iterations}
 

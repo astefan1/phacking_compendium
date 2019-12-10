@@ -10,11 +10,10 @@
 #' @param x Location of x variable (predictor) in the data frame
 #' @param y Location of y variable (criterion) in the data frame
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @importFrom stats lm median
 
-.varTransHack <- function(df, x, y, transvar, ambitious = FALSE, alpha = 0.05){
+.varTransHack <- function(df, x, y, transvar, strategy = "firstsig", alpha = 0.05){
 
   x <- df[, x]
   y <- df[, y]
@@ -30,8 +29,7 @@
     Xtrans <- cbind(Xtrans,
                     log(x+abs(min(x))+1e-10),        # log transformation
                     sqrt(x+abs(min(x))+1e-10),       # square root transformation
-                    1/x,                             # inverse
-                    as.numeric(x > stats::median(x)) # median split
+                    1/x                              # inverse
     )
   }
 
@@ -40,8 +38,7 @@
     Ytrans <- cbind(Ytrans,
                     log(y+abs(min(y))+1e-10),        # log transformation
                     sqrt(y+abs(min(y))+1e-10),       # square root transformation
-                    1/y,                             # inverse
-                    as.numeric(y > stats::median(y)) # median split
+                    1/y                              # inverse
     )
   }
 
@@ -57,24 +54,8 @@
 
   ps <- as.vector(ps)
 
-  # Select p-value "ambitious" p-hacking
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-    # Select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -85,13 +66,13 @@
 #' Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs Integer giving number of observations
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.varTransHack <- function(nobs, transvar, ambitious = FALSE, alpha = 0.05, iter = 1000, seed = 1234){
+sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -103,7 +84,7 @@ sim.varTransHack <- function(nobs, transvar, ambitious = FALSE, alpha = 0.05, it
   # Apply p-hacking procedure to each dataset
   .varTransHackList <- function(arg){
     .varTransHack(df = arg, x = 1, y = 2, transvar = transvar,
-                  ambitious = ambitious, alpha = alpha)
+                  strategy = strategy, alpha = alpha)
   }
 
   res <- lapply(dat, .varTransHackList)

@@ -4,7 +4,7 @@
 \alias{.statAnalysisHack}
 \title{P-Hacking function for exploiting different statistical analysis options}
 \usage{
-.statAnalysisHack(df, group, dv, ambitious = FALSE,
+.statAnalysisHack(df, group, dv, strategy = "firstsig",
   alternative = "two.sided", alpha = 0.05)
 }
 \arguments{
@@ -14,7 +14,7 @@
 
 \item{dv}{Location of the dependent variabl in the data frame}
 
-\item{ambitious}{Ambitious p-hacking (smallest p value): TRUE/FALSE}
+\item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 

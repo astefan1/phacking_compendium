@@ -8,13 +8,13 @@
 #' @param df Data frame with one continuous independent variable and one continuous dependent variable
 #' @param group Location of the grouping variable in the data frame
 #' @param dv Location of the dependent variabl in the data frame
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test
 #' @importFrom stats t.test wilcox.test
 #' @importFrom WRS2 yuen
 
-.statAnalysisHack <- function(df, group, dv, ambitious = FALSE, alternative = "two.sided", alpha = 0.05){
+.statAnalysisHack <- function(df, group, dv, strategy = "firstsig", alternative = "two.sided", alpha = 0.05){
 
   dftest <- cbind(df[, group], df[, dv])
   colnames(dftest) <- c("group", "dv")
@@ -41,24 +41,8 @@
 
   ps <- c(p.orig, p.welch, p.wilcox, p.yuen)
 
-  # select p-value ambitious
-  if(ambitious == TRUE){
-
-    if(min(ps) < alpha){
-      p.final <- min(ps)
-    } else {
-      p.final <- ps[1]
-    }
-
-    # select p-value "normal" p-hacking
-  } else if (ambitious == FALSE) {
-
-    if(min(ps) < alpha){
-      p.final <- ps[which(ps < alpha)[1]]
-    } else {
-      p.final <- ps[1]
-    }
-  }
+  # Select final p-hacked p-value based on strategy
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
 
   return(list(p.final = p.final,
               ps = ps))
@@ -68,14 +52,14 @@
 #' Simulate p-Hacking for exploiting different statistical analysis options
 #' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs.group Number of observations per group. Either a scalar or a vector with 2 elements.
-#' @param ambitious Ambitious p-hacking (smallest p value): TRUE/FALSE
+#' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
 #' @param seed Initial seed for the random process
 #' @export
 
-sim.statAnalysisHack <- function(nobs.group, ambitious = FALSE, alternative = "two.sided", alpha = 0.05, iter = 1000, seed = 1234){
+sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05, iter = 1000, seed = 1234){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -87,7 +71,7 @@ sim.statAnalysisHack <- function(nobs.group, ambitious = FALSE, alternative = "t
   # Apply p-hacking procedure to each dataset
 
   .statAnalysisHackList <- function(x){
-    .statAnalysisHack(df = x, group = 1, dv = 2, ambitious = ambitious, alternative = alternative, alpha = alpha)
+    .statAnalysisHack(df = x, group = 1, dv = 2, strategy = strategy, alternative = alternative, alpha = alpha)
   }
 
   res <- lapply(dat, .statAnalysisHackList)
