@@ -6,7 +6,7 @@
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
 sim.cutoffHack(nobs, strategy = "firstsig", alpha = 0.05,
-  iter = 1000, seed = 1234)
+  iter = 1000)
 }
 \arguments{
 \item{nobs}{Number of observations}
@@ -16,8 +16,6 @@ sim.cutoffHack(nobs, strategy = "firstsig", alpha = 0.05,
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Simulate p-Hacking for exploiting cutoff values

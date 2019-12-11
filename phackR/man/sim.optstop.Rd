@@ -5,7 +5,7 @@
 \title{Simulate p-hacking with incorrect rounding}
 \usage{
 sim.optstop(n.min, n.max, step = 1, alternative = "two.sided",
-  iter = 1000, alpha = 0.05, seed = 1234)
+  iter = 1000, alpha = 0.05)
 }
 \arguments{
 \item{n.min}{Minimum sample size}
@@ -19,8 +19,6 @@ sim.optstop(n.min, n.max, step = 1, alternative = "two.sided",
 \item{iter}{Number of iterations}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Simulate p-hacking with incorrect rounding

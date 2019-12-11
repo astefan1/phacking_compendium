@@ -39,14 +39,12 @@
 #' @param iter Number of iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @param seed Initial seed for the random process
 #' @export
 
-sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
+sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided", alpha = 0.05){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.data(nobs.group = 30)
   }

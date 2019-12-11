@@ -5,8 +5,7 @@
 \title{Simulate p-Hacking for exploiting different statistical analysis options}
 \usage{
 sim.statAnalysisHack(nobs.group, strategy = "firstsig",
-  alternative = "two.sided", alpha = 0.05, iter = 1000,
-  seed = 1234)
+  alternative = "two.sided", alpha = 0.05, iter = 1000)
 }
 \arguments{
 \item{nobs.group}{Number of observations per group. Either a scalar or a vector with 2 elements.}
@@ -18,8 +17,6 @@ sim.statAnalysisHack(nobs.group, strategy = "firstsig",
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations

@@ -6,7 +6,7 @@
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
 sim.subgroupHack(nobs.group, nsubvars, alternative = "two.sided",
-  strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234)
+  strategy = "firstsig", alpha = 0.05, iter = 1000)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
@@ -20,8 +20,6 @@ sim.subgroupHack(nobs.group, nsubvars, alternative = "two.sided",
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Simulate p-hacking with multiple subgroups

@@ -6,7 +6,7 @@
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
 sim.varTransHack(nobs, transvar, strategy = "firstsig", alpha = 0.05,
-  iter = 1000, seed = 1234)
+  iter = 1000)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}
@@ -18,8 +18,6 @@ sim.varTransHack(nobs, transvar, strategy = "firstsig", alpha = 0.05,
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{iter}{Number of simulation iterations}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Simulate p-hacking with variable transformations

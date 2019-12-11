@@ -66,14 +66,12 @@
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @param seed Initial seed for the random process
 #' @export
 
-sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, seed = 1234){
+sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.multIV(nobs.group = nobs.group, nvar = nvar, r = r)
   }

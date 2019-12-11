@@ -5,7 +5,7 @@
 \title{Simulate p-Hacking with different sorts of outlier definition missing value imputation}
 \usage{
 sim.impHack(nobs, missing, which = c(1:10), strategy = "firstsig",
-  alpha = 0.05, iter = 1000, seed = 1234)
+  alpha = 0.05, iter = 1000)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}
@@ -19,8 +19,6 @@ sim.impHack(nobs, missing, which = c(1:10), strategy = "firstsig",
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{iter}{Number of simulation iterations}
-
-\item{seed}{Initial seed for random processes}
 }
 \description{
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations

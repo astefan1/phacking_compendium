@@ -56,14 +56,12 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
-#' @param seed Initial seed for the random process
 #' @export
 
-sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05, iter = 1000, seed = 1234){
+sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05, iter = 1000){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.data(nobs.group = nobs.group)
   }

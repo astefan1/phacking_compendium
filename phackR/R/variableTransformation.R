@@ -69,14 +69,12 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
-#' @param seed Initial seed for the random process
 #' @export
 
-sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
+sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05, iter = 1000){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0)
   }

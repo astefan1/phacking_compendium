@@ -5,7 +5,7 @@
 \title{Simulate p-hacking with incorrect rounding}
 \usage{
 sim.roundhack(roundinglevel, iter = 1000, alternative = "two.sided",
-  alpha = 0.05, seed = 1234)
+  alpha = 0.05)
 }
 \arguments{
 \item{roundinglevel}{Highest p-value that is rounded down to 0.05}
@@ -15,8 +15,6 @@ sim.roundhack(roundinglevel, iter = 1000, alternative = "two.sided",
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Simulate p-hacking with incorrect rounding

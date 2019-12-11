@@ -5,7 +5,7 @@
 \title{P-Hacking function for outlier exclusion in univariate linear regression}
 \usage{
 .outHack(df, x, y, which = c(1:12), strategy = "firstsig",
-  alpha = 0.05, seed = 1234)
+  alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -19,8 +19,6 @@
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
-
-\item{seed}{Initial seed for the random process}
 }
 \description{
 Outputs a p-hacked p-value and a vector of all p-values that were computed in the process

@@ -5,7 +5,7 @@
 \title{P-Hacking function favorable imputation in univariate linear regression}
 \usage{
 .impHack(df, x, y, which = c(1:10), strategy = "firstsig",
-  alpha = 0.05, seed = 1234)
+  alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -19,8 +19,6 @@
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
-
-\item{seed}{Random seed for imputation processes that require a random process}
 }
 \description{
 Outputs a p-hacked p-value and a vector of all p-values that were computed in the process

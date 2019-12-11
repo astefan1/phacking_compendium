@@ -53,16 +53,14 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param iter Number of iterations
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @param seed Initial seed for the random process
 #' @importFrom utils tail
 #' @export
 #'
 
-sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter = 1000, alpha = 0.05, seed = 1234){
+sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter = 1000, alpha = 0.05){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.data(nobs.group = n.max)
   }

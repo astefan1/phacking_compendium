@@ -379,10 +379,9 @@
 #' @param y Location of y variable (criterion) in the data frame
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @param seed Initial seed for the random process
 #' @param which Which outlier definition methods? A numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)
 
-.outHack <- function(df, x, y, which = c(1:12), strategy = "firstsig", alpha = 0.05, seed = 1234){
+.outHack <- function(df, x, y, which = c(1:12), strategy = "firstsig", alpha = 0.05){
 
   # Stop if outlier exclusion methods are not defined
   stopifnot(any(c(1:12) %in% which))
@@ -565,14 +564,12 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
-#' @param seed Initial seed for the random process
 #' @export
 
-sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
+sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.05, iter = 1000){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0)
   }
@@ -582,7 +579,7 @@ sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.
 
   # Apply p-hacking procedure to each dataset
   res <- lapply(dat, x = 1, y = 2, .outHack, which = which,
-                strategy = strategy, alpha = alpha, seed = seed)
+                strategy = strategy, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL
   ps.all <- list()

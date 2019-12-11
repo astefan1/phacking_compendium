@@ -53,12 +53,11 @@
 #' @param which Which missing value handling method? 1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
-#' @param seed Random seed for imputation processes that require a random process
 #' @importFrom stats median lm
 #' @importFrom mice complete
 
 
-.impHack <- function(df, x, y, which = c(1:10), strategy = "firstsig", alpha = 0.05, seed = 1234){
+.impHack <- function(df, x, y, which = c(1:10), strategy = "firstsig", alpha = 0.05){
 
   x <- df[,x]
   y <- df[,y]
@@ -98,37 +97,37 @@
   # Multivariate imputations by chained equations ("mice" package): predictive mean matchihng
   dfnew <- as.data.frame(cbind(x, y))
   if(5 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "pmm")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "pmm")
     ps[5] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
   # Multivariate imputations by chained equations ("mice" package): Weighted predictive mean matching
   if(6 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "midastouch")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "midastouch")
     ps[6] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
   # Multivariate imputations by chained equations ("mice" package): Sample from observed values
   if(7 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "sample")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "sample")
     ps[7] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
   # Multivariate imputations by chained equations ("mice" package): Bayesian linear regression
   if(8 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "norm")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "norm")
     ps[8] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression ignoring model error
   if(9 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "norm.nob")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "norm.nob")
     ps[9] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression predicted values
   if(10 %in% which){
-    imp <- .miceNoOutput(dfnew, seed = seed, m = 1, method = "norm.predict")
+    imp <- .miceNoOutput(dfnew, m = 1, method = "norm.predict")
     ps[10] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
   }
 
@@ -150,25 +149,22 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
-#' @param seed Initial seed for random processes
 #' @export
 
-sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000, seed = 1234){
+sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
-  set.seed(seed)
   for(i in 1:iter){
     dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0, missing = missing)
   }
 
-  set.seed(seed)
   if(any(which == "random")) which <- sample(c(1:10), 5)
 
   # Apply p-hacking procedure to each dataset
   .impHackList <- function(x){
     .impHack(df = x, x = 1, y = 2,
-             which = which, strategy = strategy, alpha = alpha, seed = seed)
+             which = which, strategy = strategy, alpha = alpha)
   }
 
   res <- lapply(dat, .impHackList)
