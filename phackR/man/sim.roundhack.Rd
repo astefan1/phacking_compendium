@@ -4,8 +4,12 @@
 \alias{sim.roundhack}
 \title{Simulate p-hacking with incorrect rounding}
 \usage{
-sim.roundhack(roundinglevel, iter = 1000, alternative = "two.sided",
-  alpha = 0.05)
+sim.roundhack(
+  roundinglevel,
+  iter = 1000,
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{roundinglevel}{Highest p-value that is rounded down to 0.05}

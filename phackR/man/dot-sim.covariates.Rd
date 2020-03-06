@@ -4,8 +4,7 @@
 \alias{.sim.covariates}
 \title{Simulate data with (correlated) covariates}
 \usage{
-.sim.covariates(nobs.group, ncov, rcov, rcovdv, mu = 0, sd = 1,
-  missing = 0)
+.sim.covariates(nobs.group, ncov, rcov, rcovdv, mu = 0, sd = 1, missing = 0)
 }
 \arguments{
 \item{nobs.group}{Vector with number of observations per group}

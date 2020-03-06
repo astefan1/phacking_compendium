@@ -4,8 +4,13 @@
 \alias{sim.outHack}
 \title{Simulate p-Hacking with different sorts of outlier definition}
 \usage{
-sim.outHack(nobs, which = c(1:12), strategy = "firstsig",
-  alpha = 0.05, iter = 1000)
+sim.outHack(
+  nobs,
+  which = c(1:12),
+  strategy = "firstsig",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}

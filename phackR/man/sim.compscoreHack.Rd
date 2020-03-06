@@ -5,8 +5,15 @@
 \title{Simulate p-hacking with composite scores
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.compscoreHack(nobs, ncompv, rcomp, ndelete, strategy = "firstsig",
-  alpha = 0.05, iter = 1000)
+sim.compscoreHack(
+  nobs,
+  ncompv,
+  rcomp,
+  ndelete,
+  strategy = "firstsig",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}

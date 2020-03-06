@@ -4,8 +4,13 @@
 \alias{sim.statAnalysisHack}
 \title{Simulate p-Hacking for exploiting different statistical analysis options}
 \usage{
-sim.statAnalysisHack(nobs.group, strategy = "firstsig",
-  alternative = "two.sided", alpha = 0.05, iter = 1000)
+sim.statAnalysisHack(
+  nobs.group,
+  strategy = "firstsig",
+  alternative = "two.sided",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs.group}{Number of observations per group. Either a scalar or a vector with 2 elements.}

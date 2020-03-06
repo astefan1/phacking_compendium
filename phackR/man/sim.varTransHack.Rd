@@ -5,8 +5,13 @@
 \title{Simulate p-hacking with variable transformations
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.varTransHack(nobs, transvar, strategy = "firstsig", alpha = 0.05,
-  iter = 1000)
+sim.varTransHack(
+  nobs,
+  transvar,
+  strategy = "firstsig",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}

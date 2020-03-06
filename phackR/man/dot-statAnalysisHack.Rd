@@ -4,8 +4,14 @@
 \alias{.statAnalysisHack}
 \title{P-Hacking function for exploiting different statistical analysis options}
 \usage{
-.statAnalysisHack(df, group, dv, strategy = "firstsig",
-  alternative = "two.sided", alpha = 0.05)
+.statAnalysisHack(
+  df,
+  group,
+  dv,
+  strategy = "firstsig",
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame with one continuous independent variable and one continuous dependent variable}

@@ -5,8 +5,16 @@
 \title{Simulate p-Hacking with multiple covariates
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.covhack(nobs.group, ncov, rcov, rcovdv, interactions = FALSE,
-  strategy = "firstsig", alpha = 0.05, iter = 1000)
+sim.covhack(
+  nobs.group,
+  ncov,
+  rcov,
+  rcovdv,
+  interactions = FALSE,
+  strategy = "firstsig",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs.group}{Vector with number of observations per group}

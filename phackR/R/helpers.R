@@ -143,3 +143,22 @@
 
 }
 
+#' Compute R squared for the t-test
+#' @param x values of group 1
+#' @param y values of group 2
+
+.compR2t <- function(x, y){
+  grandmean <- mean(c(x, y))
+  sst <- sum((c(x,y)-grandmean)^2)
+  sse <- sum((x-mean(x))^2)+sum((y-mean(y))^2)
+  return(1-(sse/sst))
+}
+
+#' Compute Cohen's d
+#' @description Compute Cohen's d from t-value with equal sized groups of size n
+#' @param t t-value
+#' @param n sample size per group
+
+.compCohensD <- function(t, n){
+  t*sqrt(2/n)
+}

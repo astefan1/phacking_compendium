@@ -29,21 +29,29 @@
   # Determine places of peeks
   peeks <- seq(n.min, n.max, by=step)
 
-  # Initialize result vector
-  ps <- rep(NA, length(peeks))
-
   # Compute t-tests
-  ps <- sapply(peeks, FUN = function(x) {stats::t.test(g1[1:x], g2[1:x], var.equal = TRUE, alternative = alternative)$p.value})
+  mod <- sapply(peeks, FUN = function(x) {stats::t.test(g1[1:x], g2[1:x], var.equal = TRUE, alternative = alternative)})
+  ps <- simplify2array(mod["p.value",])
+  r2s <- sapply(peeks, FUN = function(x) {.compR2t(g1[1:x], g2[1:x])})
+  ds <- .compCohensD(simplify2array(mod["statistic",]), peeks)
 
   # Do the p-hacking
   if(any(ps < alpha) == FALSE){
     p.final <- utils::tail(ps, 1)
+    r2.final <- utils::tail(r2s, 1)
+    d.final <- utils::tail(ds, 1)
   } else if (any(ps < alpha) == TRUE) {
     p.final <- ps[which(ps < alpha)][1]
+    r2.final <- r2s[ps == p.final]
+    d.final <- ds[ps == p.final]
   }
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s,
+              d.final = d.final,
+              ds = ds))
 }
 
 #' Simulate p-hacking with incorrect rounding
@@ -72,12 +80,21 @@ sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter 
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+  ds.hack <- NULL
+  ds.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- utils::tail(res[[i]][["ps"]], 1)
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- utils::tail(res[[i]][["r2s"]], 1)
+    ds.hack[i] <- res[[i]][["d.final"]]
+    ds.orig[i] <- utils::tail(res[[i]][["ds"]], 1)
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig, ds.hack, ds.orig)
 
   return(res)
 

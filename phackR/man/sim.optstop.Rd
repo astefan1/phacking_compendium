@@ -4,8 +4,14 @@
 \alias{sim.optstop}
 \title{Simulate p-hacking with incorrect rounding}
 \usage{
-sim.optstop(n.min, n.max, step = 1, alternative = "two.sided",
-  iter = 1000, alpha = 0.05)
+sim.optstop(
+  n.min,
+  n.max,
+  step = 1,
+  alternative = "two.sided",
+  iter = 1000,
+  alpha = 0.05
+)
 }
 \arguments{
 \item{n.min}{Minimum sample size}

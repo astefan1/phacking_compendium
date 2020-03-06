@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
@@ -116,9 +115,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +283,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -318,7 +315,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="hypothesis-tests" class="section level3">
 <h3>Hypothesis tests</h3>
-<p>We use two kinds of hypothesis tests: the independent samples t-test and univariate linear regression. The standard choice is the independent samples t-test. However, some p-hacking methods are not easily applicable to this hypothesis test or are more likely to be used in a continuous variable case. In these cases, we use a univariate linear regression.</p>
+<p>We use two kinds of hypothesis tests: the independent samples t-test and univariate linear regression. The standard choice is the independent samples t-test. However, some p-hacking methods are not easily applicable to this hypothesis test or are more likely to be used in a continuous variable case. In these cases, we use a univariate linear regression. Some p-hacking strategies specifically rely on different hypothesis tests. In these cases, this is mentioned in the description of the p-hacking strategies below.</p>
+<p>The result object of the p-hacking simulation functions contains the original and p-hacked p-value for all analyses. Additionally, whenever possible the determination coefficient <span class="math inline">\(R^2\)</span> of the original and p-hacked result is shown as well. When only t-tests are used in the simulation, the output also contains the original and p-hacked Cohen’s d. The “hacked” effect sizes are always based on the p-hacked p-values, i.e., the analysis is still selected based on the smallest p-value, not on the smallest effect size.</p>
 </div>
 <div id="normal-versus-ambitious-p-hacking" class="section level3">
 <h3>“Normal” versus “Ambitious” p-hacking</h3>
@@ -343,87 +341,87 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>Description of P-Hacking Strategies and Their Implementation</h2>
 <div id="selective-reporting-of-the-dependent-variable" class="section level3">
 <h3>Selective reporting of the dependent variable</h3>
-<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and several continous variables (dependent variables). The correlation between the dependent variables can be set using the argument <code>r</code>. The size of the groups can be defined by <code>nobs.group</code> (either an integer for equally sized groups or a vector with two elements for groups of different sizes). The <strong>p-hacking strategy</strong> is implemented as follows: Compute t-test with every single of the dependent variables. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and several continous variables (dependent variables). The correlation between the dependent variables can be set using the argument <code>r</code>. The size of the groups can be defined by <code>nobs.group</code> (either an integer for equally sized groups or a vector with two elements for groups of different sizes). The <strong>p-hacking strategy</strong> is implemented as follows: Compute t-test with every single of the dependent variables. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked <span class="math inline">\(R^2\)</span>, and the original and p-hacked Cohen’s d.</p>
 <p>The simulation code can be found in the file <code>selectiveReportingDV.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="kw">sim.multDVhack</span>(<span class="dt">nobs.group =</span> <span class="dv">30</span>, <span class="dt">nvar =</span> <span class="dv">5</span>, <span class="dt">r =</span> <span class="fl">0.3</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, </a>
 <a class="sourceLine" id="cb2-3" title="3">               <span class="dt">iter =</span> <span class="dv">10</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt;  [1,] 0.06164974 0.7702692</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt;  [2,] 0.08867750 0.7649193</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt;  [3,] 0.18669108 0.2803161</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt;  [4,] 0.11127663 0.9113189</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt;  [5,] 0.13022740 0.6269691</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt;  [6,] 0.06986678 0.1830474</span></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt;  [7,] 0.07291094 0.3168725</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt;  [8,] 0.27619604 0.8442438</span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt;  [9,] 0.16142965 0.1614296</span></a>
-<a class="sourceLine" id="cb2-14" title="14"><span class="co">#&gt; [10,] 0.14650802 0.4550353</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig   r2s.hack     r2s.orig    ds.hack     ds.orig</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt;  [1,] 0.06164974 0.7702692 0.05892560 0.0014819268 -0.4920490 -0.07575369</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt;  [2,] 0.08867750 0.7649193 0.04915105 0.0015538141  0.4470736  0.07757210</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt;  [3,] 0.18669108 0.2803161 0.02986554 0.0200654432  0.3450147 -0.28138064</span></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt;  [4,] 0.11127663 0.9113189 0.04314289 0.0002156974 -0.4175413  0.02888269</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt;  [5,] 0.13022740 0.6269691 0.03903742 0.0040991187 -0.3963289  0.12615532</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt;  [6,] 0.06986678 0.1830474 0.05554370 0.0303575006 -0.4768643 -0.34793294</span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt;  [7,] 0.07291094 0.3168725 0.05439489 0.0172710516  0.4716203  0.26068190</span></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt;  [8,] 0.27619604 0.8442438 0.02040887 0.0006710488 -0.2838281 -0.05095552</span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt;  [9,] 0.16142965 0.1614296 0.03352364 0.0335236356 -0.3662253 -0.36622527</span></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="co">#&gt; [10,] 0.14650802 0.4550353 0.03599870 0.0096583411 -0.3799907 -0.19419011</span></a></code></pre></div>
 </div>
 <div id="selective-reporting-of-the-independent-variable" class="section level3">
 <h3>Selective reporting of the independent variable</h3>
-<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one control group variable and multiple treatment group variables (independent variables), thus it is in a wide format. The correlation between the treatment group variables can be set using the argument <code>r</code>. The size of the groups can be defined by <code>nobs.group</code>. Note that unequal sizes of groups are not possible here because the data set is in wide format. The <strong>p-hacking strategy</strong> is implemented as follows: Conduct an independent samples t-test with every single treatment variable and the control group variable. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one control group variable and multiple treatment group variables (independent variables), thus it is in a wide format. The correlation between the treatment group variables can be set using the argument <code>r</code>. The size of the groups can be defined by <code>nobs.group</code>. Note that unequal sizes of groups are not possible here because the data set is in wide format. The <strong>p-hacking strategy</strong> is implemented as follows: Conduct an independent samples t-test with every single treatment variable and the control group variable. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked <span class="math inline">\(R^2\)</span>, and the original and p-hacked Cohen’s d.</p>
 <p>The simulation code can be found in the file <code>selectiveReportingIV.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb3-2" title="2"><span class="kw">sim.multIVhack</span>(<span class="dt">nobs.group =</span> <span class="dv">30</span>, <span class="dt">nvar =</span> <span class="dv">5</span>, <span class="dt">r =</span> <span class="fl">0.3</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, </a>
 <a class="sourceLine" id="cb3-3" title="3">               <span class="dt">iter =</span> <span class="dv">10</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt;  [1,] 0.03656040 0.03656040</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt;  [2,] 0.61999994 0.67965745</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt;  [3,] 0.48553332 0.72651137</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt;  [4,] 0.34547020 0.72990489</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt;  [5,] 0.02942400 0.91252899</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt;  [6,] 0.08267945 0.08267945</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt;  [7,] 0.27266052 0.46496393</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt;  [8,] 0.66678887 0.66678887</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt;  [9,] 0.17456156 0.80477693</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; [10,] 0.24943695 0.41883769</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig    r2s.hack     r2s.orig    ds.hack     ds.orig</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt;  [1,] 0.03656040 0.03656040 0.073189717 0.0731897168 -0.5525836 -0.55258358</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt;  [2,] 0.61999994 0.67965745 0.004266656 0.0029609101  0.1287184  0.10715807</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt;  [3,] 0.48553332 0.72651137 0.008423249 0.0021252894  0.1812362 -0.09074849</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt;  [4,] 0.34547020 0.72990489 0.015358790 0.0020707973 -0.2455884 -0.08957510</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt;  [5,] 0.02942400 0.91252899 0.079163273 0.0002098281  0.5765526 -0.02848694</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt;  [6,] 0.08267945 0.08267945 0.051021072 0.0510210724 -0.4559475 -0.45594754</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt;  [7,] 0.27266052 0.46496393 0.020708644 0.0092421584  0.2859488  0.18992027</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt;  [8,] 0.66678887 0.66678887 0.003218702 0.0032187017  0.1117400  0.11174003</span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt;  [9,] 0.17456156 0.80477693 0.031547552 0.0010618789  0.3549049  0.06411159</span></a>
+<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; [10,] 0.24943695 0.41883769 0.022803495 0.0113016364  0.3003849 -0.21023602</span></a></code></pre></div>
 </div>
 <div id="incorrect-rounding" class="section level3">
 <h3>Incorrect rounding</h3>
-<p>We simulate this p-hacking strategy using the t-test, but literally any hypothesis test should produce the same results. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and one continous variable (dependent variable). Note that the simulation function does not include an argument for the group size as the group size is irrelevant in this p-hacking context. The <strong>p-hacking strategy</strong> is implemented as follows: Compute the p-value for the t-test, if it is between the alpha level and a rounding level specified in the argument <code>roundinglevel</code> (e.g., 0.06 &gt; p &gt; 0.05), round it down to p = 0.05, else keep the original p-value. Note that selecting a p-value selection strategy (first significant p-value, smallest significant p-value, smallest p-value) is not possible for this p-hacking strategy.</p>
+<p>We simulate this p-hacking strategy using the t-test, but literally any hypothesis test should produce the same results. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and one continous variable (dependent variable). Note that the simulation function does not include an argument for the group size as the group size is irrelevant in this p-hacking context. The <strong>p-hacking strategy</strong> is implemented as follows: Compute the p-value for the t-test, if it is between the alpha level and a rounding level specified in the argument <code>roundinglevel</code> (e.g., 0.06 &gt; p &gt; 0.05), round it down to p = 0.05, else keep the original p-value. Note that selecting a p-value selection strategy (first significant p-value, smallest significant p-value, smallest p-value) is not possible for this p-hacking strategy. The output contains the original and p-hacked p-values, and the original and p-hacked <span class="math inline">\(R^2\)</span>. Note that <span class="math inline">\(R^2\)</span> does not change because it is unlikely that researchers would adjust effect sizes retrospectively based on a rounded p-value.</p>
 <p>The simulation code can be found in the file <code>incorrectRounding.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="kw">sim.roundhack</span>(<span class="dt">roundinglevel =</span> <span class="fl">0.06</span>, <span class="dt">iter =</span> <span class="dv">10</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, </a>
 <a class="sourceLine" id="cb4-3" title="3">              <span class="dt">alpha =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt;         ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="co">#&gt;  [1,] 0.2930249 0.2930249</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="co">#&gt;  [2,] 0.9074418 0.9074418</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="co">#&gt;  [3,] 0.9470891 0.9470891</span></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="co">#&gt;  [4,] 0.8114894 0.8114894</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="co">#&gt;  [5,] 0.8986408 0.8986408</span></a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="co">#&gt;  [6,] 0.8353421 0.8353421</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="co">#&gt;  [7,] 0.4623168 0.4623168</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="co">#&gt;  [8,] 0.7801766 0.7801766</span></a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="co">#&gt;  [9,] 0.4914814 0.4914814</span></a>
-<a class="sourceLine" id="cb4-14" title="14"><span class="co">#&gt; [10,] 0.8113854 0.8113854</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt;         ps.hack   ps.orig     r2s.hack     r2s.orig</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="co">#&gt;  [1,] 0.2930249 0.2930249 1.904439e-02 1.904439e-02</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co">#&gt;  [2,] 0.9074418 0.9074418 2.350552e-04 2.350552e-04</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="co">#&gt;  [3,] 0.9470891 0.9470891 7.658541e-05 7.658541e-05</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="co">#&gt;  [4,] 0.8114894 0.8114894 9.887708e-04 9.887708e-04</span></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="co">#&gt;  [5,] 0.8986408 0.8986408 2.821287e-04 2.821287e-04</span></a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="co">#&gt;  [6,] 0.8353421 0.8353421 7.510586e-04 7.510586e-04</span></a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="co">#&gt;  [7,] 0.4623168 0.4623168 9.351747e-03 9.351747e-03</span></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="co">#&gt;  [8,] 0.7801766 0.7801766 1.353649e-03 1.353649e-03</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="co">#&gt;  [9,] 0.4914814 0.4914814 8.196844e-03 8.196844e-03</span></a>
+<a class="sourceLine" id="cb4-14" title="14"><span class="co">#&gt; [10,] 0.8113854 0.8113854 9.898828e-04 9.898828e-04</span></a></code></pre></div>
 </div>
 <div id="optional-stopping-data-peeking" class="section level3">
 <h3>Optional stopping / Data peeking</h3>
-<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and one continous variable (dependent variable), both should have at least the sample size defined in <code>n.max</code>. Note that this is the reason why the simulation function does not have an argument to specify the sample size per group (it is automatically set to n.max). The <strong>p-hacking strategy</strong> is implemented as follows: The dataset is evaluated row-by-row, starting with a minimum sample size of <code>n.min</code>. At each step, a number of observations is added to the sample, defined by the argument <code>step</code> and the t-test is computed. This continues until the maximum sample size specified in <code>n.max</code> is reached. The p-hacked p-value is defined as the first p-value that is smaller than the defined alpha level. The non-p-hacked p-value is defined as the p-value at n.max (this implies that if there was no p-hacking, n.max would be the specified fixed sample size).</p>
+<p>We simulate this p-hacking strategy using the t-test. The <strong>simulated dataset</strong> contains one discrete group variable with two levels (independent variable) and one continous variable (dependent variable), both should have at least the sample size defined in <code>n.max</code>. Note that this is the reason why the simulation function does not have an argument to specify the sample size per group (it is automatically set to n.max). The <strong>p-hacking strategy</strong> is implemented as follows: The dataset is evaluated row-by-row, starting with a minimum sample size of <code>n.min</code>. At each step, a number of observations is added to the sample, defined by the argument <code>step</code> and the t-test is computed. This continues until the maximum sample size specified in <code>n.max</code> is reached. The p-hacked p-value is defined as the first p-value that is smaller than the defined alpha level. The non-p-hacked p-value is defined as the p-value at n.max (this implies that if there was no p-hacking, n.max would be the specified fixed sample size). The output contains the original and p-hacked p-values, the original and p-hacked <span class="math inline">\(R^2\)</span>, and the original and p-hacked Cohen’s d.</p>
 <p>The simulation code can be found in the file <code>optionalStopping.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="kw">sim.optstop</span>(<span class="dt">n.min =</span> <span class="dv">10</span>, <span class="dt">n.max =</span> <span class="dv">20</span>, <span class="dt">step =</span> <span class="dv">2</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, </a>
 <a class="sourceLine" id="cb5-3" title="3">            <span class="dt">iter =</span> <span class="dv">10</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig</span></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt;  [1,] 0.26352442 0.26352442</span></a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt;  [2,] 0.01202975 0.03081077</span></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt;  [3,] 0.21285027 0.21285027</span></a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt;  [4,] 0.27429670 0.27429670</span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt;  [5,] 0.53201656 0.53201656</span></a>
-<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt;  [6,] 0.79232864 0.79232864</span></a>
-<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt;  [7,] 0.93976306 0.93976306</span></a>
-<a class="sourceLine" id="cb5-12" title="12"><span class="co">#&gt;  [8,] 0.43862992 0.43862992</span></a>
-<a class="sourceLine" id="cb5-13" title="13"><span class="co">#&gt;  [9,] 0.96766599 0.96766599</span></a>
-<a class="sourceLine" id="cb5-14" title="14"><span class="co">#&gt; [10,] 0.68865560 0.68865560</span></a></code></pre></div>
+<a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig     r2s.hack     r2s.orig     ds.hack     ds.orig</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt;  [1,] 0.26352442 0.26352442 3.278363e-02 3.278363e-02  0.35888764  0.35888764</span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt;  [2,] 0.01202975 0.03081077 3.022653e-01 1.169126e-01 -1.24882102 -0.70928483</span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt;  [3,] 0.21285027 0.21285027 4.053487e-02 4.053487e-02  0.40067441  0.40067441</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt;  [4,] 0.27429670 0.27429670 3.136386e-02 3.136386e-02 -0.35077307 -0.35077307</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt;  [5,] 0.53201656 0.53201656 1.035928e-02 1.035928e-02  0.19944254  0.19944254</span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt;  [6,] 0.79232864 0.79232864 1.846673e-03 1.846673e-03  0.08384712  0.08384712</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt;  [7,] 0.93976306 0.93976306 1.522541e-04 1.522541e-04  0.02405522  0.02405522</span></a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="co">#&gt;  [8,] 0.43862992 0.43862992 1.586743e-02 1.586743e-02 -0.24752458 -0.24752458</span></a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="co">#&gt;  [9,] 0.96766599 0.96766599 4.381244e-05 4.381244e-05 -0.01290328 -0.01290328</span></a>
+<a class="sourceLine" id="cb5-14" title="14"><span class="co">#&gt; [10,] 0.68865560 0.68865560 4.271639e-03 4.271639e-03  0.12767876  0.12767876</span></a></code></pre></div>
 </div>
 <div id="outlier-exclusion" class="section level3">
 <h3>Outlier exclusion</h3>
-<p>We simulate this p-hacking strategy using univariate linear regression (most outlier detection methods are based on some kind of distance measures on continuous variables). The <strong>simulated dataset</strong> contains two continuous variables, both with the sample size specified in the argument <code>nobs</code>. The <strong>p-hacking strategy</strong> is implemented as follows: The original p-value is computed as a simple linear regression(y ~ x) with all values. For the p-hacked p-values, outlier values are searched in x and y using an outlier definition criterion. Then, a pairwise deletion of outlier values follows for the following three options: (1) remove xy pairs where x is an outlier, (2) remove xy pairs where y is an outlier, (3) remove xy pairs where x and y are outliers. Therefore, for every outlier deletion strategy, we end up with three datasets where different values are removed (some of these may be identical and will be cut away by the <code>.extractoutlier</code> function in practice). The p-hacking method contains 12 separate outlier definition criteria, some of which have several sub-criteria (e.g., delete values that are &gt; <em>x</em> standard deviations above or below the mean, with <em>x</em> being 2, 2.5, 3, …). In the case of sub-criteria, the outlier deletion process is applied to each sub-criterion, so that we end up with <em>3 x number of sub-criteria</em> data sets (again, some of which might be identical and cut away by the <code>.extractoutlier</code> function). In the simulation function, either all separate outlier definition criteria can be applied (i.e., <code>which = c(1:12)</code>), a specific subset can be chosen (e.g., <code>which = c(1,3,5)</code>), or a random subset of 5 different outlier strategies can be chosen (<code>which = &quot;random&quot;</code>). We believe that the latter shows a realistic scenario as not all researchers know all outlier definition criteria and the ones they know are probably a random subset of the existing outlier definition criteria (which does not mean that our simulation method covers all existing outlier definition criteria). For all outlier definition criteria, the outlier-deleted datasets are created and evaluated using the t-test function. In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using univariate linear regression (most outlier detection methods are based on some kind of distance measures on continuous variables). The <strong>simulated dataset</strong> contains two continuous variables, both with the sample size specified in the argument <code>nobs</code>. The <strong>p-hacking strategy</strong> is implemented as follows: The original p-value is computed as a simple linear regression(y ~ x) with all values. For the p-hacked p-values, outlier values are searched in x and y using an outlier definition criterion. Then, a pairwise deletion of outlier values follows for the following three options: (1) remove xy pairs where x is an outlier, (2) remove xy pairs where y is an outlier, (3) remove xy pairs where x and y are outliers. Therefore, for every outlier deletion strategy, we end up with three datasets where different values are removed (some of these may be identical and will be cut away by the <code>.extractoutlier</code> function in practice). The p-hacking method contains 12 separate outlier definition criteria, some of which have several sub-criteria (e.g., delete values that are &gt; <em>x</em> standard deviations above or below the mean, with <em>x</em> being 2, 2.5, 3, …). In the case of sub-criteria, the outlier deletion process is applied to each sub-criterion, so that we end up with <em>3 x number of sub-criteria</em> data sets (again, some of which might be identical and cut away by the <code>.extractoutlier</code> function). In the simulation function, either all separate outlier definition criteria can be applied (i.e., <code>which = c(1:12)</code>), a specific subset can be chosen (e.g., <code>which = c(1,3,5)</code>), or a random subset of 5 different outlier strategies can be chosen (<code>which = &quot;random&quot;</code>). We believe that the latter shows a realistic scenario as not all researchers know all outlier definition criteria and the ones they know are probably a random subset of the existing outlier definition criteria (which does not mean that our simulation method covers all existing outlier definition criteria). For all outlier definition criteria, the outlier-deleted datasets are created and evaluated using the t-test function. In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>Below, we describe all outlier exclusion criteria:</p>
 <ol style="list-style-type: decimal">
 <li>Boxplot: Single-variable outliers are defined using the <code>graphics::boxplot</code> function.</li>
@@ -444,142 +442,142 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="kw">sim.outHack</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">which =</span> <span class="st">&quot;random&quot;</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, </a>
 <a class="sourceLine" id="cb6-3" title="3">            <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt;  [1,] 0.36575765 0.5701855</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt;  [2,] 0.23919897 0.4829183</span></a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt;  [3,] 0.44444558 0.7770139</span></a>
-<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt;  [4,] 0.11634926 0.2228680</span></a>
-<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt;  [5,] 0.36854013 0.6887060</span></a>
-<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt;  [6,] 0.09832312 0.6882591</span></a>
-<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt;  [7,] 0.19847431 0.9127607</span></a>
-<a class="sourceLine" id="cb6-12" title="12"><span class="co">#&gt;  [8,] 0.36213570 0.3621357</span></a>
-<a class="sourceLine" id="cb6-13" title="13"><span class="co">#&gt;  [9,] 0.35302939 0.6725462</span></a>
-<a class="sourceLine" id="cb6-14" title="14"><span class="co">#&gt; [10,] 0.02308360 0.4682688</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig   r2s.hack     r2s.orig</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt;  [1,] 0.36575765 0.5701855 0.03156281 0.0116520628</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt;  [2,] 0.23919897 0.4829183 0.06237719 0.0177379336</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt;  [3,] 0.44444558 0.7770139 0.02358010 0.0029119601</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt;  [4,] 0.11634926 0.2228680 0.08882336 0.0525830930</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt;  [5,] 0.36854013 0.6887060 0.03245621 0.0058179850</span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt;  [6,] 0.09832312 0.6882591 0.11929196 0.0058355770</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt;  [7,] 0.19847431 0.9127607 0.06276985 0.0004362954</span></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co">#&gt;  [8,] 0.36213570 0.3621357 0.02974142 0.0297414168</span></a>
+<a class="sourceLine" id="cb6-13" title="13"><span class="co">#&gt;  [9,] 0.35302939 0.6725462 0.03759783 0.0064737516</span></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="co">#&gt; [10,] 0.02308360 0.4682688 0.18988823 0.0189439383</span></a></code></pre></div>
 </div>
 <div id="exploiting-covariates" class="section level3">
 <h3>Exploiting covariates</h3>
-<p>We simulate this p-hacking strategy using a t-test that is expanded to an ANCOVA when covariates are taken into account. The <strong>simulated dataset</strong> contains a discrete group variable with two levels (independent variable), a continuous dependent variable, and a set of continuous covariates. The number of covariates can be specified using the argument <code>ncov</code>. The correlation of the dependent variable with the covariates as well as the correlation among the covariates can be specified using the arguments <code>rcovdv</code> and <code>rcov</code>, respectively. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value without covariates is calculated. Then, all covariates are added to the model separately (i.e., dv ~ group + cov1, df ~ group + cov2, …). Then, covariates are ordered in decreasing order with respect to their correlation with the dependent variable and then added to the model sequentially (i.e., dv ~ group + covhighest, dv ~ covhighest + covsecondhighest, …). All models are evaluated and the final p-value is selected using one of the strategies (first significant p-value, smallest significant p-value, smallest p-value). The models can either be defined as models without interaction terms (<code>interactions = FALSE</code> as is the default) or with interaction terms.</p>
+<p>We simulate this p-hacking strategy using a t-test that is expanded to an ANCOVA when covariates are taken into account. The <strong>simulated dataset</strong> contains a discrete group variable with two levels (independent variable), a continuous dependent variable, and a set of continuous covariates. The number of covariates can be specified using the argument <code>ncov</code>. The correlation of the dependent variable with the covariates as well as the correlation among the covariates can be specified using the arguments <code>rcovdv</code> and <code>rcov</code>, respectively. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value without covariates is calculated. Then, all covariates are added to the model separately (i.e., dv ~ group + cov1, df ~ group + cov2, …). Then, covariates are ordered in decreasing order with respect to their correlation with the dependent variable and then added to the model sequentially (i.e., dv ~ group + covhighest, dv ~ covhighest + covsecondhighest, …). All models are evaluated and the final p-value is selected using one of the strategies (first significant p-value, smallest significant p-value, smallest p-value). The models can either be defined as models without interaction terms (<code>interactions = FALSE</code> as is the default) or with interaction terms. The output contains the original and p-hacked p-values as well as the $ partial,^2$. In this case, we do not display the overall <span class="math inline">\(R^2\)</span> of the analyses because in the ANCOVAs the focus does not lie on the overall explained variance.</p>
 <p>The simulation code can be found in the file <code>exploitCovariates.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="kw">sim.covhack</span>(<span class="dt">nobs.group =</span> <span class="dv">30</span>, <span class="dt">ncov =</span> <span class="dv">4</span>, <span class="dt">rcov =</span> <span class="fl">0.3</span>, <span class="dt">rcovdv =</span> <span class="fl">0.5</span>, </a>
 <a class="sourceLine" id="cb7-3" title="3">            <span class="dt">interactions =</span> <span class="ot">FALSE</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, </a>
 <a class="sourceLine" id="cb7-4" title="4">            <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt;          ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt;  [1,] 0.47759857 0.7702692</span></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt;  [2,] 0.26101986 0.7649193</span></a>
-<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt;  [3,] 0.08942181 0.2803161</span></a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt;  [4,] 0.23833451 0.9113189</span></a>
-<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt;  [5,] 0.30059661 0.6269691</span></a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt;  [6,] 0.03237891 0.1830474</span></a>
-<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt;  [7,] 0.07969574 0.3168725</span></a>
-<a class="sourceLine" id="cb7-13" title="13"><span class="co">#&gt;  [8,] 0.42125010 0.8442438</span></a>
-<a class="sourceLine" id="cb7-14" title="14"><span class="co">#&gt;  [9,] 0.11788297 0.1614296</span></a>
-<a class="sourceLine" id="cb7-15" title="15"><span class="co">#&gt; [10,] 0.15415091 0.4550353</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt;          ps.hack   ps.orig  eta2s.hack   eta2s.orig</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt;  [1,] 0.47759857 0.7702692 0.009382178 0.0014819268</span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt;  [2,] 0.26101986 0.7649193 0.022912587 0.0015538141</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt;  [3,] 0.08942181 0.2803161 0.049772287 0.0200654432</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt;  [4,] 0.23833451 0.9113189 0.024307457 0.0002156974</span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt;  [5,] 0.30059661 0.6269691 0.018785707 0.0040991187</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt;  [6,] 0.03237891 0.1830474 0.077828657 0.0303575006</span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt;  [7,] 0.07969574 0.3168725 0.052900736 0.0172710516</span></a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="co">#&gt;  [8,] 0.42125010 0.8442438 0.012016761 0.0006710488</span></a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="co">#&gt;  [9,] 0.11788297 0.1614296 0.042352235 0.0335236356</span></a>
+<a class="sourceLine" id="cb7-15" title="15"><span class="co">#&gt; [10,] 0.15415091 0.4550353 0.035300865 0.0096583411</span></a></code></pre></div>
 </div>
 <div id="subgroup-analyses-tinkering-with-inclusion-criteria" class="section level3">
 <h3>Subgroup analyses / Tinkering with inclusion criteria</h3>
-<p>We simulate this p-hacking strategy using a t-test. The <strong>simulated dataset</strong> consists of one discrete group variable (independent variable), one continuous dependent variable, and several binary subgroup variables. The size of the original groups can be defined by <code>nobs.group</code> (either an integer for equally sized groups or a vector with two elements for groups of different sizes). Group sizes in the subgroup variables can differ (group membership is sampled randomly from <code>c(0,1)</code>). The number of subgroup variables can be defined using the argument <code>nsubvars</code>. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value is computed using the full dataset (independent and dependent variable). Then, for each subgroup variable, the dataset is split into two parts and the t-test is conducted separately in each part (e.g., as if one would conduct the same t-test for men and women). Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using a t-test. The <strong>simulated dataset</strong> consists of one discrete group variable (independent variable), one continuous dependent variable, and several binary subgroup variables. The size of the original groups can be defined by <code>nobs.group</code> (either an integer for equally sized groups or a vector with two elements for groups of different sizes). Group sizes in the subgroup variables can differ (group membership is sampled randomly from <code>c(0,1)</code>). The number of subgroup variables can be defined using the argument <code>nsubvars</code>. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value is computed using the full dataset (independent and dependent variable). Then, for each subgroup variable, the dataset is split into two parts and the t-test is conducted separately in each part (e.g., as if one would conduct the same t-test for men and women). Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked <span class="math inline">\(R^2\)</span>, and the original and p-hacked Cohen’s d.</p>
 <p>Note: This p-hacking strategy can both be seen as a subgroup analysis (e.g., “evaluate data separately for men and women”) or as tinkering with inclusion criteria (e.g., “include only women (if the analysis is significant for them)”). Technically, for tinkering with inclusion criteria, maybe only one of the levels of the subgroups should be evaluated but this would imply that the selection of the inclusion criterion was theory-driven. The current approach does not assume this (inclusion criterion is “HARKed”).</p>
 <p>The simulation code can be found in the file <code>subgroupAnalysis.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="kw">sim.subgroupHack</span>(<span class="dt">nobs.group =</span> <span class="dv">30</span>, <span class="dt">nsubvars =</span> <span class="dv">3</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, </a>
 <a class="sourceLine" id="cb8-3" title="3">                 <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="co">#&gt;  [1,] 0.29302489 0.29302489</span></a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="co">#&gt;  [2,] 0.12310738 0.95057443</span></a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt;  [3,] 0.09744909 0.83534209</span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt;  [4,] 0.38221017 0.38322021</span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt;  [5,] 0.07008478 0.38793977</span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt;  [6,] 0.28661761 0.28750383</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt;  [7,] 0.27892369 0.73205279</span></a>
-<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt;  [8,] 0.01541254 0.09297363</span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt;  [9,] 0.40920899 0.40920899</span></a>
-<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; [10,] 0.34139023 0.34139023</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-4" title="4"><span class="co">#&gt;          ps.hack    ps.orig   r2s.hack     r2s.orig    ds.hack     ds.orig</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">#&gt;  [1,] 0.27466289 0.29302489 0.03836236 1.904439e-02  0.3873471  0.27398526</span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="co">#&gt;  [2,] 0.12310738 0.95057443 0.07740683 6.681601e-05 -0.5620178 -0.01607397</span></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt;  [3,] 0.09744909 0.83534209 0.11987580 7.510586e-04  0.7091575  0.05390989</span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt;  [4,] 0.05376876 0.38322021 0.11478620 1.313575e-02 -0.7009333 -0.22686477</span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt;  [5,] 0.07008478 0.38793977 0.14145828 1.287904e-02  0.7772652  0.22460781</span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt;  [6,] 0.01059256 0.28750383 0.24253362 1.948104e-02  1.0905409  0.27717017</span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt;  [7,] 0.14729545 0.73205279 0.09732184 2.036715e-03 -0.6280949 -0.08883338</span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt;  [8,] 0.01541254 0.09297363 0.21289308 4.789192e-02 -1.0184963 -0.44101804</span></a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt;  [9,] 0.25867761 0.40920899 0.04532332 1.177476e-02  0.4247919  0.21464282</span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; [10,] 0.34139023 0.34139023 0.01561864 1.561864e-02  0.2476899  0.24768991</span></a></code></pre></div>
 </div>
 <div id="composite-scores-scale-redefinition" class="section level3">
 <h3>Composite scores / scale redefinition</h3>
-<p>We simulate this p-hacking strategy using univariate linear regression (so that we don’t mix it up with the multiple dependent variable p-hacking strategy). The <strong>simulated dataset</strong> consists of one dependent variable and several correlated score variables that can potentially form the items of a score (these are not correlated with the dependent variable). The correlation between these score variables can be specified using the <code>rcomp</code> argument, the number of the score variables can be specified using the <code>ncompv</code> argument. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value is calculated using the mean score of all score variables as a predictor variable. Then, one by one, items are removed from the scale. The next item to remove is always chosen based on “Cronbach’s alpha when item deleted” (the common choice in SPSS), i.e., the item is chosen that makes the scale most consistent. In each iteration, the p-values for linear regressions using the following predictors are calculated: (1) new composite score, i.e., reduced item scale; (2) deleted item from the score; (3) a composite score of all items that have been deleted so far. The maximum number of items to be removed from the scale can be set using the argument <code>ndelete</code>. In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using univariate linear regression (so that we don’t mix it up with the multiple dependent variable p-hacking strategy). The <strong>simulated dataset</strong> consists of one dependent variable and several correlated score variables that can potentially form the items of a score (these are not correlated with the dependent variable). The correlation between these score variables can be specified using the <code>rcomp</code> argument, the number of the score variables can be specified using the <code>ncompv</code> argument. The <strong>p-hacking strategy</strong> is implemented as follows: First, the original p-value is calculated using the mean score of all score variables as a predictor variable. Then, one by one, items are removed from the scale. The next item to remove is always chosen based on “Cronbach’s alpha when item deleted” (the common choice in SPSS), i.e., the item is chosen that makes the scale most consistent. In each iteration, the p-values for linear regressions using the following predictors are calculated: (1) new composite score, i.e., reduced item scale; (2) deleted item from the score; (3) a composite score of all items that have been deleted so far. The maximum number of items to be removed from the scale can be set using the argument <code>ndelete</code>. In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>The simulation code can be found in the file <code>compositeScores.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="kw">sim.compscoreHack</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">ncompv =</span> <span class="dv">5</span>, <span class="dt">rcomp =</span> <span class="fl">0.7</span>, <span class="dt">ndelete =</span> <span class="dv">3</span>, </a>
 <a class="sourceLine" id="cb9-3" title="3">                  <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="co">#&gt;         ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="co">#&gt;  [1,] 0.5645814 0.7554491</span></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="co">#&gt;  [2,] 0.3409324 0.5021432</span></a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="co">#&gt;  [3,] 0.5479496 0.6513339</span></a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="co">#&gt;  [4,] 0.1403261 0.2543529</span></a>
-<a class="sourceLine" id="cb9-9" title="9"><span class="co">#&gt;  [5,] 0.3767909 0.9976487</span></a>
-<a class="sourceLine" id="cb9-10" title="10"><span class="co">#&gt;  [6,] 0.1380544 0.2094160</span></a>
-<a class="sourceLine" id="cb9-11" title="11"><span class="co">#&gt;  [7,] 0.4650607 0.7333174</span></a>
-<a class="sourceLine" id="cb9-12" title="12"><span class="co">#&gt;  [8,] 0.2887501 0.3729319</span></a>
-<a class="sourceLine" id="cb9-13" title="13"><span class="co">#&gt;  [9,] 0.1867324 0.3390684</span></a>
-<a class="sourceLine" id="cb9-14" title="14"><span class="co">#&gt; [10,] 0.3308616 0.4481106</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-4" title="4"><span class="co">#&gt;         ps.hack   ps.orig    r2.hack      r2.orig</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="co">#&gt;  [1,] 0.5645814 0.7554491 0.01199198 3.520781e-03</span></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="co">#&gt;  [2,] 0.3409324 0.5021432 0.03243425 1.624187e-02</span></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="co">#&gt;  [3,] 0.5479496 0.6513339 0.01303920 7.397467e-03</span></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="co">#&gt;  [4,] 0.1403261 0.2543529 0.07600244 4.613560e-02</span></a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="co">#&gt;  [5,] 0.3767909 0.9976487 0.02799992 3.157301e-07</span></a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="co">#&gt;  [6,] 0.1380544 0.2094160 0.07684615 5.566566e-02</span></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="co">#&gt;  [7,] 0.4650607 0.7333174 0.01921601 4.211740e-03</span></a>
+<a class="sourceLine" id="cb9-12" title="12"><span class="co">#&gt;  [8,] 0.2887501 0.3729319 0.04009004 2.844951e-02</span></a>
+<a class="sourceLine" id="cb9-13" title="13"><span class="co">#&gt;  [9,] 0.1867324 0.3390684 0.06140666 3.268144e-02</span></a>
+<a class="sourceLine" id="cb9-14" title="14"><span class="co">#&gt; [10,] 0.3308616 0.4481106 0.03379106 2.070317e-02</span></a></code></pre></div>
 </div>
 <div id="selective-reporting-of-effects" class="section level3">
 <h3>Selective reporting of effects</h3>
-<p>We simulate this p-hacking strategy using linear regression because we want to keep it separate from the “exploiting covariates” strategy and because in linear regression all effects are potentially interesting. The <strong>simulated dataset</strong> consists of one continuous dependent variable and several continuous correlated predictor variables (independent variables). The correlation between the predictor variables and the dependent variable is set to zero. The correlation between the predictor variables can be defined using the argument <code>riv</code>. The number of predictor variables can be specified using the argument <code>niv</code>. The <strong>p-hacking strategy</strong> is implemented as follows: A multiple linear regression is calculated using all predictor variables and all p-values apart from the intercept are saved. The first of these p-values (effect of the first predictor on the dependent variable) is assumed to be the original p-value (this implies a hierarchy between the predictor variables). The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The user can specify whether the model should contain interactions (argument <code>interactions = FALSE</code> or <code>interactions = TRUE</code>, default: FALSE). This increases the number of available p-values (however, when interaction terms are used, the sample size needs to be large so that the model is still identified).</p>
+<p>We simulate this p-hacking strategy using linear regression because we want to keep it separate from the “exploiting covariates” strategy and because in linear regression all effects are potentially interesting. The <strong>simulated dataset</strong> consists of one continuous dependent variable and several continuous correlated predictor variables (independent variables). The correlation between the predictor variables and the dependent variable is set to zero. The correlation between the predictor variables can be defined using the argument <code>riv</code>. The number of predictor variables can be specified using the argument <code>niv</code>. The <strong>p-hacking strategy</strong> is implemented as follows: A multiple linear regression is calculated using all predictor variables and all p-values apart from the intercept are saved. The first of these p-values (effect of the first predictor on the dependent variable) is assumed to be the original p-value (this implies a hierarchy between the predictor variables). The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The user can specify whether the model should contain interactions (argument <code>interactions = FALSE</code> or <code>interactions = TRUE</code>, default: FALSE). This increases the number of available p-values (however, when interaction terms are used, the sample size needs to be large so that the model is still identified). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>The simulation code can be found in the file <code>selectEffects.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb10-2" title="2"><span class="kw">sim.selectEffects</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">niv =</span> <span class="dv">4</span>, <span class="dt">riv =</span> <span class="fl">0.1</span>, <span class="dt">interactions =</span> <span class="ot">FALSE</span>, </a>
 <a class="sourceLine" id="cb10-3" title="3">                  <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="co">#&gt;           ps.hack    ps.orig</span></a>
-<a class="sourceLine" id="cb10-5" title="5"><span class="co">#&gt;  [1,] 0.031947960 0.21293449</span></a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="co">#&gt;  [2,] 0.500385589 0.79616221</span></a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt;  [3,] 0.274302319 0.90241345</span></a>
-<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt;  [4,] 0.028911594 0.29326202</span></a>
-<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt;  [5,] 0.349057405 0.55223031</span></a>
-<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt;  [6,] 0.045917272 0.04591727</span></a>
-<a class="sourceLine" id="cb10-11" title="11"><span class="co">#&gt;  [7,] 0.050571590 0.05921912</span></a>
-<a class="sourceLine" id="cb10-12" title="12"><span class="co">#&gt;  [8,] 0.222132745 0.35340037</span></a>
-<a class="sourceLine" id="cb10-13" title="13"><span class="co">#&gt;  [9,] 0.002835517 0.10926687</span></a>
-<a class="sourceLine" id="cb10-14" title="14"><span class="co">#&gt; [10,] 0.210964208 0.32876367</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-4" title="4"><span class="co">#&gt;           ps.hack    ps.orig   r2s.hack   r2s.orig</span></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="co">#&gt;  [1,] 0.031947960 0.21293449 0.27351365 0.27351365</span></a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="co">#&gt;  [2,] 0.500385589 0.79616221 0.03503527 0.03503527</span></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt;  [3,] 0.274302319 0.90241345 0.06333768 0.06333768</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt;  [4,] 0.028911594 0.29326202 0.30932576 0.30932576</span></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt;  [5,] 0.349057405 0.55223031 0.06125615 0.06125615</span></a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt;  [6,] 0.045917272 0.04591727 0.15088525 0.15088525</span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="co">#&gt;  [7,] 0.050571590 0.05921912 0.24245011 0.24245011</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="co">#&gt;  [8,] 0.222132745 0.35340037 0.10249451 0.10249451</span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="co">#&gt;  [9,] 0.002835517 0.10926687 0.33452249 0.33452249</span></a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="co">#&gt; [10,] 0.210964208 0.32876367 0.15953716 0.15953716</span></a></code></pre></div>
 </div>
 <div id="exploiting-variable-transformations" class="section level3">
 <h3>Exploiting variable transformations</h3>
-<p>We simulate this p-hacking strategy using univariate linear regression because most variable transformation strategies are not applicable to discrete variables. The <strong>simulated dataset</strong> contains two continuous variables that are not correlated with each other. The <strong>p-hacking strategy</strong> is implemented as follows: The original p-value is calculated as a simple univariate linear regression y ~ x. Then, the variables in the model are transformed. Using the argument <code>transvar</code> one can specify whether only x (<code>transvar = &quot;x&quot;</code>), only y (<code>transvar = &quot;y&quot;</code>) or both (<code>transvar = &quot;xy&quot;</code>) should be transformed. The respective variables are transformed using a log transformation, a square root transformation and the inverse. Then, linear regressions are computed for all transformations of the variables. The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using univariate linear regression because most variable transformation strategies are not applicable to discrete variables. The <strong>simulated dataset</strong> contains two continuous variables that are not correlated with each other. The <strong>p-hacking strategy</strong> is implemented as follows: The original p-value is calculated as a simple univariate linear regression y ~ x. Then, the variables in the model are transformed. Using the argument <code>transvar</code> one can specify whether only x (<code>transvar = &quot;x&quot;</code>), only y (<code>transvar = &quot;y&quot;</code>) or both (<code>transvar = &quot;xy&quot;</code>) should be transformed. The respective variables are transformed using a log transformation, a square root transformation and the inverse. Then, linear regressions are computed for all transformations of the variables. The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>The simulation code can be found in the file <code>variableTransformation.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb11-2" title="2"><span class="kw">sim.varTransHack</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">transvar =</span> <span class="st">&quot;xy&quot;</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, </a>
 <a class="sourceLine" id="cb11-3" title="3">                 <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb11-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb11-5" title="5"><span class="co">#&gt;  [1,] 0.17797866 0.5701855</span></a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="co">#&gt;  [2,] 0.16510978 0.4829183</span></a>
-<a class="sourceLine" id="cb11-7" title="7"><span class="co">#&gt;  [3,] 0.05056903 0.7770139</span></a>
-<a class="sourceLine" id="cb11-8" title="8"><span class="co">#&gt;  [4,] 0.05253812 0.2228680</span></a>
-<a class="sourceLine" id="cb11-9" title="9"><span class="co">#&gt;  [5,] 0.31893767 0.6887060</span></a>
-<a class="sourceLine" id="cb11-10" title="10"><span class="co">#&gt;  [6,] 0.32296302 0.6882591</span></a>
-<a class="sourceLine" id="cb11-11" title="11"><span class="co">#&gt;  [7,] 0.04594833 0.9127607</span></a>
-<a class="sourceLine" id="cb11-12" title="12"><span class="co">#&gt;  [8,] 0.11948981 0.3621357</span></a>
-<a class="sourceLine" id="cb11-13" title="13"><span class="co">#&gt;  [9,] 0.06834996 0.6725462</span></a>
-<a class="sourceLine" id="cb11-14" title="14"><span class="co">#&gt; [10,] 0.22190875 0.4682688</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-4" title="4"><span class="co">#&gt;          ps.hack   ps.orig   r2s.hack     r2s.orig</span></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="co">#&gt;  [1,] 0.17797866 0.5701855 0.06383310 0.0116520628</span></a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="co">#&gt;  [2,] 0.16510978 0.4829183 0.06764924 0.0177379336</span></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="co">#&gt;  [3,] 0.05056903 0.7770139 0.12972626 0.0029119601</span></a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="co">#&gt;  [4,] 0.05253812 0.2228680 0.12770161 0.0525830930</span></a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="co">#&gt;  [5,] 0.31893767 0.6887060 0.03546773 0.0058179850</span></a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="co">#&gt;  [6,] 0.32296302 0.6882591 0.03489290 0.0058355770</span></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="co">#&gt;  [7,] 0.04594833 0.9127607 0.13480334 0.0004362954</span></a>
+<a class="sourceLine" id="cb11-12" title="12"><span class="co">#&gt;  [8,] 0.11948981 0.3621357 0.08434808 0.0297414168</span></a>
+<a class="sourceLine" id="cb11-13" title="13"><span class="co">#&gt;  [9,] 0.06834996 0.6725462 0.11375829 0.0064737516</span></a>
+<a class="sourceLine" id="cb11-14" title="14"><span class="co">#&gt; [10,] 0.22190875 0.4682688 0.05279580 0.0189439383</span></a></code></pre></div>
 </div>
 <div id="exploiting-arbitrary-cutoff-values" class="section level3">
 <h3>Exploiting arbitrary cutoff values</h3>
-<p>We simulate this p-hacking strategy using a t-test / ANOVA (but the underlying data is actually continuous). The <strong>simulated dataset</strong> contains two continuous variables that are uncorrelated (dependent and independent variable). In the <strong>p-hacking strategy</strong>, three mechanisms are applied to make the independent variable discrete. The first mechanism is a median split (leading to two groups, ergo a t-test). The second mechanism is a three-wise split, after which only the two extreme categories are compared in a t-test (“cut the middle” strategy). The third mechanism is a three-wise split again, but this time all three categories are evaluated using an ANOVA (only the omnibus test is evaluated). Additionally to these, the original univariate linear regression is evaluated to obtain the original p-value. Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using a t-test / ANOVA (but the underlying data is actually continuous). The <strong>simulated dataset</strong> contains two continuous variables that are uncorrelated (dependent and independent variable). In the <strong>p-hacking strategy</strong>, three mechanisms are applied to make the independent variable discrete. The first mechanism is a median split (leading to two groups, ergo a t-test). The second mechanism is a three-wise split, after which only the two extreme categories are compared in a t-test (“cut the middle” strategy). The third mechanism is a three-wise split again, but this time all three categories are evaluated using an ANOVA (only the omnibus test is evaluated). Additionally to these, the original univariate linear regression is evaluated to obtain the original p-value. Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>The simulation code can be found in the file <code>exploitCutoffs.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb12-2" title="2"><span class="kw">sim.cutoffHack</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="co">#&gt;         ps.hack   ps.orig</span></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="co">#&gt;  [1,] 0.3607383 0.5701855</span></a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="co">#&gt;  [2,] 0.2150510 0.4829183</span></a>
-<a class="sourceLine" id="cb12-6" title="6"><span class="co">#&gt;  [3,] 0.3774882 0.7770139</span></a>
-<a class="sourceLine" id="cb12-7" title="7"><span class="co">#&gt;  [4,] 0.1553856 0.2228680</span></a>
-<a class="sourceLine" id="cb12-8" title="8"><span class="co">#&gt;  [5,] 0.4054100 0.6887060</span></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="co">#&gt;  [6,] 0.4326364 0.6882591</span></a>
-<a class="sourceLine" id="cb12-10" title="10"><span class="co">#&gt;  [7,] 0.4908072 0.9127607</span></a>
-<a class="sourceLine" id="cb12-11" title="11"><span class="co">#&gt;  [8,] 0.1438563 0.3621357</span></a>
-<a class="sourceLine" id="cb12-12" title="12"><span class="co">#&gt;  [9,] 0.1406796 0.6725462</span></a>
-<a class="sourceLine" id="cb12-13" title="13"><span class="co">#&gt; [10,] 0.2629142 0.4682688</span></a></code></pre></div>
+<a class="sourceLine" id="cb12-3" title="3"><span class="co">#&gt;         ps.hack   ps.orig   r2s.hack     r2s.orig</span></a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="co">#&gt;  [1,] 0.3607383 0.5701855 0.04658767 0.0116520628</span></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="co">#&gt;  [2,] 0.2150510 0.4829183 0.10760193 0.0177379336</span></a>
+<a class="sourceLine" id="cb12-6" title="6"><span class="co">#&gt;  [3,] 0.3774882 0.7770139 0.04350891 0.0029119601</span></a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="co">#&gt;  [4,] 0.1553856 0.2228680 0.07075440 0.0525830930</span></a>
+<a class="sourceLine" id="cb12-8" title="8"><span class="co">#&gt;  [5,] 0.4054100 0.6887060 0.02485252 0.0058179850</span></a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="co">#&gt;  [6,] 0.4326364 0.6882591 0.06017682 0.0058355770</span></a>
+<a class="sourceLine" id="cb12-10" title="10"><span class="co">#&gt;  [7,] 0.4908072 0.9127607 0.01711245 0.0004362954</span></a>
+<a class="sourceLine" id="cb12-11" title="11"><span class="co">#&gt;  [8,] 0.1438563 0.3621357 0.11483785 0.0297414168</span></a>
+<a class="sourceLine" id="cb12-12" title="12"><span class="co">#&gt;  [9,] 0.1406796 0.6725462 0.13521925 0.0064737516</span></a>
+<a class="sourceLine" id="cb12-13" title="13"><span class="co">#&gt; [10,] 0.2629142 0.4682688 0.06907680 0.0189439383</span></a></code></pre></div>
 </div>
 <div id="exploiting-statistical-analysis-options" class="section level3">
 <h3>Exploiting statistical analysis options</h3>
-<p>We simulate this p-hacking strategy using a t-test (and related tests for comparing the central tendency in two independent groups). The <strong>simulated dataset</strong> contains a discrete group variable (independent variable) and a continuous dependent variable. The <strong>p-hacking strategy</strong> is implemented as follows: The central tendency in the groups is compared using a t-test (original analysis), a Welch test, a Wilcoxon test, and a Yuen test (trimming options: 0.1, 0.15, 0.2, and 0.25). Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using a t-test (and related tests for comparing the central tendency in two independent groups). The <strong>simulated dataset</strong> contains a discrete group variable (independent variable) and a continuous dependent variable. The <strong>p-hacking strategy</strong> is implemented as follows: The central tendency in the groups is compared using a t-test (original analysis), a Welch test, a Wilcoxon test, and a Yuen test (trimming options: 0.1, 0.15, 0.2, and 0.25). Then the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains only the original and p-hacked p-values because there is no common effect size for the analayses used.</p>
 <p>The simulation code can be found in the file <code>statAnalysis.R</code>.</p>
 <p><strong>Example</strong></p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
@@ -599,7 +597,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="favorable-imputation-of-missing-values" class="section level3">
 <h3>Favorable imputation of missing values</h3>
-<p>We simulate this p-hacking strategy using univariate linear regression because many imputation methods have been developed for continuous variables. The <strong>simulated dataset</strong> contains two non-correlated continuous variables. Both of these contain missing values. The percentage of missing values is defined by the argument <code>missing</code>. The <strong>p-hacking strategy</strong> is implemented similar to the outlier exclusion strategy. There are 10 different imputation methods that can be selected using the argument <code>which</code>. It is possible to select all of them (<code>which = c(1:10)</code>), a specific subset of them (e.g., <code>which = c(1,4,6)</code>), or a random subset of 5 imputation methods (<code>which = &quot;random&quot;</code>). In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value).</p>
+<p>We simulate this p-hacking strategy using univariate linear regression because many imputation methods have been developed for continuous variables. The <strong>simulated dataset</strong> contains two non-correlated continuous variables. Both of these contain missing values. The percentage of missing values is defined by the argument <code>missing</code>. The <strong>p-hacking strategy</strong> is implemented similar to the outlier exclusion strategy. There are 10 different imputation methods that can be selected using the argument <code>which</code>. It is possible to select all of them (<code>which = c(1:10)</code>), a specific subset of them (e.g., <code>which = c(1,4,6)</code>), or a random subset of 5 imputation methods (<code>which = &quot;random&quot;</code>). In the end, the final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked <span class="math inline">\(R^2\)</span>.</p>
 <p>Below, we describe all imputation methods:</p>
 <ol style="list-style-type: decimal">
 <li>Delete missing values: Pairwise deletion of missing values (default option of lm()).</li>
@@ -618,17 +616,17 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb14-2" title="2"><span class="kw">sim.impHack</span>(<span class="dt">nobs =</span> <span class="dv">30</span>, <span class="dt">missing =</span> <span class="fl">0.2</span>, <span class="dt">which =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>), <span class="dt">strategy =</span> <span class="st">&quot;smallest&quot;</span>, </a>
 <a class="sourceLine" id="cb14-3" title="3">            <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">iter =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb14-4" title="4"><span class="co">#&gt;           ps.hack    ps.orig</span></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="co">#&gt;  [1,] 0.121527228 0.69277353</span></a>
-<a class="sourceLine" id="cb14-6" title="6"><span class="co">#&gt;  [2,] 0.249940964 0.65682616</span></a>
-<a class="sourceLine" id="cb14-7" title="7"><span class="co">#&gt;  [3,] 0.002853466 0.02624177</span></a>
-<a class="sourceLine" id="cb14-8" title="8"><span class="co">#&gt;  [4,] 0.116760411 0.94202988</span></a>
-<a class="sourceLine" id="cb14-9" title="9"><span class="co">#&gt;  [5,] 0.017804385 0.41897902</span></a>
-<a class="sourceLine" id="cb14-10" title="10"><span class="co">#&gt;  [6,] 0.124002428 0.69119635</span></a>
-<a class="sourceLine" id="cb14-11" title="11"><span class="co">#&gt;  [7,] 0.006553796 0.56048920</span></a>
-<a class="sourceLine" id="cb14-12" title="12"><span class="co">#&gt;  [8,] 0.623363413 0.81745840</span></a>
-<a class="sourceLine" id="cb14-13" title="13"><span class="co">#&gt;  [9,] 0.467586012 0.72774996</span></a>
-<a class="sourceLine" id="cb14-14" title="14"><span class="co">#&gt; [10,] 0.057817105 0.36138015</span></a></code></pre></div>
+<a class="sourceLine" id="cb14-4" title="4"><span class="co">#&gt;           ps.hack    ps.orig    r2s.hack    r2s.orig</span></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="co">#&gt;  [1,] 0.121527228 0.69277353 0.083466725 0.008876505</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="co">#&gt;  [2,] 0.249940964 0.65682616 0.046981229 0.012647900</span></a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="co">#&gt;  [3,] 0.002853466 0.02624177 0.276304017 0.258465026</span></a>
+<a class="sourceLine" id="cb14-8" title="8"><span class="co">#&gt;  [4,] 0.116760411 0.94202988 0.085553807 0.000302004</span></a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="co">#&gt;  [5,] 0.017804385 0.41897902 0.184615747 0.036618614</span></a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="co">#&gt;  [6,] 0.124002428 0.69119635 0.082416663 0.009513082</span></a>
+<a class="sourceLine" id="cb14-11" title="11"><span class="co">#&gt;  [7,] 0.006553796 0.56048920 0.235568740 0.019168437</span></a>
+<a class="sourceLine" id="cb14-12" title="12"><span class="co">#&gt;  [8,] 0.623363413 0.81745840 0.008729871 0.003222120</span></a>
+<a class="sourceLine" id="cb14-13" title="13"><span class="co">#&gt;  [9,] 0.467586012 0.72774996 0.019001603 0.006898171</span></a>
+<a class="sourceLine" id="cb14-14" title="14"><span class="co">#&gt; [10,] 0.057817105 0.36138015 0.122626349 0.044013030</span></a></code></pre></div>
 </div>
 </div>
 

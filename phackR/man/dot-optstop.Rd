@@ -4,8 +4,16 @@
 \alias{.optstop}
 \title{Optional Stopping based on existing dataset}
 \usage{
-.optstop(df, group, dv, n.min, n.max, step = 1,
-  alternative = "two.sided", alpha = 0.05)
+.optstop(
+  df,
+  group,
+  dv,
+  n.min,
+  n.max,
+  step = 1,
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame}

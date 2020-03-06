@@ -4,8 +4,14 @@
 \alias{sim.impHack}
 \title{Simulate p-Hacking with different sorts of outlier definition missing value imputation}
 \usage{
-sim.impHack(nobs, missing, which = c(1:10), strategy = "firstsig",
-  alpha = 0.05, iter = 1000)
+sim.impHack(
+  nobs,
+  missing,
+  which = c(1:10),
+  strategy = "firstsig",
+  alpha = 0.05,
+  iter = 1000
+)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}

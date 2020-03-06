@@ -4,8 +4,14 @@
 \alias{.multDVhack}
 \title{P-Hacking function for multiple dependent variables}
 \usage{
-.multDVhack(df, dvs, group, strategy = "firstsig",
-  alternative = "two.sided", alpha = 0.05)
+.multDVhack(
+  df,
+  dvs,
+  group,
+  strategy = "firstsig",
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame with one group variable and multiple dependent variables}

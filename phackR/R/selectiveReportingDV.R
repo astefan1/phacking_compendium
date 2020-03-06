@@ -40,22 +40,32 @@
   # Prepare data frame
   dvs <- df[, dvs]
   group <- df[, group]
-  ps <- NULL
+  mod <- list()
+  r2s <- NULL
 
   # Compute t-tests
   for(i in 1:length(dvs)){
 
-    ps[i] <- stats::t.test(dvs[, i] ~ group,
-                           var.equal = TRUE, alternative = alternative)$p.value
+    mod[[i]] <- stats::t.test(dvs[, i] ~ group,
+                           var.equal = TRUE, alternative = alternative)
+    r2s[i] <- .compR2t(dvs[group == unique(group)[1], i],
+                       dvs[group == unique(group)[2], i])
   }
 
-  ps <- unlist(ps)
+  ps <- unlist(simplify2array(mod)["p.value", ])
+  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), length(df[, group])/2)
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
+  d.final <- ds[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s,
+              d.final = d.final,
+              ds = ds))
 
 }
 
@@ -81,14 +91,24 @@ sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
   # Apply p-hacking procedure to each dataset
   res <- lapply(dat, .multDVhack, dvs = c(2:(nvar+1)), group = 1,
                 strategy = strategy, alternative = alternative, alpha = alpha)
+
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+  ds.hack <- NULL
+  ds.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
+    ds.hack[i] <- res[[i]][["d.final"]]
+    ds.orig[i] <- res[[i]][["ds"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig, ds.hack, ds.orig)
 
   return(res)
 }

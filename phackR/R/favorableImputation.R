@@ -67,77 +67,102 @@
 
   # Initialize result vector
   ps <- rep(NA, 10)
+  r2s <- rep(NA, 10)
 
   # p-value when missing values are deleted
   if(1 %in% which){
-    ps[1] <- summary(stats::lm(y ~ x, na.action = "na.omit"))$coefficients[2, 4]
+    mod1 <- summary(stats::lm(y ~ x, na.action = "na.omit"))
+    ps[1] <- mod1$coefficients[2, 4]
+    r2s[1] <- mod1$r.squared
   }
 
   # Mean imputation
   if(2 %in% which){
     newx <- .easyimpute(x, mean, na.rm = T)
     newy <- .easyimpute(y, mean, na.rm = T)
-    ps[2] <- summary(stats::lm(newy ~ newx))$coefficients[2, 4]
+    mod2 <- summary(stats::lm(newy ~ newx))
+    ps[2] <- mod2$coefficients[2, 4]
+    r2s[2] <- mod2$r.squared
   }
 
   # Median imputation
   if(3 %in% which){
     newx <- .easyimpute(x, mean, na.rm = T)
     newy <- .easyimpute(y, mean, na.rm = T)
-    ps[3] <- summary(stats::lm(newy ~ newx))$coefficients[2, 4]
+    mod3 <- summary(stats::lm(newy ~ newx))
+    ps[3] <- mod3$coefficients[2, 4]
+    r2s[3] <- mod3$r.squared
   }
 
   # Mode imputation
   if(4 %in% which){
     newx <- .easyimpute(x, .estimate_mode)
     newy <- .easyimpute(y, .estimate_mode)
-    ps[4] <- summary(stats::lm(newy ~ newx))$coefficients[2, 4]
+    mod4 <- summary(stats::lm(newy ~ newx))
+    ps[4] <- mod4$coefficients[2, 4]
+    r2s[4] <- mod4$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): predictive mean matchihng
   dfnew <- as.data.frame(cbind(x, y))
   if(5 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "pmm")
-    ps[5] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod5 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[5] <- mod5$coefficients[2, 4]
+    r2s[5] <- mod5$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): Weighted predictive mean matching
   if(6 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "midastouch")
-    ps[6] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod6 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[6] <- mod6$coefficients[2, 4]
+    r2s[6] <- mod6$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): Sample from observed values
   if(7 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "sample")
-    ps[7] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod7 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[7] <- mod7$coefficients[2, 4]
+    r2s[7] <- mod7$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): Bayesian linear regression
   if(8 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "norm")
-    ps[8] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod8 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[8] <- mod8$coefficients[2, 4]
+    r2s[8] <- mod8$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression ignoring model error
   if(9 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "norm.nob")
-    ps[9] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod9 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[9] <- mod9$coefficients[2, 4]
+    r2s[9] <- mod9$r.squared
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression predicted values
   if(10 %in% which){
     imp <- .miceNoOutput(dfnew, m = 1, method = "norm.predict")
-    ps[10] <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))$coefficients[2, 4]
+    mod10 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
+    ps[10] <- mod10$coefficients[2, 4]
+    r2s[10] <- mod10$r.squared
   }
 
   ps <- ps[!is.na(ps)]
+  r2s <- r2s[!is.na(r2s)]
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s))
 
 }
 
@@ -171,13 +196,17 @@ sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", a
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
   ps.all <- list()
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 

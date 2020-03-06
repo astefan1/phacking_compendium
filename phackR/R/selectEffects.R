@@ -21,13 +21,18 @@
 
   mdl <- paste(paste0("V", c(1:length(ivs))), collapse = interactions)
   mdl <- paste("dv ~ ", mdl)
-  ps <- unname(summary(stats::lm(stats::as.formula(mdl), data = df))$coefficients[,4])[-1]
+  mres <- summary(stats::lm(stats::as.formula(mdl), data = df))
+  ps <- mres$coefficients[,4][-1]
+  r2s <- mres$r.squared
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s # final r squared is the same for all ps because model doesn't change
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s))
 
 }
 
@@ -60,12 +65,17 @@ sim.selectEffects <- function(nobs, niv, riv, interactions = FALSE, strategy = "
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 

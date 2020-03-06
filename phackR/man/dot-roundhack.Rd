@@ -4,8 +4,14 @@
 \alias{.roundhack}
 \title{P-Hacking function for incorrect rounding}
 \usage{
-.roundhack(df, group, dv, roundinglevel, alternative = "two.sided",
-  alpha = 0.05)
+.roundhack(
+  df,
+  group,
+  dv,
+  roundinglevel,
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame}

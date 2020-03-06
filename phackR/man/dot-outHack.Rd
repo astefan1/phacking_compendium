@@ -4,8 +4,7 @@
 \alias{.outHack}
 \title{P-Hacking function for outlier exclusion in univariate linear regression}
 \usage{
-.outHack(df, x, y, which = c(1:12), strategy = "firstsig",
-  alpha = 0.05)
+.outHack(df, x, y, which = c(1:12), strategy = "firstsig", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}

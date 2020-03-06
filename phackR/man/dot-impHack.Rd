@@ -4,8 +4,7 @@
 \alias{.impHack}
 \title{P-Hacking function favorable imputation in univariate linear regression}
 \usage{
-.impHack(df, x, y, which = c(1:10), strategy = "firstsig",
-  alpha = 0.05)
+.impHack(df, x, y, which = c(1:10), strategy = "firstsig", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}

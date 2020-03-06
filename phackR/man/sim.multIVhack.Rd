@@ -4,8 +4,15 @@
 \alias{sim.multIVhack}
 \title{Simulate p-Hacking with multiple independent variables}
 \usage{
-sim.multIVhack(nobs.group, nvar, r, strategy = "firstsig", iter = 1000,
-  alternative = "two.sided", alpha = 0.05)
+sim.multIVhack(
+  nobs.group,
+  nvar,
+  r,
+  strategy = "firstsig",
+  iter = 1000,
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}

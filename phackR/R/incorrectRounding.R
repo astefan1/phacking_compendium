@@ -19,6 +19,8 @@
   # Compute t-test
   pval <- stats::t.test(df[,dv] ~ df[,group],
                         var.equal = TRUE, alternative = alternative)$p.value
+  r2val <- .compR2t(df[,dv][(df[,group] == unique(df[,group])[1])],
+                    df[,dv][(df[,group] == unique(df[,group])[2])])
 
   # P-hack p-value
   if(pval > alpha && pval < roundinglevel){
@@ -30,7 +32,9 @@
   ps <- c(pval, p.final)
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2val,
+              r2s = rep(r2val, 2)))
 
 }
 
@@ -54,12 +58,17 @@ sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided",
                 roundinglevel = roundinglevel, alternative = alternative, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 

@@ -4,8 +4,15 @@
 \alias{.subgroupHack}
 \title{P-Hacking function for multiple subgroups analysis}
 \usage{
-.subgroupHack(df, iv, dv, subvars, alternative = "two.sided",
-  strategy = "firstsig", alpha = 0.05)
+.subgroupHack(
+  df,
+  iv,
+  dv,
+  subvars,
+  alternative = "two.sided",
+  strategy = "firstsig",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{A matrix or data frame containing all relevant data}

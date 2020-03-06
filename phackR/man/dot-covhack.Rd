@@ -4,8 +4,15 @@
 \alias{.covhack}
 \title{P-Hacking function for multiple covariates}
 \usage{
-.covhack(df, dv, group, covs, interactions = FALSE,
-  strategy = "firstsig", alpha = 0.05)
+.covhack(
+  df,
+  dv,
+  group,
+  covs,
+  interactions = FALSE,
+  strategy = "firstsig",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame with one group variable, one dependent variable, and one or more covariates}

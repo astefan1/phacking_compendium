@@ -38,6 +38,7 @@
 #' @importFrom dplyr group_by_at do
 #' @importFrom stats t.test
 #' @importFrom dplyr "%>%"
+#' @importFrom rlang .data
 
 .subgroupHack <- function(df, iv, dv, subvars, alternative = "two.sided", strategy = "firstsig", alpha = 0.05){
 
@@ -46,30 +47,50 @@
   subvars.df <- cbind(df[, subvars])
   dfnew <- as.data.frame(cbind(ttest.df, subvars.df))
 
-  # Compute p-values
+  # Compute p-values, R^2, Cohen's d
 
   # Not p-hacked
-  p.orig <- stats::t.test(ttest.df[,2] ~ ttest.df[,1], var.equal = TRUE, alternative = alternative)$p.value
+  mod.orig <- stats::t.test(ttest.df[,2] ~ ttest.df[,1], var.equal = TRUE, alternative = alternative)
+  p.orig <- mod.orig$p.value
+  r2.orig <- .compR2t(ttest.df[ttest.df[,1] == unique(ttest.df[,1])[1],2],
+                      ttest.df[ttest.df[,1] == unique(ttest.df[,1])[2],2])
+  d.orig <- .compCohensD(unname(mod.orig$statistic), nrow(ttest.df)/2)
+
 
   # p-hacked
   ps <- list()
+  ds <- list()
+  r2s <- list()
 
   for(i in 1:length(subvars)){
 
     tmp <- dplyr::group_by_at(dfnew, subvars[i]) %>%
-      dplyr::do(as.data.frame(stats::t.test(.$V2 ~ .$V1, var.equal = TRUE, alternative = alternative)$p.value))
+      dplyr::do(as.data.frame(stats::t.test(.data$V2 ~ .data$V1, var.equal = TRUE, alternative = alternative)[c("p.value", "statistic")]))
+    tmp2 <- dplyr::group_by_at(dfnew, subvars[i]) %>%
+      dplyr::do(as.data.frame(table(.data$V1)))
+    tmp3 <- dplyr::group_by_at(dfnew, subvars[i]) %>% do(as.data.frame(.compR2t(.data$V2[.data$V1 == unique(.data$V1)[1]], .data$V2[.data$V1 == unique(.data$V1)[2]])))
 
     ps[[i]] <- tmp[[2]]
+    ds[[i]] <- c(tmp[[3]][1]*sqrt(sum(1/tmp2[[3]][1:2])), tmp[[3]][2]*sqrt(sum(1/tmp2[[3]][3:4])))
+    r2s[[i]] <- tmp3[[2]]
 
   }
 
   ps <- c(p.orig, unlist(ps))
+  r2s <- c(r2.orig, unlist(r2s))
+  ds <- c(d.orig, unlist(ds))
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
+  d.final <- ds[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s,
+              d.final = d.final,
+              ds = ds))
 
 }
 
@@ -93,7 +114,7 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", st
 
   # Apply p-hacking procedure to each dataset
   .subgroupHackList <- function(x){
-    .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+length(nsubvars))),
+    .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+nsubvars)),
                   alternative = alternative, strategy = strategy, alpha = alpha)
   }
 
@@ -101,12 +122,21 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", st
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+  ds.hack <- NULL
+  ds.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
+    ds.hack[i] <- res[[i]][["d.final"]]
+    ds.orig[i] <- res[[i]][["ds"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig, ds.hack, ds.orig)
 
   return(res)
 

@@ -4,8 +4,14 @@
 \alias{.selectEffects}
 \title{P-Hacking function for selective reporting of effects}
 \usage{
-.selectEffects(df, dv, ivs, interactions = TRUE, strategy = "firstsig",
-  alpha = 0.05)
+.selectEffects(
+  df,
+  dv,
+  ivs,
+  interactions = TRUE,
+  strategy = "firstsig",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame containing dependent variable and composite score items as columns}

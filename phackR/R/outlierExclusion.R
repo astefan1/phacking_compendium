@@ -392,6 +392,7 @@
 
   # initialize p value list (one level for each outlier method)
   ps <- vector("list", 12)
+  r2s <- vector("list", 12)
 
   #### Go through each outlier detection method and calculate p values ####
 
@@ -400,10 +401,12 @@
 
     dat <- .out.boxplot(x, y)
     ps[[1]] <- rep(NA, length(dat))
+    r2s[[1]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[1]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[1]][i] <- mod$coefficients[2,4]
+      r2s[[1]][i] <- mod$r.squared
     }
   }
 
@@ -412,10 +415,12 @@
 
     dat <- .out.stemleaf(x, y)
     ps[[2]] <- rep(NA, length(dat))
+    r2s[[2]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[2]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[2]][i] <- mod$coefficients[2,4]
+      r2s[[2]][i] <- mod$r.squared
     }
   }
 
@@ -424,10 +429,12 @@
 
     dat <- .out.sdrule(x, y)
     ps[[3]] <- rep(NA, length(dat))
+    r2s[[3]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[3]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[3]][i] <- mod$coefficients[2,4]
+      r2s[[3]][i] <- mod$r.squared
     }
   }
 
@@ -436,10 +443,12 @@
 
     dat <- .out.percentrule(x, y)
     ps[[4]] <- rep(NA, length(dat))
+    r2s[[4]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[4]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[4]][i] <- mod$coefficients[2,4]
+      r2s[[4]][i] <- mod$r.squared
     }
   }
 
@@ -448,10 +457,12 @@
 
     dat <- .out.residual(x, y, type = "stud")
     ps[[5]] <- rep(NA, length(dat))
+    r2s[[5]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[5]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[5]][i] <- mod$coefficients[2,4]
+      r2s[[5]][i] <- mod$r.squared
     }
   }
 
@@ -460,10 +471,12 @@
 
     dat <- .out.residual(x, y, type = "stan")
     ps[[6]] <- rep(NA, length(dat))
+    r2s[[6]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[6]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[6]][i] <- mod$coefficients[2,4]
+      r2s[[6]][i] <- mod$r.squared
     }
   }
 
@@ -472,10 +485,12 @@
 
     dat <- .out.dfbeta(x, y)
     ps[[7]] <- rep(NA, length(dat))
+    r2s[[7]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[7]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[7]][i] <- mod$coefficients[2,4]
+      r2s[[7]][i] <- mod$r.squared
     }
   }
 
@@ -484,10 +499,12 @@
 
     dat <- .out.dffits(x, y)
     ps[[8]] <- rep(NA, length(dat))
+    r2s[[8]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[8]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[8]][i] <- mod$coefficients[2,4]
+      r2s[[8]][i] <- mod$r.squared
     }
   }
 
@@ -496,10 +513,12 @@
 
     dat <- .out.cook(x, y)
     ps[[9]] <- rep(NA, length(dat))
+    r2s[[9]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[9]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[9]][i] <- mod$coefficients[2,4]
+      r2s[[9]][i] <- mod$r.squared
     }
   }
 
@@ -508,10 +527,12 @@
 
     dat <- .out.mahalanobis(x, y)
     ps[[10]] <- rep(NA, length(dat))
+    r2s[[10]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[10]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[10]][i] <- mod$coefficients[2,4]
+      r2s[[10]][i] <- mod$r.squared
     }
   }
 
@@ -520,10 +541,12 @@
 
     dat <- .out.leverage(x, y)
     ps[[11]] <- rep(NA, length(dat))
+    r2s[[11]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[11]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[11]][i] <- mod$coefficients[2,4]
+      r2s[[11]][i] <- mod$r.squared
     }
   }
 
@@ -532,28 +555,37 @@
 
     dat <- .out.covratio(x, y)
     ps[[12]] <- rep(NA, length(dat))
+    r2s[[12]] <- rep(NA, length(dat))
 
     for(i in 1:length(dat)){
-      mod <- stats::lm(dat[[i]][,2] ~ dat[[i]][,1])
-      ps[[12]][i] <- summary(mod)$coefficients[2,4]
+      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
+      ps[[12]][i] <- mod$coefficients[2,4]
+      r2s[[12]][i] <- mod$r.squared
     }
   }
 
   # Compute original p value
-  mod <- stats::lm(y ~ x)
-  p.orig <- summary(mod)$coefficients[2,4]
+  mod <- summary(stats::lm(y ~ x))
+  p.orig <- mod$coefficients[2,4]
+  r2.orig <- mod$r.squared
 
   # Combine all p values and remove NAs
   psc <- unlist(ps)
   psc <- psc[!is.na(psc)]
+  r2c <- unlist(r2s)
+  r2c <- r2c[!is.na(psc)]
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = psc, strategy = strategy, alpha = alpha, p.orig = p.orig)
+  r2.final <- unique(r2c[psc == p.final])
 
   ps <- c(p.orig, psc)
+  r2s <- c(r2.orig, r2c)
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s))
 
 }
 
@@ -582,14 +614,19 @@ sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.
                 strategy = strategy, alpha = alpha)
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
   ps.all <- list()
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
     #ps.all[[i]] <- res[[i]][["ps"]]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 }

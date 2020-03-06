@@ -45,20 +45,27 @@
   # Calculate p-values for all transformed variables
 
   ps <- matrix(NA, nrow = dim(Xtrans)[2], ncol = dim(Ytrans)[2])
+  r2s <- matrix(NA, nrow = dim(Xtrans)[2], ncol = dim(Ytrans)[2])
 
   for(i in 1:ncol(Xtrans)){
     for(j in 1:ncol(Ytrans)){
-      ps[i,j] <- summary(stats::lm(Ytrans[,j] ~ Xtrans[,i]))$coefficients[2, 4]
+      mod <- summary(stats::lm(Ytrans[,j] ~ Xtrans[,i]))
+      ps[i,j] <- mod$coefficients[2, 4]
+      r2s[i,j] <- mod$r.squared
     }
   }
 
   ps <- as.vector(ps)
+  r2s <- as.vector(r2s)
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s))
 
 }
 
@@ -89,12 +96,17 @@ sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 

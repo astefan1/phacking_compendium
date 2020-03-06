@@ -5,8 +5,7 @@
 \title{Simulate p-Hacking for exploiting cutoff values
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
 \usage{
-sim.cutoffHack(nobs, strategy = "firstsig", alpha = 0.05,
-  iter = 1000)
+sim.cutoffHack(nobs, strategy = "firstsig", alpha = 0.05, iter = 1000)
 }
 \arguments{
 \item{nobs}{Number of observations}

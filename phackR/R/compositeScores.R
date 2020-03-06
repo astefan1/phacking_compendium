@@ -33,11 +33,14 @@
 
   stopifnot(length(compv)-ndelete >= 2)
 
-  # Compute original p-value with full scale
-  p.orig <- summary(lm(df[, dv] ~ rowMeans(df[, compv])))$coefficients[2, 4]
+  # Compute original p-value and R^2 with full scale
+  modres <- summary(lm(df[, dv] ~ rowMeans(df[, compv])))
+  p.orig <- modres$coefficients[2, 4]
+  r2.orig <- modres$r.squared
 
   # Prepare and initialize variables for p-hacking
   ps <- list()
+  r2s <- list()
   compscale <- df[, compv]
   changescale <- df[, compv]
   out <- NULL
@@ -46,33 +49,45 @@
   for(i in 1:ndelete){
 
     pval <- rep(NA, 3)
+    r2val <- rep(NA, 3)
 
     # Define new item to delete from the scale
     out[i] <- which(colnames(compscale) %in% colnames(changescale)[which.max(performance::item_reliability(changescale)[,2])])
 
     # Compute p-value for the new composite score
     newscore <- rowMeans(compscale[, -out])
-    pval[1] <- summary(lm(df[, dv] ~ newscore))$coefficients[2, 4]
+    newmodres <- summary(lm(df[, dv] ~ newscore))
+    pval[1] <- newmodres$coefficients[2, 4]
+    r2val[1] <- newmodres$r.squared
 
     # Compute p-value for the item deleted from the score
     itemscore <- compscale[, out[i]]
-    pval[2] <- summary(lm(df[, dv] ~ itemscore))$coefficients[2, 4]
+    newmodres2 <- summary(lm(df[, dv] ~ itemscore))
+    pval[2] <- newmodres2$coefficients[2, 4]
+    r2val[2] <- newmodres2$r.squared
 
     # Compute p-value for a scale of all items deleted so far
     nonscore <- rowMeans(cbind(compscale[, out]))
-    pval[3] <- summary(lm(df[, dv] ~ nonscore))$coefficients[2, 4]
+    newmodres3 <- summary(lm(df[, dv] ~ nonscore))
+    pval[3] <- newmodres3$coefficients[2, 4]
+    r2val[3] <- newmodres3$r.squared
 
     changescale <- compscale[, -out]
     ps[[i]] <- pval
+    r2s[[i]] <- r2val
   }
 
   ps <- c(p.orig, unique(unlist(ps)))
+  r2s <- c(r2.orig, unique(unlist(r2s)))
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s))
 
 }
 
@@ -105,12 +120,17 @@ sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2.orig <- NULL
+  r2.hack <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2.hack[i] <- res[[i]][["r2.final"]]
+    r2.orig[i] <- res[[i]][["r2s"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2.hack, r2.orig)
 
   return(res)
 

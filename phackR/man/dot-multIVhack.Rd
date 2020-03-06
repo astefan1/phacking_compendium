@@ -4,8 +4,14 @@
 \alias{.multIVhack}
 \title{P-Hacking function for multiple independent variables}
 \usage{
-.multIVhack(df, ivs, control, strategy = "firstsig",
-  alternative = "two.sided", alpha = 0.05)
+.multIVhack(
+  df,
+  ivs,
+  control,
+  strategy = "firstsig",
+  alternative = "two.sided",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame (wide format) containing a control group variable and multiple treatment group variables}

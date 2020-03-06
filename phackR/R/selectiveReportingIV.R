@@ -42,18 +42,29 @@
   control <- df[, control]
 
   # Prepare dataset
-  ps <- NULL
+  mod <- list()
+  r2s <- rep(NA, length(ivs))
 
   # Compute t-tests
   for(i in 1:length(ivs)){
-    ps[i] <- stats::t.test(control, treatm[,i], var.equal = TRUE, alternative = alternative)$p.value
+    mod[[i]] <- stats::t.test(control, treatm[,i], var.equal = TRUE, alternative = alternative)
+    r2s[i] <- .compR2t(control, treatm[,i])
   }
+
+  ps <- unlist(simplify2array(mod)["p.value", ])
+  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), length(control))
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- r2s[ps == p.final]
+  d.final <- ds[ps == p.final]
 
   return(list(p.final = p.final,
-              ps = ps))
+              ps = ps,
+              r2.final = r2.final,
+              r2s = r2s,
+              d.final = d.final,
+              ds = ds))
 
 }
 
@@ -87,12 +98,21 @@ sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
 
   ps.hack <- NULL
   ps.orig <- NULL
+  r2s.hack <- NULL
+  r2s.orig <- NULL
+  ds.hack <- NULL
+  ds.orig <- NULL
+
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
+    ds.hack[i] <- res[[i]][["d.final"]]
+    ds.orig[i] <- res[[i]][["ds"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig, ds.hack, ds.orig)
 
   return(res)
 

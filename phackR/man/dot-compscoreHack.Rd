@@ -4,8 +4,7 @@
 \alias{.compscoreHack}
 \title{P-Hacking function for scale redefinition / Composite Scores}
 \usage{
-.compscoreHack(df, dv, compv, ndelete, strategy = "firstsig",
-  alpha = 0.05)
+.compscoreHack(df, dv, compv, ndelete, strategy = "firstsig", alpha = 0.05)
 }
 \arguments{
 \item{df}{Data frame containing dependent variable and composite score items as columns}
