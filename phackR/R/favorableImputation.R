@@ -174,9 +174,10 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000){
+sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -187,12 +188,27 @@ sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", a
   if(any(which == "random")) which <- sample(c(1:10), 5)
 
   # Apply p-hacking procedure to each dataset
-  .impHackList <- function(x){
-    .impHack(df = x, x = 1, y = 2,
-             which = which, strategy = strategy, alpha = alpha)
+
+  if(!shinyEnv){
+    .impHackList <- function(x){
+      .impHack(df = x, x = 1, y = 2,
+               which = which, strategy = strategy, alpha = alpha)
+    }
+
+    res <- pbapply::pblapply(dat, .impHackList)
   }
 
-  res <- lapply(dat, .impHackList)
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .impHack(df = x, x = 1, y = 2,
+                 which = which, strategy = strategy, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL

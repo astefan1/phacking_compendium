@@ -39,13 +39,14 @@
 }
 
 #' Simulate p-hacking with incorrect rounding
-#' @param roundinglevel Highest p-value that is rounded down to 0.05
+#' @param roundinglevel Highest p-value that is rounded down to alpha
 #' @param iter Number of iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided", alpha = 0.05){
+sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -54,8 +55,22 @@ sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided",
   }
 
   # Apply p-hacking procedure to each dataset
-  res <- lapply(dat, .roundhack, group = 1, dv = 2,
-                roundinglevel = roundinglevel, alternative = alternative, alpha = alpha)
+  if(!shinyEnv){
+    res <- pbapply::pblapply(dat, .roundhack, group = 1, dv = 2,
+                  roundinglevel = roundinglevel, alternative = alternative, alpha = alpha)
+  }
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .roundhack(df=x, group = 1, dv = 2, roundinglevel = roundinglevel,
+                   alternative = alternative, alpha = alpha)
+      })
+    })
+  }
+
   ps.hack <- NULL
   ps.orig <- NULL
   r2s.hack <- NULL

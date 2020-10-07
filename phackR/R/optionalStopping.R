@@ -61,11 +61,12 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param iter Number of iterations
 #' @param alpha Significance level of the t-test (default: 0.05)
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @importFrom utils tail
 #' @export
 #'
 
-sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter = 1000, alpha = 0.05){
+sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter = 1000, alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -74,9 +75,24 @@ sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter 
   }
 
   # Apply p-hacking procedure to each dataset
-  res <- lapply(dat, .optstop, group = 1, dv = 2,
-                n.min = n.min, n.max = n.max, step = step,
-                alternative = alternative, alpha = alpha)
+  if(!shinyEnv){
+    res <- pbapply::pblapply(dat, .optstop, group = 1, dv = 2,
+                  n.min = n.min, n.max = n.max, step = step,
+                  alternative = alternative, alpha = alpha)
+  }
+
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .optstop(df=x, group = 1, dv = 2,
+                 n.min = n.min, n.max = n.max, step = step,
+                 alternative = alternative, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL
