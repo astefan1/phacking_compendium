@@ -100,9 +100,10 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
+#' @importFrom pbapply pblapply
 #' @export
 
-sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", alpha = 0.05, iter = 1000){
+sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv=FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -110,27 +111,41 @@ sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig
     dat[[i]] <- .sim.compscore(nobs = nobs, ncompv = ncompv, rcomp = rcomp)
   }
 
-  # Apply p-hacking procedure to each dataset
-  .compscoreHackList <- function(x){
-    .compscoreHack(df = x, dv = 1, compv = c(2:(ncompv+1)), ndelete = ndelete,
-                  strategy = strategy, alpha = alpha)
+  # Apply p-hacking procedure to each dataset (with progress bar within or outside Shiny)
+  if(!shinyEnv){
+    .compscoreHackList <- function(x){
+      .compscoreHack(df = x, dv = 1, compv = c(2:(ncompv+1)), ndelete = ndelete,
+                     strategy = strategy, alpha = alpha)
+    }
+
+    res <- pbapply::pblapply(dat, .compscoreHackList)
   }
 
-  res <- lapply(dat, .compscoreHackList)
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value=0, {
+      res=lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .compscoreHack(df = x, dv = 1, compv = c(2:(ncompv+1)), ndelete = ndelete,
+                       strategy = strategy, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL
-  r2.orig <- NULL
-  r2.hack <- NULL
+  r2s.orig <- NULL
+  r2s.hack <- NULL
 
   for(i in 1:iter){
     ps.hack[i] <- res[[i]][["p.final"]]
     ps.orig[i] <- res[[i]][["ps"]][1]
-    r2.hack[i] <- res[[i]][["r2.final"]]
-    r2.orig[i] <- res[[i]][["r2s"]][1]
+    r2s.hack[i] <- res[[i]][["r2.final"]]
+    r2s.orig[i] <- res[[i]][["r2s"]][1]
   }
 
-  res <- cbind(ps.hack, ps.orig, r2.hack, r2.orig)
+  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
 
   return(res)
 
