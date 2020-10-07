@@ -100,7 +100,9 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @importFrom pbapply pblapply
+#' @importFrom shiny withProgress incProgress
 #' @export
 
 sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv=FALSE){

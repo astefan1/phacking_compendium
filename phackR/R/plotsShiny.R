@@ -2,13 +2,18 @@
 # Figures: p-value and effect size distributions
 # ==============================================================================
 
-# simdat <- sim.compscoreHack(50, 10, 0.5, 4)
+#' Plot p-value distributions
+#' @param simdat Simulated data from one of the p-hacking simulation functions
+#' @param alpha Alpha level
+#' @importFrom ggplot2 ggplot geom_histogram aes theme_light xlab ggtitle theme element_text geom_vline ylim scale_color_manual scale_fill_manual layer_scales geom_density ylab
+#' @importFrom rlang .data
+#' @importFrom dplyr all_of
 
 pplots <- function(simdat, alpha){
   
   simdat <- as.data.frame(simdat)
   
-  phack <- ggplot(simdat, aes(x=ps.hack)) +
+  phack <- ggplot(simdat, aes(x=.data$ps.hack)) +
     geom_histogram(fill="#FFAE4A", color="#C27516", bins=30) +
     theme_light() +
     xlab("p-value") +
@@ -18,7 +23,7 @@ pplots <- function(simdat, alpha){
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
   
-  pnohack <- ggplot(simdat, aes(x=ps.orig)) +
+  pnohack <- ggplot(simdat, aes(x=.data$ps.orig)) +
     geom_histogram(fill="#43B7C2", color="#024B7A", bins=30) +
     theme_light() +
     xlab("p-value") +
@@ -29,9 +34,9 @@ pplots <- function(simdat, alpha){
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
   
-  simdat_long <- tidyr::gather(simdat, condition, pval, ps.hack:ps.orig)
+  simdat_long <- tidyr::gather(simdat, "condition", "pval", all_of("ps.hack"):all_of("ps.orig"))
   
-  pcomp <- ggplot(simdat_long, aes(pval, fill=condition, color=condition)) +
+  pcomp <- ggplot(simdat_long, aes(.data$pval, fill=.data$condition, color=.data$condition)) +
     geom_density(alpha=0.3) +
     xlab("p-value") +
     ylab("Density") +

@@ -12,10 +12,10 @@ function(input, output) {
   observeEvent(input$calcCompScores > 0, {
       ifelse(length(input$uindeleteCompScores)==0, ndelete<-2, ndelete<-input$uindeleteCompScores)
       res <- sim.compscoreHack(nobs=input$nobsCompScores, ncompv=input$ncompvCompScores, rcomp=input$rcompCompScores, ndelete=ndelete, strategy = input$strategyCompScores, alpha = input$alphaCompScores, iter = input$iterCompScores, shinyEnv=TRUE)
-      compscorePlot <- pplots(simdat=res, alpha=0.05)
+      compscorePlot <- pplots(simdat=res, alpha=input$alphaCompScores)
       compscorePlotES <- esplots(simdat=res, EScolumn.hack=3, EScolumn.orig=4)
-      fprate.p <- paste0(sum(res[,"ps.hack"] < 0.05)/input$iterCompScores*100, " %")
-      fprate.o <- paste0(sum(res[,"ps.orig"] < 0.05)/input$iterCompScores*100, " %")
+      fprate.p <- paste0(sum(res[,"ps.hack"] < input$alphaCompScores)/input$iterCompScores*100, " %")
+      fprate.o <- paste0(sum(res[,"ps.orig"] < input$alphaCompScores)/input$iterCompScores*100, " %")
       output$compScoresPlot1 = renderPlot(compscorePlot$phack)
       output$compScoresPlot2 = renderPlot(compscorePlot$pnohack)
       output$compScoresPlot3 = renderPlot(compscorePlot$pcomp)
