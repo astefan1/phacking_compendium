@@ -9,7 +9,8 @@ sim.outHack(
   which = c(1:12),
   strategy = "firstsig",
   alpha = 0.05,
-  iter = 1000
+  iter = 1000,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ sim.outHack(
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{iter}{Number of simulation iterations}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations

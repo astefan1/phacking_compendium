@@ -8,17 +8,20 @@ sim.roundhack(
   roundinglevel,
   iter = 1000,
   alternative = "two.sided",
-  alpha = 0.05
+  alpha = 0.05,
+  shinyEnv = FALSE
 )
 }
 \arguments{
-\item{roundinglevel}{Highest p-value that is rounded down to 0.05}
+\item{roundinglevel}{Highest p-value that is rounded down to alpha}
 
 \item{iter}{Number of iterations}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Simulate p-hacking with incorrect rounding

@@ -98,5 +98,40 @@ function(input, output) {
 
   # ------------------- Optional Stopping --------------------------------------
 
+  observeEvent(input$calcOptStop > 0, {
+    res6 <- sim.optstop(n.min = input$nminOptStop, n.max = input$nmaxOptStop, step = input$stepOptStop, alternative = input$altOptStop, iter = input$iterOptStop, alpha = input$alphaOptStop, shinyEnv = TRUE)
+    optstopPlot <- pplots(simdat = res6, alpha = input$alphaOptStop)
+    optstopESr2 <- esplots(simdat=res6, EScolumn.hack=3, EScolumn.orig=4)
+    optstopESd <- esplots(simdat=res6, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                    expression("Distribution of original effect sizes "*delta)))
+    optstop.fprate.p <- paste0(sum(res6[,"ps.hack"] <= input$alphaOptStop)/input$iterOptStop*100, " %")
+    optstop.fprate.o <- paste0(sum(res6[,"ps.orig"] <= input$alphaOptStop)/input$iterOptStop*100, " %")
+    output$optStopPlot1 <- renderPlot(optstopPlot$phack)
+    output$optStopPlot2 <- renderPlot(optstopPlot$pnohack)
+    output$optStopPlot3 <- renderPlot(optstopPlot$pcomp)
+    output$optStopFPHack = renderText(optstop.fprate.p)
+    output$optStopFPOrig = renderText(optstop.fprate.o)
+    output$optStopPlot4 = renderPlot(optstopESr2$eshack)
+    output$optStopPlot5 = renderPlot(optstopESr2$esnohack)
+    output$optStopPlot6 = renderPlot(optstopESd$eshack)
+    output$optStopPlot7 = renderPlot(optstopESd$esnohack)
+  })
+  
+  # ------------------- Outlier Exclusion --------------------------------------
+  
+  observeEvent(input$calcOutExcl > 0, {
+    res7 <- sim.outHack(nobs = input$nobsOutExcl, which = as.numeric(input$whichOutExcl), strategy = input$strategyOutExcl, alpha = input$alphaOutExcl, iter = input$iterOutExcl, shinyEnv = TRUE)
+    outExclPlot <- pplots(simdat = res7, alpha = input$alphaOutExcl)
+    outExclES <- esplots(simdat = res7, EScolumn.hack = 3, EScolumn.orig = 4)
+    outExcl.fprate.p <- paste0(sum(res7[,"ps.hack"] <= input$alphaOutExcl)/input$iterOutExcl*100, " %")
+    outExcl.fprate.o <- paste0(sum(res7[,"ps.orig"] <= input$alphaOutExcl)/input$iterOutExcl*100, " %")
+    output$outExclPlot1 <- renderPlot(outExclPlot$phack)
+    output$outExclPlot2 <- renderPlot(outExclPlot$pnohack)
+    output$outExclPlot3 <- renderPlot(outExclPlot$pcomp)
+    output$outExclFPHack = renderText(outExcl.fprate.p)
+    output$outExclFPOrig = renderText(outExcl.fprate.o)
+    output$outExclPlot4 = renderPlot(outExclES$eshack)
+    output$outExclPlot5 = renderPlot(outExclES$esnohack)
+  })
 
 }

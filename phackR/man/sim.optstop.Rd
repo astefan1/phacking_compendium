@@ -10,7 +10,8 @@ sim.optstop(
   step = 1,
   alternative = "two.sided",
   iter = 1000,
-  alpha = 0.05
+  alpha = 0.05,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ sim.optstop(
 \item{iter}{Number of iterations}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Simulate p-hacking with incorrect rounding
