@@ -133,5 +133,24 @@ function(input, output) {
     output$outExclPlot4 = renderPlot(outExclES$eshack)
     output$outExclPlot5 = renderPlot(outExclES$esnohack)
   })
+  
+  # ------------------- Selective Reporting of Effects -------------------------
+  
+  observeEvent(input$calcSelectEff > 0, {
+    if(input$interactSelectEff == "Yes") interactions <- TRUE
+    else if(input$interactSelectEff == "No") interactions <- FALSE
+    res8 <- sim.selectEffects(nobs = input$nobsSelectEff, niv = input$nivSelectEff, interactions = interactions, riv = input$rivSelectEff, strategy = input$strategySelectEff, alpha = input$alphaSelectEff, iter = input$iterSelectEff, shinyEnv = TRUE)
+    selectEffPlot <- pplots(simdat = res8, alpha = input$alphaSelectEff)
+    selectEffES <- esplots(simdat = res8, EScolumn.hack = 3, EScolumn.orig = 4)
+    selectEff.fprate.p <- paste0(sum(res8[,"ps.hack"] <= input$alphaSelectEff)/input$iterSelectEff*100, " %")
+    selectEff.fprate.o <- paste0(sum(res8[,"ps.orig"] <= input$alphaSelectEff)/input$iterSelectEff*100, " %")
+    output$selectEffPlot1 <- renderPlot(selectEffPlot$phack)
+    output$selectEffPlot2 <- renderPlot(selectEffPlot$pnohack)
+    output$selectEffPlot3 <- renderPlot(selectEffPlot$pcomp)
+    output$selectEffFPHack = renderText(selectEff.fprate.p)
+    output$selectEffFPOrig = renderText(selectEff.fprate.o)
+    output$selectEffPlot4 = renderPlot(selectEffES$eshack)
+    output$selectEffPlot5 = renderPlot(selectEffES$esnohack)
+  })
 
 }
