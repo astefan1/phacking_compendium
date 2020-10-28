@@ -230,5 +230,21 @@ function(input, output) {
     output$subgroupPlot7 = renderPlot(subgroupESd$esnohack)
   })
   
+  # --------------------- Variable Transformation ------------------------------
+  
+  observeEvent(input$calcVarTrans > 0, {
+    res13 <- sim.varTransHack(nobs = input$nobsVarTrans, transvar = input$transvarVarTrans, strategy = input$strategyVarTrans, alpha = input$alphaVarTrans, iter = input$iterVarTrans, shinyEnv = TRUE)
+    varTransPlot <- pplots(simdat = res13, alpha = input$alphaVarTrans)
+    varTransES <- esplots(simdat = res13, EScolumn.hack = 3, EScolumn.orig = 4)
+    varTrans.fprate.p <- paste0(sum(res13[,"ps.hack"] <= input$alphaVarTrans)/input$iterVarTrans*100, " %")
+    varTrans.fprate.o <- paste0(sum(res13[,"ps.orig"] <= input$alphaVarTrans)/input$iterVarTrans*100, " %")
+    output$varTransPlot1 <- renderPlot(varTransPlot$phack)
+    output$varTransPlot2 <- renderPlot(varTransPlot$pnohack)
+    output$varTransPlot3 <- renderPlot(varTransPlot$pcomp)
+    output$varTransFPHack = renderText(varTrans.fprate.p)
+    output$varTransFPOrig = renderText(varTrans.fprate.o)
+    output$varTransPlot4 = renderPlot(varTransES$eshack)
+    output$varTransPlot5 = renderPlot(varTransES$esnohack)
+  })
   
 }

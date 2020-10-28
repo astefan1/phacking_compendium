@@ -10,7 +10,8 @@ sim.varTransHack(
   transvar,
   strategy = "firstsig",
   alpha = 0.05,
-  iter = 1000
+  iter = 1000,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ sim.varTransHack(
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{iter}{Number of simulation iterations}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Simulate p-hacking with variable transformations
