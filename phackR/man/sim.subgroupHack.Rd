@@ -11,7 +11,8 @@ sim.subgroupHack(
   alternative = "two.sided",
   strategy = "firstsig",
   alpha = 0.05,
-  iter = 1000
+  iter = 1000,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ sim.subgroupHack(
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Simulate p-hacking with multiple subgroups

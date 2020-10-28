@@ -102,9 +102,10 @@
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", strategy = "firstsig", alpha = 0.05, iter = 1000){
+sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -117,8 +118,22 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", st
     .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+nsubvars)),
                   alternative = alternative, strategy = strategy, alpha = alpha)
   }
+  
+  if(!shinyEnv){
+    res <- pbapply::pblapply(dat, .subgroupHackList)
+  }
 
-  res <- lapply(dat, .subgroupHackList)
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+nsubvars)),
+                      alternative = alternative, strategy = strategy, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL

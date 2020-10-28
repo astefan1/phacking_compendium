@@ -209,6 +209,26 @@ function(input, output) {
     output$statAnalysisFPOrig = renderText(statAnalysis.fprate.o)
   })
   
+  # --------------- Subgroup Analyses / Inclusion Criteria ---------------------
+  
+  observeEvent(input$calcSubgroup > 0, {
+    res12 <- sim.subgroupHack(nobs.group = input$nobsSubgroup, nsubvars = input$nsubvarsSubgroup, alternative = input$altSubgroup, strategy = input$strategySubgroup, alpha = input$alphaSubgroup, iter = input$iterSubgroup, shinyEnv = TRUE)
+    subgroupPlot <- pplots(simdat = res12, alpha = input$alphaSubgroup)
+    subgroupESr2 <- esplots(simdat=res12, EScolumn.hack=3, EScolumn.orig=4)
+    subgroupESd <- esplots(simdat=res12, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                 expression("Distribution of original effect sizes "*delta)))
+    subgroup.fprate.p <- paste0(sum(res12[,"ps.hack"] <= input$alphaSubgroup)/input$iterSubgroup*100, " %")
+    subgroup.fprate.o <- paste0(sum(res12[,"ps.orig"] <= input$alphaSubgroup)/input$iterSubgroup*100, " %")
+    output$subgroupPlot1 <- renderPlot(subgroupPlot$phack)
+    output$subgroupPlot2 <- renderPlot(subgroupPlot$pnohack)
+    output$subgroupPlot3 <- renderPlot(subgroupPlot$pcomp)
+    output$subgroupFPHack = renderText(subgroup.fprate.p)
+    output$subgroupFPOrig = renderText(subgroup.fprate.o)
+    output$subgroupPlot4 = renderPlot(subgroupESr2$eshack)
+    output$subgroupPlot5 = renderPlot(subgroupESr2$esnohack)
+    output$subgroupPlot6 = renderPlot(subgroupESd$eshack)
+    output$subgroupPlot7 = renderPlot(subgroupESd$esnohack)
+  })
   
   
 }
