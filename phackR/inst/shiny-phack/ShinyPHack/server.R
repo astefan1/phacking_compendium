@@ -152,5 +152,27 @@ function(input, output) {
     output$selectEffPlot4 = renderPlot(selectEffES$eshack)
     output$selectEffPlot5 = renderPlot(selectEffES$esnohack)
   })
+  
+  # ------------------- Selective Reporting of DVs -----------------------------
+  
+  observeEvent(input$calcSRDV > 0, {
+    res9 <- sim.multDVhack(nobs.group = input$nobsSRDV, nvar = input$nvarSRDV, r = input$rSRDV, strategy = input$strategySRDV, iter = input$iterSRDV, alternative = input$altSRDV, alpha = input$alphaSRDV, shinyEnv = TRUE)
+    SRDVPlot <- pplots(simdat = res9, alpha = input$alphaSRDV)
+    SRDVESr2 <- esplots(simdat=res9, EScolumn.hack=3, EScolumn.orig=4)
+    SRDVESd <- esplots(simdat=res9, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                    expression("Distribution of original effect sizes "*delta)))
+    SRDV.fprate.p <- paste0(sum(res9[,"ps.hack"] <= input$alphaSRDV)/input$iterSRDV*100, " %")
+    SRDV.fprate.o <- paste0(sum(res9[,"ps.orig"] <= input$alphaSRDV)/input$iterSRDV*100, " %")
+    output$SRDVPlot1 <- renderPlot(SRDVPlot$phack)
+    output$SRDVPlot2 <- renderPlot(SRDVPlot$pnohack)
+    output$SRDVPlot3 <- renderPlot(SRDVPlot$pcomp)
+    output$SRDVFPHack = renderText(SRDV.fprate.p)
+    output$SRDVFPOrig = renderText(SRDV.fprate.o)
+    output$SRDVPlot4 = renderPlot(SRDVESr2$eshack)
+    output$SRDVPlot5 = renderPlot(SRDVESr2$esnohack)
+    output$SRDVPlot6 = renderPlot(SRDVESd$eshack)
+    output$SRDVPlot7 = renderPlot(SRDVESd$esnohack)
+  })
+  
 
 }
