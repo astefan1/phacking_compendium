@@ -195,4 +195,20 @@ function(input, output) {
     output$SRIVPlot7 = renderPlot(SRIVESd$esnohack)
   })
   
+  # --------------- Exploiting Statistical Analysis ----------------------------
+  
+  observeEvent(input$calcStatAnalysis > 0, {
+    res11 <- sim.statAnalysisHack(nobs.group = input$nobsStatAnalysis, strategy = input$strategyStatAnalysis, alternative = input$altStatAnalysis, alpha = input$alphaStatAnalysis, iter = input$iterStatAnalysis, shinyEnv = TRUE)
+    statAnalysisPlot <- pplots(simdat = res11, alpha = input$alphaStatAnalysis)
+    statAnalysis.fprate.p <- paste0(sum(res11[,"ps.hack"] <= input$alphaStatAnalysis)/input$iterStatAnalysis*100, " %")
+    statAnalysis.fprate.o <- paste0(sum(res11[,"ps.orig"] <= input$alphaStatAnalysis)/input$iterStatAnalysis*100, " %")
+    output$statAnalysisPlot1 <- renderPlot(statAnalysisPlot$phack)
+    output$statAnalysisPlot2 <- renderPlot(statAnalysisPlot$pnohack)
+    output$statAnalysisPlot3 <- renderPlot(statAnalysisPlot$pcomp)
+    output$statAnalysisFPHack = renderText(statAnalysis.fprate.p)
+    output$statAnalysisFPOrig = renderText(statAnalysis.fprate.o)
+  })
+  
+  
+  
 }

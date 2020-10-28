@@ -9,7 +9,8 @@ sim.statAnalysisHack(
   strategy = "firstsig",
   alternative = "two.sided",
   alpha = 0.05,
-  iter = 1000
+  iter = 1000,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ sim.statAnalysisHack(
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations

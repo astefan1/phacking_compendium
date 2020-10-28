@@ -96,7 +96,7 @@ sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
   }
   
   if(!shinyEnv){
-    res <- lapply(dat, .multIVhacklist)
+    res <- pbapply::pblapply(dat, .multIVhacklist)
   }
 
   if(shinyEnv){

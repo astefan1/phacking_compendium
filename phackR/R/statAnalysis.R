@@ -56,9 +56,10 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05, iter = 1000){
+sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -72,7 +73,21 @@ sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative 
     .statAnalysisHack(df = x, group = 1, dv = 2, strategy = strategy, alternative = alternative, alpha = alpha)
   }
 
-  res <- lapply(dat, .statAnalysisHackList)
+  if(!shinyEnv){
+    res <- pbapply::pblapply(dat, .statAnalysisHackList)
+  }
+  
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .statAnalysisHack(df = x, group = 1, dv = 2, strategy = strategy, 
+                          alternative = alternative, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL
