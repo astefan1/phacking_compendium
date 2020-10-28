@@ -11,7 +11,8 @@ sim.multIVhack(
   strategy = "firstsig",
   iter = 1000,
   alternative = "two.sided",
-  alpha = 0.05
+  alpha = 0.05,
+  shinyEnv = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ sim.multIVhack(
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
+
+\item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
 Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations

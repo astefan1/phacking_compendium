@@ -174,5 +174,25 @@ function(input, output) {
     output$SRDVPlot7 = renderPlot(SRDVESd$esnohack)
   })
   
-
+  # ------------------- Selective Reporting of IVs -----------------------------
+  
+  observeEvent(input$calcSRIV > 0, {
+    res10 <- sim.multDVhack(nobs.group = input$nobsSRIV, nvar = input$nvarSRIV, r = input$rSRIV, strategy = input$strategySRIV, iter = input$iterSRIV, alternative = input$altSRIV, alpha = input$alphaSRIV, shinyEnv = TRUE)
+    SRIVPlot <- pplots(simdat = res10, alpha = input$alphaSRIV)
+    SRIVESr2 <- esplots(simdat=res10, EScolumn.hack=3, EScolumn.orig=4)
+    SRIVESd <- esplots(simdat=res10, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                 expression("Distribution of original effect sizes "*delta)))
+    SRIV.fprate.p <- paste0(sum(res10[,"ps.hack"] <= input$alphaSRIV)/input$iterSRIV*100, " %")
+    SRIV.fprate.o <- paste0(sum(res10[,"ps.orig"] <= input$alphaSRIV)/input$iterSRIV*100, " %")
+    output$SRIVPlot1 <- renderPlot(SRIVPlot$phack)
+    output$SRIVPlot2 <- renderPlot(SRIVPlot$pnohack)
+    output$SRIVPlot3 <- renderPlot(SRIVPlot$pcomp)
+    output$SRIVFPHack = renderText(SRIV.fprate.p)
+    output$SRIVFPOrig = renderText(SRIV.fprate.o)
+    output$SRIVPlot4 = renderPlot(SRIVESr2$eshack)
+    output$SRIVPlot5 = renderPlot(SRIVESr2$esnohack)
+    output$SRIVPlot6 = renderPlot(SRIVESd$eshack)
+    output$SRIVPlot7 = renderPlot(SRIVESd$esnohack)
+  })
+  
 }

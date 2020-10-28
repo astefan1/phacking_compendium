@@ -77,9 +77,10 @@
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
+#' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05){
+sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -93,8 +94,22 @@ sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
     .multIVhack(df = x, ivs = c(2:(nvar+1)), control = 1,
                 strategy = strategy, alternative = alternative, alpha = alpha)
   }
+  
+  if(!shinyEnv){
+    res <- lapply(dat, .multIVhacklist)
+  }
 
-  res <- lapply(dat, .multIVhacklist)
+  if(shinyEnv){
+    percentage <- 0
+    withProgress(message = "Running simulation", value = 0, {
+      res = lapply(dat, function(x){
+        percentage <<- percentage + 1/length(dat)*100
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        .multIVhack(df=x, ivs = c(2:(nvar+1)), control = 1,
+                    strategy = strategy, alternative = alternative, alpha = alpha)
+      })
+    })
+  }
 
   ps.hack <- NULL
   ps.orig <- NULL
