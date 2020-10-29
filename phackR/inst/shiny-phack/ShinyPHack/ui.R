@@ -83,7 +83,7 @@ body <- dashboardBody(
                                 sliderInput("rcompCompScores", label = "Correlation between composite score variables", min = 0, max = 0.99, value = 0.8, step = 0.01),
                                 radioButtons("strategyCompScores", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaCompScores", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterCompScores", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterCompScores", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcCompScores", "Start simulation"))))),
 
     # ------------------- Exploit Covariates -----------------------------------
@@ -118,7 +118,7 @@ body <- dashboardBody(
                                 radioButtons("interactExpCov", label = "Should models include interactions?", choiceNames = list("No", "Yes"), choiceValues = list("No", "Yes")),
                                 radioButtons("strategyExpCov", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaExpCov", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterExpCov", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterExpCov", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcExpCov", "Start simulation"))))),
 
     # ------------------- Exploit Cutoffs --------------------------------------
@@ -149,7 +149,7 @@ body <- dashboardBody(
                                 numericInput("nobsExpCut", label = "Number of observations", value = 30, min = 10, max = 1000),
                                 radioButtons("strategyExpCut", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaExpCut", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterExpCut", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterExpCut", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcExpCut", "Start simulation"))))),
 
     # ------------------- Favorable Imputation ---------------------------------
@@ -183,7 +183,7 @@ body <- dashboardBody(
                                                    choiceValues = as.list(as.character(c(1:10))), selected = as.character(c(1:3))),
                                 radioButtons("strategyfavImp", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphafavImp", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterfavImp", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterfavImp", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcfavImp", "Start simulation"))))),
 
     # ------------------- Incorrect Rounding -----------------------------------
@@ -214,7 +214,7 @@ body <- dashboardBody(
                                 numericInput("levelRounding", label = "Maximum difference to alpha that is rounded down (e.g., 0.001 if all p-values smaller than 0.051 should be rounded to 0.05)", value = 0.001, min = 0.0001, max = 0.01),
                                 radioButtons("altRounding", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 numericInput("alphaRounding", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterRounding", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterRounding", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcRounding", "Start simulation"))))),
 
     # ------------------- Optional Stopping ------------------------------------
@@ -251,7 +251,7 @@ body <- dashboardBody(
                                 sliderInput("stepOptStop", label = "Step size", value = 1, min = 1, max = 10, step = 1),
                                 radioButtons("altOptStop", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 numericInput("alphaOptStop", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterOptStop", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterOptStop", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcOptStop", "Start simulation"))))),
     # ------------------- Outlier Exclusion ------------------------------------
     tabItem(tabName = "outlierExclusion",
@@ -283,7 +283,7 @@ body <- dashboardBody(
                                                    choiceValues = as.list(as.character(c(1:12))), selected = as.character(c(1:2))),
                                 radioButtons("strategyOutExcl", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaOutExcl", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterOutExcl", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterOutExcl", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcOutExcl", "Start simulation"))))),
     
     # ------------------- Selective Reporting of Effects -----------------------
@@ -317,7 +317,7 @@ body <- dashboardBody(
                                 radioButtons("interactSelectEff", label = "Include Interactions", choiceNames = list("No", "Yes"), choiceValues = list("No", "Yes")),
                                 radioButtons("strategySelectEff", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSelectEff", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterSelectEff", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterSelectEff", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSelectEff", "Start simulation"))))),
     
     # ------------------- Selective Reporting DV -------------------------------
@@ -355,7 +355,7 @@ body <- dashboardBody(
                                 radioButtons("altSRDV", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 radioButtons("strategySRDV", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSRDV", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterSRDV", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterSRDV", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSRDV", "Start simulation"))))),
     
     # ------------------- Selective Reporting IV -------------------------------
@@ -389,11 +389,11 @@ body <- dashboardBody(
                                 h4("Simulation settings"),
                                 numericInput("nobsSRIV", label = "Number of observations", value = 30, min = 10, max = 1000),
                                 numericInput("nvarSRIV", label = "Number of independent variables", value = 5, min = 1, max = 100),
-                                sliderInput("rSRIV", label = "Correlation of dependent variables", value = 0.5, min = 0, max = 0.99, step = 0.01),
+                                sliderInput("rSRIV", label = "Correlation of independent variables", value = 0.5, min = 0, max = 0.99, step = 0.01),
                                 radioButtons("altSRIV", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 radioButtons("strategySRIV", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSRIV", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterSRIV", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterSRIV", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSRIV", "Start simulation"))))),
     
     # -------------- Exploiting Statistical Analysis Options ------------------
@@ -421,7 +421,7 @@ body <- dashboardBody(
                                 radioButtons("altStatAnalysis", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 radioButtons("strategyStatAnalysis", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaStatAnalysis", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterStatAnalysis", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterStatAnalysis", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcStatAnalysis", "Start simulation"))))),
     
     # -------------- Subgroup Analyses / Inclusion Criteria --------------------
@@ -458,7 +458,7 @@ body <- dashboardBody(
                                 radioButtons("altSubgroup", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 radioButtons("strategySubgroup", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSubgroup", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterSubgroup", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterSubgroup", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSubgroup", "Start simulation"))))),
     
     # ------------------ Variable Transformation -------------------------------
@@ -490,10 +490,11 @@ body <- dashboardBody(
                                 radioButtons("transvarVarTrans", label = "Which variables should be transformed?", choiceNames = list("Predictors", "Outcomes", "Predictors and Outcomes"), choiceValues = list("x", "y", "xy")),
                                 radioButtons("strategyVarTrans", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaVarTrans", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
-                                numericInput("iterVarTrans", label = "Simulation iterations", value = 100, min = 10, max = 10000),
+                                numericInput("iterVarTrans", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcVarTrans", "Start simulation")))))
   )
 )
+
 
 # ==============================================================================
 # Create UI
