@@ -111,10 +111,10 @@
 #' @param alpha Significance level (default: 0.05)
 #' @param p.orig Original p-value (if already computed, otherwise it will be set to the first value in ps)
 
-.selectpvalue <- function(ps, strategy, alpha, p.orig = NULL){
+.selectpvalue <- function(ps, strategy, alpha){
 
   p.final <- NA
-  if(is.null(p.orig)) p.orig <- ps[1]
+  p.orig <- ps[1]
 
   # Select smallest significant p-value
   if(strategy == "smallest.sig"){

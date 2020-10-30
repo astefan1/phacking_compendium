@@ -570,17 +570,14 @@
   r2.orig <- mod$r.squared
 
   # Combine all p values and remove NAs
-  psc <- unlist(ps)
-  psc <- psc[!is.na(psc)]
-  r2c <- unlist(r2s)
-  r2c <- r2c[!is.na(psc)]
+  ps <- c(p.orig, unlist(ps))
+  ps <- ps[!is.na(ps)]
+  r2s <- c(r2.orig, unlist(r2s))
+  r2s <- r2s[!is.na(ps)]
 
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = psc, strategy = strategy, alpha = alpha, p.orig = p.orig)
-  r2.final <- unique(r2c[psc == p.final])
-
-  ps <- c(p.orig, psc)
-  r2s <- c(r2.orig, r2c)
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  r2.final <- unique(r2s[ps == p.final])
 
   return(list(p.final = p.final,
               ps = ps,

@@ -60,7 +60,7 @@
 
   # Select final p-hacked p-value based on strategy
   p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- r2s[ps == p.final]
+  r2.final <- unique(r2s[ps == p.final])
 
   return(list(p.final = p.final,
               ps = ps,

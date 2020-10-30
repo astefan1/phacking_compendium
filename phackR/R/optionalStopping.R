@@ -42,8 +42,8 @@
     d.final <- utils::tail(ds, 1)
   } else if (any(ps < alpha) == TRUE) {
     p.final <- ps[which(ps < alpha)][1]
-    r2.final <- r2s[ps == p.final]
-    d.final <- ds[ps == p.final]
+    r2.final <- unique(r2s[ps == p.final])
+    d.final <- unique(ds[ps == p.final])
   }
 
   return(list(p.final = p.final,
