@@ -10,9 +10,9 @@
 #' @importFrom dplyr all_of
 
 pplots <- function(simdat, alpha){
-  
+
   simdat <- as.data.frame(simdat)
-  
+
   phack <- ggplot(simdat, aes(x=.data$ps.hack)) +
     geom_histogram(fill="#FFAE4A", color="#C27516", bins=30) +
     theme_light() +
@@ -22,7 +22,7 @@ pplots <- function(simdat, alpha){
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
-  
+
   pnohack <- ggplot(simdat, aes(x=.data$ps.orig)) +
     geom_histogram(fill="#43B7C2", color="#024B7A", bins=30) +
     theme_light() +
@@ -33,9 +33,9 @@ pplots <- function(simdat, alpha){
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
-  
+
   simdat_long <- tidyr::gather(simdat, "condition", "pval", all_of("ps.hack"):all_of("ps.orig"))
-  
+
   pcomp <- ggplot(simdat_long, aes(.data$pval, fill=.data$condition, color=.data$condition)) +
     geom_density(alpha=0.3) +
     xlab("p-value") +
@@ -50,19 +50,19 @@ pplots <- function(simdat, alpha){
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
-  
+
   return(list(phack=phack,
               pnohack=pnohack,
-              pcomp=pcomp)) 
+              pcomp=pcomp))
 }
 
 esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression("Distribution of p-hacked effect sizes R"^2),
                                                                            expression("Distribution of original effect sizes R"^2))){
-  
+
   simdat <- as.data.frame(simdat)
   es.hack <- colnames(simdat)[EScolumn.hack]
   es.orig <- colnames(simdat)[EScolumn.orig]
-  
+
   eshack <- ggplot(simdat, aes(x=simdat[,es.hack])) +
     geom_histogram(fill="#FFAE4A", color="#C27516", bins=30, na.rm=FALSE) +
     theme_light() +
@@ -71,7 +71,7 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
-  
+
   esnohack <- ggplot(simdat, aes(x=simdat[, es.orig])) +
     geom_histogram(fill="#43B7C2", color="#024B7A", bins=30) +
     theme_light() +
@@ -80,10 +80,15 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
           plot.title = element_text(size=18))
-  
+
+  xlim <- range(c(layer_scales(eshack)$x$range$range, layer_scales(esnohack)$x$range$range))
+
+  eshack <- eshack + coord_cartesian(xlim = xlim)
+  esnohack <- esnohack + coord_cartesian(xlim = xlim)
+
   return(list(eshack=eshack,
               esnohack=esnohack))
-  
+
 }
 
 
