@@ -1,0 +1,5 @@
+### Subgroup Analysis / Tinkering with Inclusion Criteria
+
+This p-hacking strategy assumes that if an initial hypothesis test does not yield a significant result, a researcher would repeat the same hypothesis test on subgroups of the sample (e.g., right-handed and left-handed participants). Here, we assume that all subgroup variables have two levels, and that the hypothesis test is conducted on each level of the subgroup variables. Additionally, we assume that the hypothesis test in question is a t-test (e.g., between an experimental and a control condition). Note that we do not assume that the experimental and control condition are balanced within the subgroups. Therefore, within a subgroup, the number of participants in the experimental and control group can differ.
+
+In the simulation function in this Shiny app, users can specify the number of observations per group in the original t-test, the number of subgroup variables, the direction of the test, the p-value selection method, the significance level &alpha;, and the number of simulation iterations. 

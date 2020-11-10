@@ -52,11 +52,11 @@ body <- dashboardBody(
   tabItems(
     tabItem(tabName = "startpage",
             fluidRow(box(width=12, status = "primary",
-                         includeMarkdown("landingPage.md")))),
+                         includeMarkdown("mddoc/landingPage.md")))),
     # ------------------- Composite Scores -------------------------------------
     tabItem(tabName = "compositeScores",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("01_CompScores.md")
+                         includeMarkdown("mddoc/01_CompScores.md")
                          )),
             fluidRow(column(width=8,
                             fixedRow(box(width = 6, status = "primary",
@@ -89,7 +89,7 @@ body <- dashboardBody(
     # ------------------- Exploit Covariates -----------------------------------
     tabItem(tabName = "exploitCovariates",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("02_ExploitCovariates.md")
+                         includeMarkdown("mddoc/02_ExploitCovariates.md")
                          )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -123,7 +123,7 @@ body <- dashboardBody(
     # ------------------- Exploit Cutoffs --------------------------------------
     tabItem(tabName = "exploitCutoffs",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("03_ExploitCutoffs.md")
+                         includeMarkdown("mddoc/03_ExploitCutoffs.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -153,7 +153,7 @@ body <- dashboardBody(
     # ------------------- Favorable Imputation ---------------------------------
     tabItem(tabName = "favorableImputation",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("04_FavorableImputation.md")
+                         includeMarkdown("mddoc/04_FavorableImputation.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -186,7 +186,7 @@ body <- dashboardBody(
     # ------------------- Incorrect Rounding -----------------------------------
     tabItem(tabName = "incorrectRounding",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("05_IncorrectRounding.md")
+                         includeMarkdown("mddoc/05_IncorrectRounding.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -216,7 +216,7 @@ body <- dashboardBody(
     # ------------------- Optional Stopping ------------------------------------
     tabItem(tabName = "optionalStopping",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("06_OptionalStopping.md")
+                         includeMarkdown("mddoc/06_OptionalStopping.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -251,7 +251,7 @@ body <- dashboardBody(
     # ------------------- Outlier Exclusion ------------------------------------
     tabItem(tabName = "outlierExclusion",
             fluidRow(box(width = 12, status = "primary",
-                         includeMarkdown("07_OutlierExclusion.md")
+                         includeMarkdown("mddoc/07_OutlierExclusion.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -283,8 +283,7 @@ body <- dashboardBody(
     # ------------------- Selective Reporting of Effects -----------------------
     tabItem(tabName = "selectEffects",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of effects"),
-                         HTML("In statistical models that contain multiple independent variables (e.g., ANOVA, multiple linear regression), only significant effects are reported.")
+                         includeMarkdown("mddoc/08_SelectiveReportingEffects.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -317,8 +316,7 @@ body <- dashboardBody(
     # ------------------- Selective Reporting DV -------------------------------
     tabItem(tabName = "selectiveReportingDV",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of the dependent variable"),
-                         HTML("The dataset contains several dependent variables. The p-value is hacked by recomputing the statistical test with several dependent variables and reporting a significant test result.")
+                         includeMarkdown("mddoc/09_SelectiveReportingDV.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -355,8 +353,7 @@ body <- dashboardBody(
     # ------------------- Selective Reporting IV -------------------------------
     tabItem(tabName = "selectiveReportingIV",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of the independent variable"),
-                         HTML("The dataset contains one control group variable and multiple treatment group variables. The p-value is hacked by recomputing the statistical test with different treatment groups and reporting a significant test result.")
+                         includeMarkdown("mddoc/10_SelectiveReportingIV.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -393,8 +390,7 @@ body <- dashboardBody(
     # -------------- Exploiting Statistical Analysis Options ------------------
     tabItem(tabName = "statAnalysis",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting statistical analysis options"),
-                         HTML("If one statistical test does not yield a significant result (e.g., t-test), a slightly different statistical test is used (e.g., Welch-test).")
+                         includeMarkdown("mddoc/11_StatAnalysis.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -421,8 +417,7 @@ body <- dashboardBody(
     # -------------- Subgroup Analyses / Inclusion Criteria --------------------
     tabItem(tabName = "subgroupAnalysis",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Subgroup analyses / Tinkering with inclusion criteria"),
-                         HTML("If a statistical test is not significant, the test is repeated in different subgroups of the sample (e.g., for male and female participants).")
+                         includeMarkdown("mddoc/12_SubgroupAnalysis.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -448,7 +443,7 @@ body <- dashboardBody(
                             box(width=12, status="primary", height=800, background="navy",
                                 h4("Simulation settings"),
                                 numericInput("nobsSubgroup", label = "Number of observations", value = 30, min = 10, max = 1000),
-                                numericInput("nsubvarsSubgroup", label = "Number of variables with potential subgroups", value = 5, min = 1, max = 100),
+                                numericInput("nsubvarsSubgroup", label = "Number of subgroup variables", value = 5, min = 1, max = 100),
                                 radioButtons("altSubgroup", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 radioButtons("strategySubgroup", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSubgroup", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
@@ -458,8 +453,7 @@ body <- dashboardBody(
     # ------------------ Variable Transformation -------------------------------
     tabItem(tabName = "variableTransformation",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting variable transformations"),
-                         HTML("If the results of an initial statistical test are not significant, the involved variables are transformed to obtain statistical significance.")
+                         includeMarkdown("mddoc/13_VariableTransformation.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",

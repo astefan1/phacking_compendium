@@ -24,7 +24,7 @@ Each tab of this Shiny app lets the user explore the effects of a different p-ha
 ### Common Settings
 Several settings are common to the simulation of (almost) all p-hacking strategies. To avoid unnecessary repetition, we will describe these settings here.
 
-#### Normal vs. ambitious p-hacking
+#### p-Value selection method
 In all simulation functions, it is necessary to specify how the final p-value is determined. There are three options: *first significant* simulates a situation where the researcher conducts a series of hypothesis tests, and stops as soon as the result is significant, that is, at the first significant p-value. In a comment on Simonsohn et al. (2014), Ulrich and Miller (2015) argued that researchers might instead engage in "ambitious" p-hacking, where the researcher conducts a series of hypothesis tests and selects the smallest significant p-value from the set. This strategy is implemented in the *smallest significant* option. Simonsohn (private comm.) argues that there might exist a third p-hacking strategy where the researcher tries a number of different analysis options, and selects the smallest p-value, no matter if it is significant or not. This strategy is implemented in the option *smallest*. The default strategy is *first significant*.
 
 #### True effect size
