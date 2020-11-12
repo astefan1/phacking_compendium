@@ -1,0 +1,5 @@
+### Favorable Imputation of Missing Values
+
+This p-hacking strategy assumes that there the original dataset a researcher is confronted with contains missing values. A researcher engaging in p-hacking can now try out different imputation methods to replace the missing values, until (possibly) a significant result is obtained. Here, we simulate this p-hacking strategy based on a univariate linear regression, because many imputation methods assume a regression context.
+
+The simulation function in this Shiny app allows the specification of the total number of observations (observations with missing values are included in this number), the percentage of missing values, and the imputation methods that are used. The percentage of missing values defined is the same for the predictor and the outcome variable (e.g., if the percentage is set to 10%, there will be ten percent missing values in both the predictor and the outcome variable). Additionally, users can specify the p-value selection method, the significance level &alpha;, and the number of simulation iterations.

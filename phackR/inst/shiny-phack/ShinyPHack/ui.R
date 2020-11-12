@@ -1,4 +1,5 @@
 library(shinydashboard)
+library(markdown)
 
 # ==============================================================================
 # Define header
@@ -51,13 +52,12 @@ body <- dashboardBody(
   tabItems(
     tabItem(tabName = "startpage",
             fluidRow(box(width=12, status = "primary",
-                         h3("Shiny App for p-Hacking Simulation")))),
+                         includeMarkdown("mddoc/landingPage.md")))),
     # ------------------- Composite Scores -------------------------------------
     tabItem(tabName = "compositeScores",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Composite scores / Scale redefinition"),
-                         HTML("One of the variables in the statistical test is a composite score (e.g., mean of item scores). If the initial result is not significant, items are removed from the score to obtain a statistical significant result.")
-            )),
+                         includeMarkdown("mddoc/01_CompScores.md")
+                         )),
             fluidRow(column(width=8,
                             fixedRow(box(width = 6, status = "primary",
                                          plotOutput("compScoresPlot1")),
@@ -78,10 +78,10 @@ body <- dashboardBody(
                             box(width=12, status = "primary", height=750, background = "navy",
                                 h4("Simulation settings"),
                                 numericInput("nobsCompScores", label = "Number of observations", value = 30, min = 10, max = 1000),
-                                numericInput("ncompvCompScores", label = "Number of variables in composite score", value = 5, min = 3, max = 20),
+                                numericInput("ncompvCompScores", label = "Number of items in composite score", value = 5, min = 3, max = 20),
                                 uiOutput("uindeleteCompScores"),
-                                sliderInput("rcompCompScores", label = "Correlation between composite score variables", min = 0, max = 0.99, value = 0.8, step = 0.01),
-                                radioButtons("strategyCompScores", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                sliderInput("rcompCompScores", label = "Correlation between composite score items", min = 0, max = 0.99, value = 0.8, step = 0.01),
+                                radioButtons("strategyCompScores", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaCompScores", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterCompScores", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcCompScores", "Start simulation"))))),
@@ -89,9 +89,8 @@ body <- dashboardBody(
     # ------------------- Exploit Covariates -----------------------------------
     tabItem(tabName = "exploitCovariates",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting covariates"),
-                         HTML("Different combinations of covariates are introduced in the statistical analysis until a significant result is obtained.")
-            )),
+                         includeMarkdown("mddoc/02_ExploitCovariates.md")
+                         )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
                                          plotOutput("expCovPlot1")),
@@ -116,7 +115,7 @@ body <- dashboardBody(
                                 sliderInput("rcovExpCov", label = "Correlation between covariates", value = 0.3, min = 0, max = 0.99, step = 0.01),
                                 sliderInput("rcovdvExpCov", label = "Correlation between covariates and dependent variable", value = 0.5, min = 0, max = 0.99, step = 0.01),
                                 radioButtons("interactExpCov", label = "Should models include interactions?", choiceNames = list("No", "Yes"), choiceValues = list("No", "Yes")),
-                                radioButtons("strategyExpCov", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyExpCov", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaExpCov", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterExpCov", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcExpCov", "Start simulation"))))),
@@ -124,8 +123,7 @@ body <- dashboardBody(
     # ------------------- Exploit Cutoffs --------------------------------------
     tabItem(tabName = "exploitCutoffs",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting arbitrary cutoff values"),
-                         HTML("Continuous independent variables are split into categories, such that, for example, high scorers and low scorers are compared to each other.")
+                         includeMarkdown("mddoc/03_ExploitCutoffs.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -147,7 +145,7 @@ body <- dashboardBody(
                             box(width=12, status="primary", height=800, background="navy",
                                 h4("Simulation settings"),
                                 numericInput("nobsExpCut", label = "Number of observations", value = 30, min = 10, max = 1000),
-                                radioButtons("strategyExpCut", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyExpCut", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaExpCut", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterExpCut", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcExpCut", "Start simulation"))))),
@@ -155,8 +153,7 @@ body <- dashboardBody(
     # ------------------- Favorable Imputation ---------------------------------
     tabItem(tabName = "favorableImputation",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Favorable imputation of missing values"),
-                         HTML("Missing values are imputed in a way that is favorable for statistical significance.")
+                         includeMarkdown("mddoc/04_FavorableImputation.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -181,7 +178,7 @@ body <- dashboardBody(
                                 sliderInput("missingfavImp", label = "Percentage of missing values", value = 0.1, min = 0, max = 0.5, step = 0.01),
                                 checkboxGroupInput("whichImpfavImp", label = "Imputation methods", choiceNames = list("Delete missing values", "Mean imputation", "Median imputation", "Mode imputation", "Predictive mean matching", "Weighted predictive mean matching", "Sample from observed values", "Bayesian linear regression", "Linear regression ignoring model error", "Linear regression predicted values"),
                                                    choiceValues = as.list(as.character(c(1:10))), selected = as.character(c(1:3))),
-                                radioButtons("strategyfavImp", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyfavImp", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphafavImp", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterfavImp", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcfavImp", "Start simulation"))))),
@@ -189,8 +186,7 @@ body <- dashboardBody(
     # ------------------- Incorrect Rounding -----------------------------------
     tabItem(tabName = "incorrectRounding",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Incorrect rounding"),
-                         HTML("If the p-value is close to significance, a significant p-value is reported (i.e., the true p-value is rounded downwards).")
+                         includeMarkdown("mddoc/05_IncorrectRounding.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -211,7 +207,7 @@ body <- dashboardBody(
                      column(width=4,
                             box(width=12, status="primary", height=800, background="navy",
                                 h4("Simulation settings"),
-                                numericInput("levelRounding", label = "Maximum difference to alpha that is rounded down (e.g., 0.001 if all p-values smaller than 0.051 should be rounded to 0.05)", value = 0.001, min = 0.0001, max = 0.01),
+                                numericInput("levelRounding", label = "Rounding margin (e.g., 0.001 if all p-values smaller than 0.051 should be rounded to 0.05)", value = 0.001, min = 0.0001, max = 0.01),
                                 radioButtons("altRounding", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
                                 numericInput("alphaRounding", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterRounding", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
@@ -220,8 +216,7 @@ body <- dashboardBody(
     # ------------------- Optional Stopping ------------------------------------
     tabItem(tabName = "optionalStopping",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Optional stopping / Data peeking"),
-                         HTML("Results of the statistical test are inspected during data collection. Data collection is stopped as soon as a significant result has been obtained.")
+                         includeMarkdown("mddoc/06_OptionalStopping.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -256,8 +251,7 @@ body <- dashboardBody(
     # ------------------- Outlier Exclusion ------------------------------------
     tabItem(tabName = "outlierExclusion",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Outlier exclusion"),
-                         HTML("Outliers are excluded from the dataset with the goal to obtain a significant result.")
+                         includeMarkdown("mddoc/07_OutlierExclusion.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -281,16 +275,15 @@ body <- dashboardBody(
                                 numericInput("nobsOutExcl", label = "Number of observations", value = 30, min = 10, max = 1000),
                                 checkboxGroupInput("whichOutExcl", label = "Outlier exclusion methods", choiceNames = list("Boxplot", "Stem & leaf plot", "Standard deviation", "Percentile", "Studentized residuals", "Standardized residuals", "DFBETA", "DFFITS", "Cook's D", "Mahalanobis distance", "Leverage values", "Covariance ratio"),
                                                    choiceValues = as.list(as.character(c(1:12))), selected = as.character(c(1:2))),
-                                radioButtons("strategyOutExcl", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyOutExcl", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaOutExcl", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterOutExcl", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcOutExcl", "Start simulation"))))),
-    
+
     # ------------------- Selective Reporting of Effects -----------------------
     tabItem(tabName = "selectEffects",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of effects"),
-                         HTML("In statistical models that contain multiple independent variables (e.g., ANOVA, multiple linear regression), only significant effects are reported.")
+                         includeMarkdown("mddoc/08_SelectiveReportingEffects.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -315,16 +308,15 @@ body <- dashboardBody(
                                 numericInput("nivSelectEff", label = "Number of independent variables", value = 3, min = 2, max = 10),
                                 sliderInput("rivSelectEff", label = "Correlation of independent variables", value = 0.5, min = 0, max = 0.99, step = 0.01),
                                 radioButtons("interactSelectEff", label = "Include Interactions", choiceNames = list("No", "Yes"), choiceValues = list("No", "Yes")),
-                                radioButtons("strategySelectEff", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategySelectEff", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSelectEff", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterSelectEff", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSelectEff", "Start simulation"))))),
-    
+
     # ------------------- Selective Reporting DV -------------------------------
     tabItem(tabName = "selectiveReportingDV",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of the dependent variable"),
-                         HTML("The dataset contains several dependent variables. The p-value is hacked by recomputing the statistical test with several dependent variables and reporting a significant test result.")
+                         includeMarkdown("mddoc/09_SelectiveReportingDV.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -353,16 +345,15 @@ body <- dashboardBody(
                                 numericInput("nvarSRDV", label = "Number of dependent variables", value = 5, min = 1, max = 100),
                                 sliderInput("rSRDV", label = "Correlation of dependent variables", value = 0.5, min = 0, max = 0.99, step = 0.01),
                                 radioButtons("altSRDV", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
-                                radioButtons("strategySRDV", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategySRDV", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSRDV", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterSRDV", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSRDV", "Start simulation"))))),
-    
+
     # ------------------- Selective Reporting IV -------------------------------
     tabItem(tabName = "selectiveReportingIV",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Selective reporting of the independent variable"),
-                         HTML("The dataset contains one control group variable and multiple treatment group variables. The p-value is hacked by recomputing the statistical test with different treatment groups and reporting a significant test result.")
+                         includeMarkdown("mddoc/10_SelectiveReportingIV.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -391,16 +382,15 @@ body <- dashboardBody(
                                 numericInput("nvarSRIV", label = "Number of independent variables", value = 5, min = 1, max = 100),
                                 sliderInput("rSRIV", label = "Correlation of independent variables", value = 0.5, min = 0, max = 0.99, step = 0.01),
                                 radioButtons("altSRIV", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
-                                radioButtons("strategySRIV", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategySRIV", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSRIV", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterSRIV", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSRIV", "Start simulation"))))),
-    
+
     # -------------- Exploiting Statistical Analysis Options ------------------
     tabItem(tabName = "statAnalysis",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting statistical analysis options"),
-                         HTML("If one statistical test does not yield a significant result (e.g., t-test), a slightly different statistical test is used (e.g., Welch-test).")
+                         includeMarkdown("mddoc/11_StatAnalysis.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -419,16 +409,15 @@ body <- dashboardBody(
                                 h4("Simulation settings"),
                                 numericInput("nobsStatAnalysis", label = "Number of observations", value = 30, min = 10, max = 1000),
                                 radioButtons("altStatAnalysis", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
-                                radioButtons("strategyStatAnalysis", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyStatAnalysis", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaStatAnalysis", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterStatAnalysis", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcStatAnalysis", "Start simulation"))))),
-    
+
     # -------------- Subgroup Analyses / Inclusion Criteria --------------------
     tabItem(tabName = "subgroupAnalysis",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Subgroup analyses / Tinkering with inclusion criteria"),
-                         HTML("If a statistical test is not significant, the test is repeated in different subgroups of the sample (e.g., for male and female participants).")
+                         includeMarkdown("mddoc/12_SubgroupAnalysis.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -454,18 +443,17 @@ body <- dashboardBody(
                             box(width=12, status="primary", height=800, background="navy",
                                 h4("Simulation settings"),
                                 numericInput("nobsSubgroup", label = "Number of observations", value = 30, min = 10, max = 1000),
-                                numericInput("nsubvarsSubgroup", label = "Number of variables with potential subgroups", value = 5, min = 1, max = 100),
+                                numericInput("nsubvarsSubgroup", label = "Number of subgroup variables", value = 5, min = 1, max = 100),
                                 radioButtons("altSubgroup", label = "Direction of the test", choiceNames = list("Two-sided", "One-sided (greater)"), choiceValues = list("two.sided", "greater")),
-                                radioButtons("strategySubgroup", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategySubgroup", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaSubgroup", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterSubgroup", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcSubgroup", "Start simulation"))))),
-    
+
     # ------------------ Variable Transformation -------------------------------
     tabItem(tabName = "variableTransformation",
             fluidRow(box(width = 12, status = "primary",
-                         h3("Exploiting variable transformations"),
-                         HTML("If the results of an initial statistical test are not significant, the involved variables are transformed to obtain statistical significance.")
+                         includeMarkdown("mddoc/13_VariableTransformation.md")
             )),
             fluidRow(column(width=8,
                             fixedRow(box(width=6, status="primary",
@@ -488,7 +476,7 @@ body <- dashboardBody(
                                 h4("Simulation settings"),
                                 numericInput("nobsVarTrans", label = "Number of observations", value = 30, min = 10, max = 1000),
                                 radioButtons("transvarVarTrans", label = "Which variables should be transformed?", choiceNames = list("Predictors", "Outcomes", "Predictors and Outcomes"), choiceValues = list("x", "y", "xy")),
-                                radioButtons("strategyVarTrans", label = "p-hacking strategy", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
+                                radioButtons("strategyVarTrans", label = "p-value selection method", choiceNames = list("First significant", "Smallest", "Smallest significant"), choiceValues = list("firstsig", "smallest", "smallest.sig")),
                                 numericInput("alphaVarTrans", label = "Significance level", value = 0.05, min = 0.001, max = 0.2),
                                 numericInput("iterVarTrans", label = "Simulation iterations", value = 1000, min = 10, max = 10000),
                                 actionButton("calcVarTrans", "Start simulation")))))
