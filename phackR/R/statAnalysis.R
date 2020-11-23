@@ -76,14 +76,14 @@ sim.statAnalysisHack <- function(nobs.group, strategy = "firstsig", alternative 
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .statAnalysisHackList)
   }
-  
+
   if(shinyEnv){
     percentage <- 0
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
-        .statAnalysisHack(df = x, group = 1, dv = 2, strategy = strategy, 
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
+        .statAnalysisHack(df = x, group = 1, dv = 2, strategy = strategy,
                           alternative = alternative, alpha = alpha)
       })
     })

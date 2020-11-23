@@ -118,7 +118,7 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", st
     .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+nsubvars)),
                   alternative = alternative, strategy = strategy, alpha = alpha)
   }
-  
+
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .subgroupHackList)
   }
@@ -128,7 +128,7 @@ sim.subgroupHack <- function(nobs.group, nsubvars, alternative = "two.sided", st
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .subgroupHack(df = x, iv = 1, dv = 2, subvars = c(3:(2+nsubvars)),
                       alternative = alternative, strategy = strategy, alpha = alpha)
       })

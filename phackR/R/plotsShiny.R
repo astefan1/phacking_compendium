@@ -60,6 +60,9 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
   es.hack <- colnames(simdat)[EScolumn.hack]
   es.orig <- colnames(simdat)[EScolumn.orig]
 
+  meanES.hack <- grobTree(textGrob(paste0("Mean: ", round(mean(simdat[,es.hack]), 3)), x = 0.95, y=0.95, hjust=1, gp=gpar(fontsize=14)))
+  meanES.orig <- grobTree(textGrob(paste0("Mean: ", round(mean(simdat[,es.orig]), 3)), x = 0.95, y=0.95, hjust=1, gp=gpar(fontsize=14)))
+
   eshack <- ggplot(simdat, aes(x=simdat[,es.hack])) +
     geom_histogram(fill="#FFAE4A", color="#C27516", bins=30, na.rm=FALSE) +
     theme_light() +
@@ -67,7 +70,8 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     ggtitle(titles[1]) +
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
-          plot.title = element_text(size=18))
+          plot.title = element_text(size=18)) +
+    annotation_custom(meanES.hack)
 
   esnohack <- ggplot(simdat, aes(x=simdat[, es.orig])) +
     geom_histogram(fill="#43B7C2", color="#024B7A", bins=30) +
@@ -76,7 +80,8 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     ggtitle(titles[2]) +
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
-          plot.title = element_text(size=18))
+          plot.title = element_text(size=18)) +
+    annotation_custom(meanES.orig)
 
   xlim <- range(c(layer_scales(eshack)$x$range$range, layer_scales(esnohack)$x$range$range))
 

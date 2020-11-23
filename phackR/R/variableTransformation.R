@@ -92,17 +92,17 @@ sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05
     .varTransHack(df = arg, x = 1, y = 2, transvar = transvar,
                   strategy = strategy, alpha = alpha)
   }
-  
+
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .varTransHackList)
   }
-  
+
   if(shinyEnv){
     percentage <- 0
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .varTransHack(df = x, x = 1, y = 2, transvar = transvar,
                       strategy = strategy, alpha = alpha)
       })
