@@ -4,7 +4,7 @@
 \alias{.selectpvalue}
 \title{Select a p-value from a vector of p-hacked p-values}
 \usage{
-.selectpvalue(ps, strategy, alpha, p.orig = NULL)
+.selectpvalue(ps, strategy, alpha)
 }
 \arguments{
 \item{ps}{Vector of p values}

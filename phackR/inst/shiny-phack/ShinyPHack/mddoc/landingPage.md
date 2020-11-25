@@ -44,3 +44,6 @@ The number of observations determines the sample size in the test. In the case o
 
 #### Start simulation
 A new simulation will be started when you click the *Start simulation* button on the bottom of the options panel in each tab. The progress of the simulation will be displayed in a small progress bar in the bottom right corner of the screen.
+
+## Resources
+The code for this Shiny app as well as for the simulations can be found on [https://github.com/nicebread/phacking_compendium](https://github.com/nicebread/phacking_compendium).
