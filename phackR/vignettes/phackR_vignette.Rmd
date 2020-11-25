@@ -2,7 +2,7 @@
 title: "P-Hacking Compendium Documentation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{phackR_vignette_tmp}
+  %\VignetteIndexEntry{phackR_vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
