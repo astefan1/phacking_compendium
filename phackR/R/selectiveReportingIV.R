@@ -94,7 +94,7 @@ sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
     .multIVhack(df = x, ivs = c(2:(nvar+1)), control = 1,
                 strategy = strategy, alternative = alternative, alpha = alpha)
   }
-  
+
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .multIVhacklist)
   }
@@ -104,7 +104,7 @@ sim.multIVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .multIVhack(df=x, ivs = c(2:(nvar+1)), control = 1,
                     strategy = strategy, alternative = alternative, alpha = alpha)
       })

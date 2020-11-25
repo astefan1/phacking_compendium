@@ -86,7 +86,7 @@ sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter 
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .optstop(df=x, group = 1, dv = 2,
                  n.min = n.min, n.max = n.max, step = step,
                  alternative = alternative, alpha = alpha)
