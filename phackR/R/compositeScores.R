@@ -128,7 +128,7 @@ sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig
     withProgress(message = "Running simulation", value=0, {
       res=lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .compscoreHack(df = x, dv = 1, compv = c(2:(ncompv+1)), ndelete = ndelete,
                        strategy = strategy, alpha = alpha)
       })

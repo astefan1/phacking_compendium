@@ -64,7 +64,7 @@ sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided",
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .roundhack(df=x, group = 1, dv = 2, roundinglevel = roundinglevel,
                    alternative = alternative, alpha = alpha)
       })

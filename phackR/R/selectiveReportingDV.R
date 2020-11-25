@@ -90,18 +90,18 @@ sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
   }
 
   # Apply p-hacking procedure to each dataset
-  
+
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .multDVhack, dvs = c(2:(nvar+1)), group = 1,
                   strategy = strategy, alternative = alternative, alpha = alpha)
   }
-  
+
   if(shinyEnv){
     percentage <- 0
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .multDVhack(df=x, dvs = c(2:(nvar+1)), group = 1,
                     strategy = strategy, alternative = alternative, alpha = alpha)
       })

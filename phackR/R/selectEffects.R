@@ -61,22 +61,22 @@ sim.selectEffects <- function(nobs, niv, riv, interactions = FALSE, strategy = "
     .selectEffects(df = x, dv = 1, ivs = c(2:(niv+1)),
                    interactions = interactions, strategy = strategy, alpha = alpha)
   }
-  
+
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .selectEffectsList)
   }
-  
+
   if(shinyEnv){
     percentage <- 0
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .selectEffects(df=x, dv = 1, ivs = c(2:(niv+1)), interactions = interactions, strategy = strategy, alpha = alpha)
       })
     })
   }
-  
+
   ps.hack <- NULL
   ps.orig <- NULL
   r2s.hack <- NULL

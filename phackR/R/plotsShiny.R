@@ -5,9 +5,10 @@
 #' Plot p-value distributions
 #' @param simdat Simulated data from one of the p-hacking simulation functions
 #' @param alpha Alpha level
-#' @importFrom ggplot2 ggplot geom_histogram aes theme_light xlab ggtitle theme element_text geom_vline ylim scale_color_manual scale_fill_manual layer_scales geom_density ylab
+#' @importFrom ggplot2 ggplot geom_histogram aes theme_light xlab ggtitle theme element_text geom_vline scale_fill_manual layer_scales ylab geom_segment geom_col scale_x_continuous scale_y_continuous waiver
 #' @importFrom rlang .data
-#' @importFrom dplyr all_of
+#' @importFrom dplyr all_of mutate
+#' @importFrom magrittr "%$%"
 
 pplots <- function(simdat, alpha){
 
@@ -16,6 +17,8 @@ pplots <- function(simdat, alpha){
   simdat <- as.data.frame(simdat)
 
   simdat_long <- tidyr::gather(simdat, "condition", "pval", all_of("ps.hack"):all_of("ps.orig"))
+
+  bin <- condition <- Freq <- binInt <- pval <- plotVal <- NULL
 
   plotdata <-
     simdat_long %>%
@@ -53,12 +56,23 @@ pplots <- function(simdat, alpha){
   return(list(pcomp=pcomp))
 }
 
+#' Plot effect size distributions
+#' @param simdat Simulated data from one of the p-hacking simulation functions
+#' @param EScolumn.hack Column number of hacked effect sizes
+#' @param EScolumn.orig Column number of original effect sizes
+#' @param titles Title of effect size plots
+#' @importFrom grid grobTree textGrob gpar
+#' @importFrom ggplot2 annotation_custom coord_cartesian
+
 esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression("Distribution of p-hacked effect sizes R"^2),
                                                                            expression("Distribution of original effect sizes R"^2))){
 
   simdat <- as.data.frame(simdat)
   es.hack <- colnames(simdat)[EScolumn.hack]
   es.orig <- colnames(simdat)[EScolumn.orig]
+
+  meanES.hack <- grobTree(textGrob(paste0("Mean: ", round(mean(simdat[,es.hack]), 3)), x = 0.95, y=0.95, hjust=1, gp=gpar(fontsize=14)))
+  meanES.orig <- grobTree(textGrob(paste0("Mean: ", round(mean(simdat[,es.orig]), 3)), x = 0.95, y=0.95, hjust=1, gp=gpar(fontsize=14)))
 
   eshack <- ggplot(simdat, aes(x=simdat[,es.hack])) +
     geom_histogram(fill="#FFAE4A", color="#C27516", bins=30, na.rm=FALSE) +
@@ -67,7 +81,8 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     ggtitle(titles[1]) +
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
-          plot.title = element_text(size=18))
+          plot.title = element_text(size=18)) +
+    annotation_custom(meanES.hack)
 
   esnohack <- ggplot(simdat, aes(x=simdat[, es.orig])) +
     geom_histogram(fill="#43B7C2", color="#024B7A", bins=30) +
@@ -76,7 +91,8 @@ esplots <- function(simdat, EScolumn.hack, EScolumn.orig, titles = c(expression(
     ggtitle(titles[2]) +
     theme(axis.title = element_text(size=14),
           axis.text = element_text(size=12),
-          plot.title = element_text(size=18))
+          plot.title = element_text(size=18)) +
+    annotation_custom(meanES.orig)
 
   xlim <- range(c(layer_scales(eshack)$x$range$range, layer_scales(esnohack)$x$range$range))
 

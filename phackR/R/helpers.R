@@ -109,7 +109,6 @@
 #' @param ps Vector of p values
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level (default: 0.05)
-#' @param p.orig Original p-value (if already computed, otherwise it will be set to the first value in ps)
 
 .selectpvalue <- function(ps, strategy, alpha){
 

@@ -203,7 +203,7 @@ sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", a
     withProgress(message = "Running simulation", value = 0, {
       res = lapply(dat, function(x){
         percentage <<- percentage + 1/length(dat)*100
-        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2)))
+        incProgress(1/length(dat), detail = paste0("Progress: ",round(percentage,2), "%"))
         .impHack(df = x, x = 1, y = 2,
                  which = which, strategy = strategy, alpha = alpha)
       })
