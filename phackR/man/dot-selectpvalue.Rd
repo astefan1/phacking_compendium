@@ -4,7 +4,7 @@
 \alias{.selectpvalue}
 \title{Select a p-value from a vector of p-hacked p-values}
 \usage{
-.selectpvalue(ps, strategy, alpha, p.orig = NULL)
+.selectpvalue(ps, strategy, alpha)
 }
 \arguments{
 \item{ps}{Vector of p values}
@@ -12,8 +12,6 @@
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
 \item{alpha}{Significance level (default: 0.05)}
-
-\item{p.orig}{Original p-value (if already computed, otherwise it will be set to the first value in ps)}
 }
 \description{
 Takes a vector of p-values and selects the smallest, first significant, or smallest significant p-value.
