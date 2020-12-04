@@ -10,7 +10,7 @@ The phackR package is not on CRAN, but you can install it from GitHub:
 
 ```
 library(devtools)
-install_github("nicebread/phacking_compendium", build_vignettes = TRUE)
+install_github("nicebread/phacking_compendium/phackR", build_vignettes = TRUE)
 ```
 
 ## Package Description
