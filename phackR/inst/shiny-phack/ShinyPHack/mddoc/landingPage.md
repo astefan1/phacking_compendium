@@ -47,3 +47,6 @@ A new simulation will be started when you click the *Start simulation* button on
 
 ## Resources
 The code for this Shiny app as well as for the simulations can be found on [https://github.com/nicebread/phacking_compendium](https://github.com/nicebread/phacking_compendium).
+
+## About
+This Shiny app and the underlying R-package were created by Angelika Stefan and Felix Schönbrodt. If you have questions or feature requests, submit a GitHub issue on [https://github.com/nicebread/phacking_compendium](https://github.com/nicebread/phacking_compendium) or write an e-mail to a.m.stefan[at]uva.nl.
