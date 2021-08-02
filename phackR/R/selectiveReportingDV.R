@@ -38,13 +38,13 @@
 .multDVhack <- function(df, dvs, group, strategy = "firstsig", alternative = "two.sided", alpha = 0.05){
 
   # Prepare data frame
-  dvs <- df[, dvs]
+  dvs <- as.matrix(df[, dvs], ncol = length(dvs))
   group <- df[, group]
   mod <- list()
   r2s <- NULL
 
   # Compute t-tests
-  for(i in 1:length(dvs)){
+  for(i in 1:ncol(dvs)){
 
     mod[[i]] <- stats::t.test(dvs[, i] ~ group,
                            var.equal = TRUE, alternative = alternative)
