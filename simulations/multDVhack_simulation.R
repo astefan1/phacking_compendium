@@ -1,4 +1,6 @@
-# Selective Reporting of the Dependent Variable
+# Selective Reporting of the Dependent Variable: Simulation
+
+#### Conditions ####
 
 nobs.group <- c(30, 50, 100, 300)   # number of observations per group
 nvar <- c(3, 5, 10)                 # number of dependent variables
@@ -6,6 +8,8 @@ r <- c(0, 0.3, 0.8)                 # correlation between dependent variables
 strategy <- c("firstsig", "smallest", "smallest.sig")
 
 cond.multDVhack <- expand.grid(nobs.group, nvar, r)
+
+#### Simulation ####
 
 simresults.multDVhack <- list()
 
@@ -30,6 +34,8 @@ simresults.multDVhack$smallest <- apply(cond.multDVhack, 1, function(x) {
 simresults.multDVhack$smallestsig <- apply(cond.multDVhack, 1, function(x) {
   simmultiple.multDVhack(x, strategy = "smallest.sig")
 })
+
+#### Plots ####
 
 cond.multDVhack$FP.rates <- findFPrate(simresults.multDVhack)
 # false positive rates are the same no matter which strategy is used (once 
@@ -127,21 +133,57 @@ iter <- nrow(simresults.multDVhack$firstsig[[1]])
 samplesize <- rep(cond.multDVhack$Var1, each=iter)
 nDV <- rep(cond.multDVhack$Var2, each=iter)
 rs <- rep(cond.multDVhack$Var3, each=iter)
+ds.nohack <- unlist(lapply(simresults.multDVhack$firstsig, function(x) x$ds.orig))
+
 
 plotdat <- data.frame(ds=ds, 
+                      ds.nohack=ds.nohack,
                       samplesize=as.factor(samplesize), 
                       nDV=as.factor(nDV), 
                       rs=as.factor(rs))
 new.labels.ss <- c("30" = "N = 30", "50" = "N = 50", "100" = "N = 100", "300" = "N = 300")
 new.labels.r <- c("0" = "r = 0", "0.3" = "r = 0.3", "0.8" = "r = 0.8")
-ggplot(data=plotdat, aes(x = nDV, y = ds)) +
+
+library(dplyr)
+
+newplotdat <- plotdat %>%
+  group_by(samplesize, nDV, rs) %>%
+  do(data.frame(loc.ds = density(.$ds)$x,
+                dens.ds = density(.$ds)$y / (2*max(density(.$ds)$y)),
+                loc.ds.nohack = density(.$ds.nohack)$x,
+                dens.ds.nohack = -1*density(.$ds.nohack)$y/(2*max(density(.$ds.nohack)$y))))
+
+newplotdat <- plotdat %>%
+  group_by(samplesize, nDV, rs) %>%
+  do(data.frame(loc.ds = density(abs(.$ds))$x,
+                dens.ds = density(abs(.$ds))$y / (2*max(density(abs(.$ds))$y)),
+                loc.ds.nohack = density(abs(.$ds.nohack))$x,
+                dens.ds.nohack = -1*density(abs(.$ds.nohack))$y/(2*max(density(abs(.$ds.nohack))$y))))
+
+
+newplotdat$dens.ds <- newplotdat$dens.ds + as.numeric(newplotdat$nDV)
+newplotdat$dens.ds.nohack <- newplotdat$dens.ds.nohack + as.numeric(newplotdat$nDV)
+
+
+
+ggplot(data=newplotdat, aes(group = nDV)) +
+  geom_polygon(aes(y=dens.ds, x=loc.ds), fill = "#FFAE4A") +
+  geom_polygon(aes(y=dens.ds.nohack, x=loc.ds.nohack), fill = "#5AB4BD") +
+  facet_grid(rs ~ samplesize, labeller = labeller(samplesize = new.labels.ss,
+                                                  rs = new.labels.r)) +
+  labs(title = "Cohen's d Distributions (Strategy: first significant)",
+       x = "Cohen's d",
+       y = "Number of Dependent Variables")
+         
+
+ggplot(data=plotdat, aes(x = ds, y = nDV)) +
   geom_jitter(shape = 16, position = position_jitter(0.2), color = "orange", alpha = 0.05) +
   geom_violin(fill = NA) +
   facet_grid(rs ~ samplesize, labeller = labeller(samplesize = new.labels.ss,
                                                   rs = new.labels.r)) +
   labs(title = "Cohen's d Distributions (Strategy: first significant)",
-       x = "Number of Dependent Variables",
-       y = "Cohen's d")
+       x = "Cohen's d",
+       y = "Number of Dependent Variables")
   
 # Effect size distribution for smallest strategy
 
