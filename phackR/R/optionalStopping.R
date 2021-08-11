@@ -12,12 +12,13 @@
 #' @param n.min Minimum sample size
 #' @param n.max Maximum sample size
 #' @param step Step size of the optional stopping (default is 1)
+#' @param peek Determines how often one peeks at the data. Overrides step argument if not NULL.
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 #' @importFrom utils tail
 
-.optstop <- function(df, group, dv, n.min, n.max, step = 1, alternative = "two.sided", alpha = 0.05){
+.optstop <- function(df, group, dv, n.min, n.max, step = 1, peek = NULL, alternative = "two.sided", alpha = 0.05){
 
   # Extract group variables
   g1 <- df[df[,group] == unique(df[,group])[1], dv]
@@ -27,7 +28,12 @@
   stopifnot(length(g1) >= n.max && length(g2) >= n.max)
 
   # Determine places of peeks
-  peeks <- seq(n.min, n.max, by=step)
+  if(is.null(peek)){
+    peeks <- seq(n.min, n.max, by=step)
+    if(step > (n.max-n.min)) peeks <- c(n.min, n.max)
+  } else {
+    peeks <- round(seq(n.min, n.max, length.out = peek))
+  }
 
   # Compute t-tests
   mod <- sapply(peeks, FUN = function(x) {stats::t.test(g1[1:x], g2[1:x], var.equal = TRUE, alternative = alternative)})
@@ -58,6 +64,7 @@
 #' @param n.min Minimum sample size
 #' @param n.max Maximum sample size
 #' @param step Step size of the optional stopping (default is 1)
+#' @param peek Determines how often one peeks at the data. Overrides step argument if not NULL.
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")
 #' @param iter Number of iterations
 #' @param alpha Significance level of the t-test (default: 0.05)
@@ -66,7 +73,7 @@
 #' @export
 #'
 
-sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter = 1000, alpha = 0.05, shinyEnv = FALSE){
+sim.optstop <- function(n.min, n.max, step = 1, peek = NULL, alternative = "two.sided", iter = 1000, alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -77,7 +84,7 @@ sim.optstop <- function(n.min, n.max, step = 1, alternative = "two.sided", iter 
   # Apply p-hacking procedure to each dataset
   if(!shinyEnv){
     res <- pbapply::pblapply(dat, .optstop, group = 1, dv = 2,
-                  n.min = n.min, n.max = n.max, step = step,
+                  n.min = n.min, n.max = n.max, step = step, peek = peek,
                   alternative = alternative, alpha = alpha)
   }
 
