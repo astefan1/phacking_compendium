@@ -5,7 +5,6 @@
 nobs.group <- c(30, 50, 100, 300)   # number of observations per group
 nvar <- c(3, 5, 10)                 # number of dependent variables
 r <- c(0, 0.3, 0.8)                 # correlation between dependent variables
-strategy <- c("firstsig", "smallest", "smallest.sig")
 
 cond.multDVhack <- expand.grid(nobs.group, nvar, r)
 
