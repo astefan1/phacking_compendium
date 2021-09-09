@@ -19,7 +19,3 @@ simresults.roundHack <- apply(cond.roundHack, 1, function(x) {
   simmultiple.roundHack(x)
 })
 
-sum(simresults.roundHack[[1]]$ps.hack <= 0.05)/10000
-
-#### Plots ####
-hist(simresults.roundHack[[3]]$ps.hack)
