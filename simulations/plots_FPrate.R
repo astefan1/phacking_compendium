@@ -50,7 +50,7 @@ ggplot(cond.covhack, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.fact
   geom_line(aes(linetype = as.factor(Var3))) +
   theme_classic() +
   labs(title = "False Positive Rates",
-       x = "Maximum Number of Deleted Items",
+       x = "Number of Covariates",
        y = "False Positive Rate",
        color = "Sample Size",
        shape = "Correlation Covariates",
@@ -240,7 +240,7 @@ ggplot(cond.statAnalysisHack, aes(Var1, FP.rates)) +
 #### Subgroup Analyses ####
 
 nobs.group <-  c(30, 50, 100, 300) #Var1
-nsubvars <- c(3, 5) #Var2
+nsubvars <- c(1, 3, 5) #Var2
 
 cond.subgroupHack <- expand.grid(nobs.group, nsubvars)
 cond.subgroupHack$FP.rates <- findFPrate(simresults.subgroupHack)
@@ -273,3 +273,57 @@ ggplot(cond.varTransHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
        color = "Sample Size") +
   geom_hline(yintercept = 0.05, col = "grey")
 
+#### FP Rate Overview Plot ####
+
+FPCombined <- matrix(NA, nrow=0, ncol=2)
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.compscoreHack$FP.rates, 1))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.covhack$FP.rates, 2))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.impHack$FP.rates, 3))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.optstop$FP.rates, 4))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.outHack$FP.rates, 5))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.selectEffects$FP.rates, 6))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.statAnalysisHack$FP.rates, 7))
+
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.multDVhack$FP.rates, 8))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.multIVhack$FP.rates, 9))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.subgroupHack$FP.rates, 10))
+FPCombined <- rbind(FPCombined,
+                    cbind(cond.varTransHack$FP.rates, 11))
+
+FPCombined <- as.data.frame(FPCombined)
+colnames(FPCombined) <- c("FP.rate", "method")
+FPCombined$method <- as.factor(FPCombined$method)
+levels(FPCombined$method) <- c("Scale redefinition",
+                               "Exploit covariates",
+                               "Favorable imputation",
+                               "Optional stopping",
+                               "Outlier exclusion",
+                               "Selecting effects",
+                               "Statistical analyses",
+                               "Selective reporting DV",
+                               "Selective reporting IV",
+                               "Subgroup Analysis",
+                               "Variable Transformation")
+
+ggplot(FPCombined, aes(x = FP.rate, y = method)) +
+  geom_point(aes(color = method)) +
+  theme_classic() +
+  theme(axis.title.y = element_blank(),
+        legend.position = "none",
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14, vjust = -2),
+        axis.text.x = element_text(size = 14),
+        plot.margin = unit(c(3,3,20,3), "pt")) +
+  labs(x = "False Positive Rate") +
+  geom_vline(xintercept = 0.05, linetype = "dashed")
+  

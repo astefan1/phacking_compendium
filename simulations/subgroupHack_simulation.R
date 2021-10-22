@@ -2,7 +2,7 @@
 
 #### Conditions ####
 nobs.group <-  c(30, 50, 100, 300)
-nsubvars <- c(3, 5)
+nsubvars <- c(1, 3, 5)
 
 cond.subgroupHack <- expand.grid(nobs.group, nsubvars)
 
