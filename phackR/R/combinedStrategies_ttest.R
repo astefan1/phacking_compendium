@@ -68,7 +68,7 @@
                                   stage = 1))
   
   # If original p-value is smaller than rounding level stop and return alpha as p
-  if(p.orig <= roundinglevel) return(list(p.final = alpha,
+  if(p.orig < roundinglevel) return(list(p.final = alpha,
                                           p.orig = p.orig,
                                           r2.final = r2.orig,
                                           r2.orig = r2.orig,
@@ -101,25 +101,16 @@
   ps <- c(p.orig, p.welch, p.wilcox, p.yuen)
   
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = roundinglevel)
   
   # If final p-value is smaller than alpha, stop and return
-  if(p.final <= alpha) return(list(p.final = p.final,
+  if(p.final < roundinglevel) return(list(p.final = p.final,
                                    p.orig = p.orig,
                                    r2.final = r2.orig,
                                    r2.orig = r2.orig,
                                    d.final = d.orig,
                                    d.orig = d.orig,
                                    stage = 2))
-                                  
-  # If final p-value is smaller than rounding level, return alpha as p
-  if(p.final <= roundinglevel) return(list(p.final = alpha,
-                                           p.orig = p.orig,
-                                           r2.final = r2.orig,
-                                           r2.orig = r2.orig,
-                                           d.final = d.orig,
-                                           d.orig = d.orig,
-                                           stage = 2.5))
   
   ################# (3) Selective Reporting DV ##########################
   
@@ -141,16 +132,15 @@
   
   ps <- unlist(simplify2array(mod)["p.value", ])
   
-  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), 
-                     length(df[, group])/2)
+  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), nrow(df)/2)
   
   # Select final p-hacked p-value based on strategy
-  p.final   <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  p.final   <- .selectpvalue(ps = ps, strategy = strategy, alpha = roundinglevel)
   r2.final  <- unique(r2s[ps == p.final])
   d.final   <- unique(ds[ps == p.final])
   
   # If final p-value is smaller than alpha stop and return
-  if(p.final <= alpha) return(list(p.final = p.final,
+  if(p.final < roundinglevel) return(list(p.final = p.final,
                                    p.orig = p.orig,
                                    r2.final = r2.final,
                                    r2.orig = r2.orig,
@@ -198,10 +188,10 @@
   }
   
   # Select final p-hacked p-value based on strategy
-  p.final     <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  p.final     <- .selectpvalue(ps = ps, strategy = strategy, alpha = roundinglevel)
 
   # If final p-value is smaller than alpha stop and return
-  if(p.final <= alpha) return(list(p.final = p.final,
+  if(p.final < roundinglevel) return(list(p.final = p.final,
                                    p.orig = p.orig,
                                    r2.final = NA,
                                    r2.orig = r2.orig,
@@ -236,12 +226,12 @@
   ds <- c(d.orig, unlist(ds))
   
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
+  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = roundinglevel)
   r2.final <- unique(r2s[ps == p.final])
   d.final <- unique(ds[ps == p.final])
   
   # If final p-value is smaller than alpha stop and return
-  if(p.final <= alpha) {
+  if(p.final < roundinglevel) {
     return(list(p.final = p.final,
                 p.orig = p.orig,
                 r2.final = r2.final,

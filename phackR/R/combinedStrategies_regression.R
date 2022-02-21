@@ -56,7 +56,7 @@
                                   stage = 1))
   
   # If original p-value is smaller than rounding level stop and return alpha as p
-  if(p.orig <= roundinglevel) return(list(p.final = alpha,
+  if(p.orig < roundinglevel) return(list(p.final = alpha,
                                           p.orig = p.orig,
                                           r2.final = r2.orig,
                                           r2.orig = r2.orig,
@@ -71,21 +71,14 @@
                          y = 1, 
                          which = impMethods, 
                          strategy = strategy, 
-                         alpha = alpha)
+                         alpha = roundinglevel)
   
   # If p-value is significant stop and return
-  if(impres$p.final <= alpha) return(list(p.final = impres$p.final,
-                                          p.orig = p.orig,
-                                          r2.final = impres$r2.final,
-                                          r2.orig = r2.orig,
-                                          stage = 2))
-  
-  # If p-value is smaller than rounding level stop and return alpha as p
-  if(impres$p.final <= roundinglevel) return(list(p.final = alpha,
-                                                  p.orig = p.orig,
-                                                  r2.final = impres$r2.final,
-                                                  r2.orig = r2.orig,
-                                                  stage = 2.5))
+  if(impres$p.final < roundinglevel) return(list(p.final = impres$p.final,
+                                            p.orig = p.orig,
+                                            r2.final = impres$r2.final,
+                                            r2.orig = r2.orig,
+                                            stage = 2))
   
   ###################### (3) Variable transformation #################
   
@@ -95,14 +88,14 @@
                             y = 1, 
                             transvar = "xy", 
                             strategy = "firstsig", 
-                            alpha = 0.05)
+                            alpha = roundinglevel)
   
   # If p-value is significant, stop and return
-  if(transres$p.final <= alpha) return(list(p.final = transres$p.final,
-                                            p.orig = p.orig,
-                                            r2.final = transres$r2.final,
-                                            r2.orig = r2.orig,
-                                            stage = 3))
+  if(transres$p.final < roundinglevel) return(list(p.final = transres$p.final,
+                                              p.orig = p.orig,
+                                              r2.final = transres$r2.final,
+                                              r2.orig = r2.orig,
+                                              stage = 3))
   
   ##################### (4) Scale redefinition ##########################
   
@@ -112,14 +105,14 @@
                                compv = c(2:6),
                                ndelete = ndelete,
                                strategy = strategy,
-                               alpha = alpha)
+                               alpha = roundinglevel)
   
   # If p-value is significant, stop and return
-  if(rescaleRes$p.final <= alpha) return(list(p.final = rescaleRes$p.final,
-                                              p.orig = p.orig,
-                                              r2.final = rescaleRes$r2.final,
-                                              r2.orig = r2.orig,
-                                              stage = 4))
+  if(rescaleRes$p.final < roundinglevel) return(list(p.final = rescaleRes$p.final,
+                                                p.orig = p.orig,
+                                                r2.final = rescaleRes$r2.final,
+                                                r2.orig = r2.orig,
+                                                stage = 4))
   
   ##################### (5) Outlier exclusion #############################
   
@@ -130,10 +123,10 @@
                          y = 1, 
                          which = outMethods, 
                          strategy = strategy, 
-                         alpha = alpha)
+                         alpha = roundinglevel)
   
   # If p-value is significant, stop and return, else return original p-value
-  if(outlierRes$p.final <= alpha){
+  if(outlierRes$p.final < roundinglevel){
     return(list(p.final = outlierRes$p.final,
                 p.orig = p.orig,
                 r2.final = outlierRes$r2.final,

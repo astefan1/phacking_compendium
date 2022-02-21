@@ -37,5 +37,3 @@ simresults.compscoreHack$smallestsig <- apply(cond.compscoreHack, 1, function(x)
 })
 
 save(simresults.compscoreHack, file = "simulations/SIM_compscoreHack.RData")
-
-#### Plots ####
