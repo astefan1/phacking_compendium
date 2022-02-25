@@ -187,27 +187,6 @@ ggplot(cond.outHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3), limits = c(0,0.3)) +
   scale_x_continuous(breaks = c(3,5,12))
 
-# #### Selecting Effects ####
-# 
-# nobs <- c(30, 50, 100, 300) #Var1
-# niv <- c(3, 5, 10) #Var2
-# riv <- c(0, 0.3, 0.7) #Var3
-# 
-# cond.selectEffects <- expand.grid(nobs, niv, riv)
-# cond.selectEffects$FP.rates <- findFPrate(simresults.selectEffects)
-# 
-# ggplot(cond.selectEffects, aes(Var3, FP.rates, colour = as.factor(Var1), shape=as.factor(Var2))) +
-#   geom_point(size = 2) +
-#   geom_line(aes(linetype = as.factor(Var2))) +
-#   theme_classic() +
-#   labs(title = "False Positive Rates",
-#        x = "Correlation between IVs",
-#        y = "False Positive Rate",
-#        color = "Sample Size",
-#        shape = "Number of IVs",
-#        linetype = "Number of IVs" ) +
-#   geom_hline(yintercept = 0.05, col = "grey")
-
 #### Selective Reporting DV ####
 
 nobs.group <- c(30, 50, 100, 300) # Var1

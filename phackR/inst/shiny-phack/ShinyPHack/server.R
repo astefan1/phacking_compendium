@@ -225,37 +225,7 @@ function(input, output) {
                                            }
   )
 
-  # ------------------- Selective Reporting of Effects -------------------------
-
-  output$selectEffPlot <- renderPlot(startplots$selectEffPlot$pcomp)
-  output$selectEffFPHack = renderText(startplots$selectEff.fprate.p)
-  output$selectEffFPOrig = renderText(startplots$selectEff.fprate.o)
-  output$selectEffPlot4 = renderPlot(startplots$selectEffES$eshack)
-  output$selectEffPlot5 = renderPlot(startplots$selectEffES$esnohack)
-
-  observeEvent(input$calcSelectEff > 0, {
-    if(input$interactSelectEff == "Yes") interactions <- TRUE
-    else if(input$interactSelectEff == "No") interactions <- FALSE
-    res8 <- sim.selectEffects(nobs = input$nobsSelectEff, niv = input$nivSelectEff, interactions = interactions, riv = input$rivSelectEff, strategy = input$strategySelectEff, alpha = input$alphaSelectEff, iter = input$iterSelectEff, shinyEnv = TRUE)
-    selectEffPlot <- phackR:::pplots(simdat = res8, alpha = input$alphaSelectEff)
-    selectEffES <- phackR:::esplots(simdat = res8, EScolumn.hack = 3, EScolumn.orig = 4)
-    selectEff.fprate.p <- paste0(round(sum(res8[,"ps.hack"] <= input$alphaSelectEff)/input$iterSelectEff*100, 2), " %")
-    selectEff.fprate.o <- paste0(round(sum(res8[,"ps.orig"] <= input$alphaSelectEff)/input$iterSelectEff*100, 2), " %")
-    output$selectEffPlot <- renderPlot(selectEffPlot$pcomp)
-    output$selectEffFPHack = renderText(selectEff.fprate.p)
-    output$selectEffFPOrig = renderText(selectEff.fprate.o)
-    output$selectEffPlot4 = renderPlot(selectEffES$eshack)
-    output$selectEffPlot5 = renderPlot(selectEffES$esnohack)
-    sims$res8 <- res8
-  }, ignoreInit = TRUE)
-
-  output$downloadSelectEff <- downloadHandler(filename = "selectEffSimdata.csv",
-                                           content = function(file){
-                                             if(!is.null(sims$res8)) write.csv(sims$res8, file, row.names = FALSE)
-                                             else write.csv(startplots$res8, file, row.names = FALSE)
-                                           }
-  )
-
+ 
   # ------------------- Selective Reporting of DVs -----------------------------
 
   output$SRDVPlot <- renderPlot(startplots$SRDVPlot$pcomp)

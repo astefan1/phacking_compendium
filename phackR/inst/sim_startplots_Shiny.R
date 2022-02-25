@@ -66,14 +66,6 @@ startplots$outExcl.fprate.p <- paste0(round(sum(res7[,"ps.hack"] <= 0.05)/1000*1
 startplots$outExcl.fprate.o <- paste0(round(sum(res7[,"ps.orig"] <= 0.05)/1000*100, 2), " %")
 startplots$res7 <- res7
 
-# 8: Selective Reporting of Effects
-res8 <- sim.selectEffects(nobs = 30, niv = 3, interactions = FALSE, riv = 0.5, strategy = "firstsig", alpha = 0.05, iter = 1000)
-startplots$selectEffPlot <- pplots(simdat = res8, alpha = 0.05)
-startplots$selectEffES <- esplots(simdat = res8, EScolumn.hack = 3, EScolumn.orig = 4)
-startplots$selectEff.fprate.p <- paste0(round(sum(res8[,"ps.hack"] <= 0.05)/1000*100, 2), " %")
-startplots$selectEff.fprate.o <- paste0(round(sum(res8[,"ps.orig"] <= 0.05)/1000*100, 2), " %")
-startplots$res8 <- res8
-
 # 9: Selective Reporting DV
 res9 <- sim.multDVhack(nobs.group = 30, nvar = 5, r = 0.5, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05)
 startplots$SRDVPlot <- pplots(simdat = res9, alpha = 0.05)
