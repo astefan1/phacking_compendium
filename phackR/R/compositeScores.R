@@ -48,8 +48,8 @@
   # Strategically delete items from the composite scale and re-calculate the p-value
   for(i in 1:ndelete){
 
-    pval <- rep(NA, 3)
-    r2val <- rep(NA, 3)
+    pval <- rep(NA, 2)
+    r2val <- rep(NA, 2)
 
     # Define new item to delete from the scale
     out[i] <- which(colnames(compscale) %in% colnames(changescale)[which.max(performance::item_reliability(changescale)[,2])])
@@ -67,10 +67,10 @@
     r2val[2] <- newmodres2$r.squared
 
     # Compute p-value for a scale of all items deleted so far
-    nonscore <- rowMeans(cbind(compscale[, out]))
-    newmodres3 <- summary(lm(df[, dv] ~ nonscore))
-    pval[3] <- newmodres3$coefficients[2, 4]
-    r2val[3] <- newmodres3$r.squared
+    #nonscore <- rowMeans(cbind(compscale[, out]))
+    #newmodres3 <- summary(lm(df[, dv] ~ nonscore))
+    #pval[3] <- newmodres3$coefficients[2, 4]
+    #r2val[3] <- newmodres3$r.squared
 
     changescale <- compscale[, -out]
     ps[[i]] <- pval
