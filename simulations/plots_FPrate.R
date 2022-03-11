@@ -153,7 +153,7 @@ cond.optstop$FP.rates <- FP.rates
 
 ggplot(cond.optstop, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_point(size = 3) +
-  geom_line(aes(colour = as.factor(Var1))) +
+  geom_line(aes(colour = as.factor(Var1)), lwd = 1) +
   theme_classic() +
   labs(title = "",
        x = "Step Size",
@@ -161,9 +161,38 @@ ggplot(cond.optstop, aes(Var2, FP.rates, colour = as.factor(Var1))) +
        color = bquote("N"["max"])) +
   geom_hline(yintercept = 0.05, col = "grey") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
-  theme(text = element_text(size=20)) +
+  theme(text = element_text(size=30)) +
   scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(1,3,5,10,50))
+
+#### Optional Stopping 2 ####
+
+n.min <- 5
+n.max <- c(30, 50, 100, 300) #Var1
+step = c(1, 5, 10, 50) #Var2
+
+cond.optstop <- expand.grid(n.max, step)
+cond.optstop$Var3 <- apply(cond.optstop, 1, function(x) {
+  if(x[2] > x[1]-5){
+    return(2)
+  } else {
+    return(length(seq(5, x[1], by = x[2])))
+  }
+})
+
+FP.rates <- sapply(simresults.optstop,
+                   function(x) {sum(x$ps.hack < 0.05) / nrow(x)})
+cond.optstop$FP.rates <- FP.rates
+
+ggplot(cond.optstop, aes(Var3, FP.rates)) +
+  geom_point(size = 3) +
+  theme_classic() +
+  labs(title = "",
+       x = "Peeks",
+       y = "False Positive Rate") +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
+  theme(text = element_text(size=30)) +
+  geom_hline(yintercept = 0.05, col = "grey")
 
 #### Outlier Exclusion ####
 
@@ -335,7 +364,7 @@ FPCombined <- as.data.frame(FPCombined)
 colnames(FPCombined) <- c("FP.rate", "method")
 FPCombined$method <- as.factor(FPCombined$method)
 levels(FPCombined$method) <- c("Incorrect rounding",
-                               "Inclusion criteria",
+                               "Subgroup analyses",
                                "Favorable imputation",
                                "Alt. hypothesis tests",
                                "Discretizing variables",
@@ -348,7 +377,8 @@ levels(FPCombined$method) <- c("Incorrect rounding",
                                "Selective reporting DV")
 
 ggplot(FPCombined, aes(x = FP.rate, y = method)) +
-  geom_point(aes(color = method)) +
+  #geom_point(aes(color = method)) +
+  geom_point() +
   theme_classic() +
   theme(axis.title.y = element_blank(),
         legend.position = "none",

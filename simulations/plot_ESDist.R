@@ -19,10 +19,11 @@ r <- c(0, 0.3, 0.8)                 # correlation between dependent variables
 cond.multDVhack <- expand.grid(nobs.group, nvar, r)
 
 # Select conditions to show in the plot
-nobs.extracted <- 50
+nobs.extracted <- 50 # to get plots for N=100, change this to 100
 cond.plot <- which(cond.multDVhack$Var1 == nobs.extracted & cond.multDVhack$Var3 == 0)
 
 # ES distributions for the firstsig strategy
+# To get plots for other reporting strategies, exchange all firstsig by smallestsig or smallest
 
 ds.hack <- unlist(lapply(simresults.multDVhack$firstsig[cond.plot], function(x) x$ds.hack))
 ds.nohack <- unlist(lapply(simresults.multDVhack$firstsig[cond.plot], function(x) x$ds.orig))

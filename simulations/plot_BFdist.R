@@ -21,10 +21,11 @@ cond.multDVhack <- expand.grid(nobs.group, nvar, r)
 
 # Select conditions to show in the plot
 
-nobs.extracted <- 50
+nobs.extracted <- 300 # to get plots for N=100, change this to 100
 cond.plot <- which(cond.multDVhack$Var1 == nobs.extracted & cond.multDVhack$Var3 == 0)
 
 # Extract t-values and compute BFs
+# To get plots for other reporting strategies, exchange all firstsig by smallestsig or smallest
 
 ps.hack <- unlist(lapply(simresults.multDVhack$firstsig[cond.plot], function(x) x$ps.hack))
 ts.hack <- qt(ps.hack/2, df=nobs.extracted-2)
@@ -66,8 +67,10 @@ ggplot(data=newplotdat, aes(group = nDV)) +
         axis.title = element_text(size=25),
         axis.text = element_text(size=25)) +
   scale_y_continuous(breaks = c(1,2,3), labels = c("3", "5", "10")) +
-  scale_x_continuous(breaks = log(c(1/10, 1/3, 1, 3, 10)), labels = c("1/10", "1/3", "1", "3", "10"), limits = log(c(1/11, 100))) +
-  facet_grid(. ~ title)
+  scale_x_continuous(breaks = log(c(1/10, 1/3, 1, 3, 10)), labels = c("1/10", "1/3", "1", "3", "10")) +
+  coord_cartesian(xlim = log(c(1/20, 100))) +
+  facet_grid(. ~ title) +
+  geom_vline(xintercept = 0, linetype = "dashed", col = "grey", lwd = 1.5) 
                      
 
 plot.new()
