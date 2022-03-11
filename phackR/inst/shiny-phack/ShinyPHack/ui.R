@@ -35,7 +35,7 @@ sidebar <- dashboardSidebar(
              icon = icon("stats",lib = "glyphicon")),
     menuItem("Favorable Imputation", tabName = "favorableImputation",
              icon = icon("stats",lib = "glyphicon")),
-    menuItem("Tinkering w. Inclusion", tabName = "subgroupAnalysis",
+    menuItem("Subgroup Analyses", tabName = "subgroupAnalysis",
              icon = icon("stats",lib = "glyphicon")),
     menuItem("Incorrect Rounding", tabName = "incorrectRounding",
              icon = icon("stats",lib = "glyphicon"))

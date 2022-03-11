@@ -1,4 +1,4 @@
-### Tinkering with Inclusion Criteria
+### Subgroup Analyses
 
 This p-hacking strategy assumes that if an initial hypothesis test does not yield a significant result, a researcher would repeat the same hypothesis test on subgroups of the sample (e.g., right-handed and left-handed participants). Here, we assume that all subgroup variables have two levels, and that the hypothesis test is conducted on each level of the subgroup variables. Additionally, we assume that the hypothesis test in question is a t-test (e.g., between an experimental and a control condition). Note that we do not assume that the experimental and control condition are balanced within the subgroups. Therefore, within a subgroup, the number of participants in the experimental and control group can differ.
 
