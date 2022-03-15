@@ -33,15 +33,17 @@ plotdat <- data.frame(ps=ps,
 plotdat$title <- "first significant p-value"
 
 ggplot(data=plotdat, aes(x = nDV, y = ps)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.12) +
-  geom_violin(fill = NA) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +
   theme_bw() +
   theme(text = element_text(size=35),
         axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
+        axis.text = element_text(size=25),
+        legend.position = "none") +
+  facet_grid(. ~ title) +
+  scale_color_manual(values = c("#9AD3EB", "#6AACCC", "#2F7CA6", "#125A84"))
 
 # p-value distributions for the smallest significant strategy
 
@@ -54,15 +56,17 @@ plotdat2 <- data.frame(ps=ps2,
 plotdat2$title <- "smallest significant p-value"
 
 ggplot(data=plotdat2, aes(x = nDV, y = ps2)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.12) +
-  geom_violin(fill = NA) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +
   theme_bw() +
   theme(text = element_text(size=35),
         axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
+        axis.text = element_text(size=25),
+        legend.position = "none") +
+  facet_grid(. ~ title) +
+  scale_color_manual(values = c("#9AD3EB", "#6AACCC", "#2F7CA6", "#125A84"))
 
 # p-value distribution for the smallest strategy
 
@@ -75,15 +79,17 @@ plotdat3 <- data.frame(ps=ps3,
 plotdat3$title <- "smallest p-value"
 
 ggplot(data=plotdat3, aes(x = nDV, y = ps3)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.12) +
-  geom_violin(fill = NA) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +
   theme_bw() +
   theme(text = element_text(size=35),
         axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
+        axis.text = element_text(size=25),
+        legend.position = "none") +
+  facet_grid(. ~ title) +
+  scale_color_manual(values = c("#9AD3EB", "#6AACCC", "#2F7CA6", "#125A84"))
 
 # Plot: Only significant p-values
 
