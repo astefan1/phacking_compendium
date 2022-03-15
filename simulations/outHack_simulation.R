@@ -28,3 +28,6 @@ simresults.outHack$smallest <- apply(cond.outHack, 1, function(x) {
 simresults.outHack$smallestsig <- apply(cond.outHack, 1, function(x) {
   simmultiple.outHack(x, strategy = "smallest.sig")
 })
+
+save(simresults.outHack, file = "simulations/SIM_outHack.RData")
+

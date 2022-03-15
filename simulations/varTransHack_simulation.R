@@ -33,3 +33,4 @@ simresults.varTransHack$smallestsig <- apply(cond.varTransHack, 1, function(x) {
   simmultiple.varTransHack(x, strategy = "smallest.sig")
 })
 
+save(simresults.varTransHack, file = "simulations/SIM_varTransHack.RData")

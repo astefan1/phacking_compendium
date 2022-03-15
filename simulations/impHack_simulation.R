@@ -32,3 +32,5 @@ simresults.impHack$smallest <- apply(cond.impHack, 1, function(x) {
 simresults.impHack$smallestsig <- apply(cond.impHack, 1, function(x) {
   simmultiple.impHack(x, strategy = "smallest.sig")
 })
+
+save(simresults.impHack, file = "simulations/SIM_impHack.RData")

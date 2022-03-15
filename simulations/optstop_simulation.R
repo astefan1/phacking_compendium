@@ -24,3 +24,5 @@ simresults.optstop <- apply(cond.optstop, 1, function(x) {
   simmultiple.optstop(x)
 })
 
+save(simresults.optstop, file = "simulations/SIM_optstop.RData")
+

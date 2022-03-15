@@ -28,3 +28,5 @@ simresults.statAnalysisHack$smallest <- apply(cond.statAnalysisHack, 1, function
 simresults.statAnalysisHack$smallestsig <- apply(cond.statAnalysisHack, 1, function(x) {
   simmultiple.statAnalysisHack(x, strategy = "smallest.sig")
 })
+
+save(simresults.statAnalysisHack, file = "simulations/SIM_statAnalysisHack.RData")

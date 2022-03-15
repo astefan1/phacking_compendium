@@ -32,3 +32,6 @@ simresults.multIVhack$smallest <- apply(cond.multIVhack, 1, function(x) {
 simresults.multIVhack$smallestsig <- apply(cond.multIVhack, 1, function(x) {
   simmultiple.multIVhack(x, strategy = "smallest.sig")
 })
+
+save(simresults.multIVhack, file = "simulations/SIM_multIVhack.RData")
+

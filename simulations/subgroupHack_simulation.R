@@ -31,3 +31,5 @@ simresults.subgroupHack$smallestsig <- apply(cond.subgroupHack, 1, function(x) {
   simmultiple.subgroupHack(x, strategy = "smallest.sig")
 })
 
+save(simresults.subgroupHack, file = "simulations/SIM_subgroupHack.RData")
+

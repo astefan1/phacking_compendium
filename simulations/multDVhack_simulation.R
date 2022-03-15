@@ -33,3 +33,6 @@ simresults.multDVhack$smallest <- apply(cond.multDVhack, 1, function(x) {
 simresults.multDVhack$smallestsig <- apply(cond.multDVhack, 1, function(x) {
   simmultiple.multDVhack(x, strategy = "smallest.sig")
 })
+
+save(simresults.multDVhack, file = "simulations/SIM_multDVhack.RData")
+

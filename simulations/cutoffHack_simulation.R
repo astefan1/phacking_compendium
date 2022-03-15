@@ -30,3 +30,6 @@ simresults.cutoffHack$smallest <- apply(cond.cutoffHack, 1, function(x) {
 simresults.cutoffHack$smallestsig <- apply(cond.cutoffHack, 1, function(x) {
   simmultiple.cutoffHack(x, strategy = "smallest.sig")
 })
+
+save(simresults.cutoffHack, file = "simulations/SIM_cutoffHack.RData")
+

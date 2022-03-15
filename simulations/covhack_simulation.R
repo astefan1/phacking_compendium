@@ -36,5 +36,6 @@ simresults.covhack$smallestsig <- apply(cond.covhack, 1, function(x) {
   simmultiple.covhack(x, strategy = "smallest.sig")
 })
 
+save(simresults.covhack, file = "simulations/SIM_covhack.RData")
 
 

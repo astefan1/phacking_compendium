@@ -19,7 +19,7 @@ r <- c(0, 0.3, 0.8)                 # correlation between dependent variables
 cond.multDVhack <- expand.grid(nobs.group, nvar, r)
 
 # Select conditions to show in the plot
-cond.plot <- which(cond.multDVhack$Var1 == 50 & cond.multDVhack$Var3 == 0)
+cond.plot <- which(cond.multDVhack$Var1 == 50 & cond.multDVhack$Var3 == 0.3)
 
 # p-value distributions for the firstsig strategy
 
@@ -90,48 +90,4 @@ ggplot(data=plotdat3, aes(x = nDV, y = ps3)) +
         legend.position = "none") +
   facet_grid(. ~ title) +
   scale_color_manual(values = c("#9AD3EB", "#6AACCC", "#2F7CA6", "#125A84"))
-
-# Plot: Only significant p-values
-
-# For first significant p-value
-
-plotdat4 <- plotdat[plotdat$ps < 0.05, ]
-ggplot(data=plotdat4, aes(x = nDV, y = ps)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.3) +
-  geom_violin(fill = NA) +
-  labs(x = "Number of dependent variables",
-       y = "p-value") +
-  theme_bw() +
-  theme(text = element_text(size=35),
-        axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
-
-# For smallest significant p-value
-
-plotdat5 <- plotdat2[plotdat2$ps < 0.05, ]
-ggplot(data=plotdat5, aes(x = nDV, y = ps)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.3) +
-  geom_violin(fill = NA) +
-  labs(x = "Number of dependent variables",
-       y = "p-value") +
-  theme_bw() +
-  theme(text = element_text(size=35),
-        axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
-
-# For smallest p-value
-
-plotdat6 <- plotdat3[plotdat3$ps < 0.05, ]
-ggplot(data=plotdat6, aes(x = nDV, y = ps)) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), color = "blue", alpha = 0.3) +
-  geom_violin(fill = NA) +
-  labs(x = "Number of dependent variables",
-       y = "p-value") +
-  theme_bw() +
-  theme(text = element_text(size=35),
-        axis.title = element_text(size=25),
-        axis.text = element_text(size=25)) +
-  facet_grid(. ~ title)
 
