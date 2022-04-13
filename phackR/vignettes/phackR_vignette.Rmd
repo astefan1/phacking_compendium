@@ -167,18 +167,6 @@ sim.compscoreHack(nobs = 30, ncompv = 5, rcomp = 0.7, ndelete = 3,
                   strategy = "smallest", alpha = 0.05, iter = 10)
 ```
 
-### Selective reporting of effects
-We simulate this p-hacking strategy using linear regression because we want to keep it separate from the "exploiting covariates" strategy and because in linear regression all effects are potentially interesting. The **simulated dataset** consists of one continuous dependent variable and several continuous correlated predictor variables (independent variables). The correlation between the predictor variables and the dependent variable is set to zero. The correlation between the predictor variables can be defined using the argument `riv`. The number of predictor variables can be specified using the argument `niv`. The **p-hacking strategy** is implemented as follows: A multiple linear regression is calculated using all predictor variables and all p-values apart from the intercept are saved. The first of these p-values (effect of the first predictor on the dependent variable) is assumed to be the original p-value (this implies a hierarchy between the predictor variables). The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The user can specify whether the model should contain interactions (argument `interactions = FALSE` or `interactions = TRUE`, default: FALSE). This increases the number of available p-values (however, when interaction terms are used, the sample size needs to be large so that the model is still identified). The output contains the original and p-hacked p-values as well as the original and p-hacked $R^2$.
-
-The simulation code can be found in the file `selectEffects.R`.
-
-**Example**
-```{r selectEffects}
-set.seed(1234)
-sim.selectEffects(nobs = 30, niv = 4, riv = 0.1, interactions = FALSE, 
-                  strategy = "smallest", alpha = 0.05, iter = 10)
-```
-
 ### Exploiting variable transformations
 We simulate this p-hacking strategy using univariate linear regression because most variable transformation strategies are not applicable to discrete variables. The **simulated dataset** contains two continuous variables that are not correlated with each other. The **p-hacking strategy** is implemented as follows: The original p-value is calculated as a simple univariate linear regression y ~ x. Then, the variables in the model are transformed. Using the argument `transvar` one can specify whether only x (`transvar = "x"`), only y (`transvar = "y"`) or both (`transvar = "xy"`) should be transformed. The respective variables are transformed using a log transformation, a square root transformation and the inverse. Then, linear regressions are computed for all transformations of the variables. The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked $R^2$.
 

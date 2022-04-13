@@ -185,25 +185,6 @@ test_that("Scale Redefinition works", {
 
 })
 
-test_that("Selective reporting of effects works", {
-
-  set.seed(1234)
-  selR1 <- sim.selectEffects(nobs = 30, niv = 3, riv = 0.1, interactions = TRUE,
-                             strategy = "firstsig", alpha = 0.05,
-                             iter = 100)
-  set.seed(1234)
-  selR2 <- sim.selectEffects(nobs = 30, niv = 3, riv = 0.1, interactions = TRUE,
-                             strategy = "smallest.sig", alpha = 0.05,
-                             iter = 100)
-
-  expect_equal(nrow(selR1), 100)
-  expect_equal(selR1[,2], selR2[,2])
-  expect_equal(length(which(selR1[,1] <= 0.05)),
-               length(which(selR2[,1] <= 0.05)))
-  expect_gt(length(which(selR1[,1] <= 0.05)), length(which(selR1[,2] <= 0.05)))
-
-})
-
 test_that("Exploiting arbitraray cutoffs works", {
 
   set.seed(1234)

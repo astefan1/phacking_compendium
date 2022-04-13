@@ -8,6 +8,7 @@ sim.optstop(
   n.min,
   n.max,
   step = 1,
+  peek = NULL,
   alternative = "two.sided",
   iter = 1000,
   alpha = 0.05,
@@ -20,6 +21,8 @@ sim.optstop(
 \item{n.max}{Maximum sample size}
 
 \item{step}{Step size of the optional stopping (default is 1)}
+
+\item{peek}{Determines how often one peeks at the data. Overrides step argument if not NULL.}
 
 \item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
 
