@@ -27,17 +27,6 @@
   d$x[which.max(d$y)]
 }
 
-#' Use mice::mice function without output being sent to the console
-#' @param ... All arguments sent to the mice function
-#' @importFrom mice mice
-
-.miceNoOutput <- function(...){
-  sink("/dev/null")
-  res <- mice::mice(...)
-  sink()
-  invisible(res)
-}
-
 # ------------------------------------------------------------------------------
 # P-Hacking functions
 # ------------------------------------------------------------------------------
@@ -106,7 +95,7 @@
   # Multivariate imputations by chained equations ("mice" package): predictive mean matchihng
   dfnew <- as.data.frame(cbind(x, y))
   if(5 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "pmm")
+    imp <- mice::mice(dfnew, m = 1, method = "pmm", silent = TRUE, print = FALSE)
     mod5 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[5] <- mod5$coefficients[2, 4]
     r2s[5] <- mod5$r.squared
@@ -114,7 +103,7 @@
 
   # Multivariate imputations by chained equations ("mice" package): Weighted predictive mean matching
   if(6 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "midastouch")
+    imp <- mice::mice(dfnew, m = 1, method = "midastouch", silent = TRUE, print = FALSE)
     mod6 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[6] <- mod6$coefficients[2, 4]
     r2s[6] <- mod6$r.squared
@@ -122,7 +111,7 @@
 
   # Multivariate imputations by chained equations ("mice" package): Sample from observed values
   if(7 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "sample")
+    imp <- mice::mice(dfnew, m = 1, method = "sample", silent = TRUE, print = FALSE)
     mod7 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[7] <- mod7$coefficients[2, 4]
     r2s[7] <- mod7$r.squared
@@ -130,7 +119,7 @@
 
   # Multivariate imputations by chained equations ("mice" package): Bayesian linear regression
   if(8 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "norm")
+    imp <- mice::mice(dfnew, m = 1, method = "norm", silent = TRUE, print = FALSE)
     mod8 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[8] <- mod8$coefficients[2, 4]
     r2s[8] <- mod8$r.squared
@@ -138,7 +127,7 @@
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression ignoring model error
   if(9 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "norm.nob")
+    imp <- mice::mice(dfnew, m = 1, method = "norm.nob", silent = TRUE, print = FALSE)
     mod9 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[9] <- mod9$coefficients[2, 4]
     r2s[9] <- mod9$r.squared
@@ -146,7 +135,7 @@
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression predicted values
   if(10 %in% which){
-    imp <- .miceNoOutput(dfnew, m = 1, method = "norm.predict")
+    imp <- mice::mice(dfnew, m = 1, method = "norm.predict", silent = TRUE, print = FALSE)
     mod10 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
     ps[10] <- mod10$coefficients[2, 4]
     r2s[10] <- mod10$r.squared
