@@ -10,14 +10,22 @@
 #' @param x Location of x variable (predictor) in the data frame
 #' @param y Location of y variable (criterion) in the data frame
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
+#' @param testnorm
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 
-.varTransHack <- function(df, x, y, transvar, strategy = "firstsig", alpha = 0.05){
+.varTransHack <- function(df, x, y, transvar, testnorm = FALSE, strategy = "firstsig", alpha = 0.05){
 
   x <- df[, x]
   y <- df[, y]
-
+  
+  # Test normality of residuals first
+  normality <- FALSE
+  if(testnorm){
+    mod <- stats::lm(y ~ x)
+    normality <- stats::shapiro.test(stats::residuals(mod))$p.value > alpha
+  }
+  
   # Transform all variables that should be transformed
 
   Xtrans <- matrix(NA, nrow = nrow(df))
@@ -25,7 +33,7 @@
   Ytrans <- matrix(NA, nrow = nrow(df))
   Ytrans[,1] <- y
 
-  if(transvar != "y"){
+  if(transvar != "y" && normality == FALSE){
     Xtrans <- cbind(Xtrans,
                     log(x+abs(min(x))+1e-10),        # log transformation
                     sqrt(x+abs(min(x))+1e-10),       # square root transformation
@@ -34,7 +42,7 @@
   }
 
 
-  if(transvar != "x"){
+  if(transvar != "x" && normality == FALSE){
     Ytrans <- cbind(Ytrans,
                     log(y+abs(min(y))+1e-10),        # log transformation
                     sqrt(y+abs(min(y))+1e-10),       # square root transformation
@@ -79,7 +87,7 @@
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.varTransHack <- function(nobs, transvar, testnorm = FALSE, strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
@@ -89,7 +97,7 @@ sim.varTransHack <- function(nobs, transvar, strategy = "firstsig", alpha = 0.05
 
   # Apply p-hacking procedure to each dataset
   .varTransHackList <- function(arg){
-    .varTransHack(df = arg, x = 1, y = 2, transvar = transvar,
+    .varTransHack(df = arg, x = 1, y = 2, testnorm = testnorm, transvar = transvar,
                   strategy = strategy, alpha = alpha)
   }
 

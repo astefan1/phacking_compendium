@@ -20,7 +20,7 @@ simmultiple.covhack <- function(par, strategy){
                          rcovdv = par[4],
                          strategy = strategy,
                          interactions = FALSE,
-                         iter = 1000,
+                         iter = 10000,
                          alpha = 0.05))
 }
   

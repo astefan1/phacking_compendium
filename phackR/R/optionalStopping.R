@@ -5,7 +5,7 @@
 # Generic sampling function .sim.data() can be used
 
 #' Optional Stopping based on existing dataset
-#' @description Outputs a p-hacked p-value and a non-p-hacked p-value based on the maximum sample size
+#' @description Returns a p-hacked p-value and a non-p-hacked p-value based on the maximum sample size
 #' @param df Data frame
 #' @param group group Scalar defining grouping column
 #' @param dv Scalar defining location of dependent variable in the data frame

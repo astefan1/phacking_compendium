@@ -11,7 +11,7 @@ simresults.statAnalysisHack <- list()
 simmultiple.statAnalysisHack <- function(par, strategy){
   data.frame(sim.statAnalysisHack(nobs.group = par[1],
                                   strategy = strategy,
-                                  iter = 1000,
+                                  iter = 10000,
                                   alternative = "two.sided",
                                   alpha = 0.05
                             ))

@@ -35,7 +35,7 @@ ggplot(cond.compscoreHack, aes(Var4, FP.rates, colour = as.factor(Var1), shape=a
   facet_wrap(~ Var2, labeller = labeller(Var2 = new.labels.ncompv)) +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.2, 0.3, 0.4), limits = c(0,0.4)) +
+  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(1,3,7))
 
 #### Exploit Covariates ####
@@ -67,7 +67,7 @@ ggplot(cond.covhack, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.fact
   facet_wrap(~ Var4, labeller = label_parsed) +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3), limits = c(0,0.3)) +
+  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(3,5,10))
 
 
@@ -88,7 +88,7 @@ ggplot(cond.cutoffHack, aes(Var1, FP.rates)) +
        y = "False Positive Rate") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0,0.2)) +
+  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(20, 50, 100, 300))
 
 #### Favorable Imputation ####
@@ -130,6 +130,7 @@ ggplot(cond.roundHack, aes(Var1, FP.rates)) +
   geom_line() +
   geom_hline(yintercept = 0.05, col = "grey") +
   theme_classic() +
+  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.2, 0.3, 0.4), limits = c(0,0.45)) +
   labs(title = "False Positive Rates",
        x = "Rounding Level",
        y = "False Positive Rate")
@@ -139,19 +140,19 @@ ggplot(cond.roundHack, aes(Var1, FP.rates)) +
 # of the small differences in FP rates, we would have to conduct many more
 # simulations.
 
-#### Optional Stopping ####
+#### Optional Stopping: Varying n.max ####
 
 n.min <- 5
 n.max <- c(30, 50, 100, 300) #Var1
 step = c(1, 5, 10, 50) #Var2
 
-cond.optstop <- expand.grid(n.max, step)
+cond.optstop_nmax <- expand.grid(n.max, step)
 
-FP.rates <- sapply(simresults.optstop,
+FP.rates <- sapply(simresults.optstop_nmax,
                    function(x) {sum(x$ps.hack < 0.05) / nrow(x)})
-cond.optstop$FP.rates <- FP.rates
+cond.optstop_nmax$FP.rates <- FP.rates
 
-ggplot(cond.optstop, aes(Var2, FP.rates, colour = as.factor(Var1))) +
+ggplot(cond.optstop_nmax, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_point(size = 3) +
   geom_line(aes(colour = as.factor(Var1)), lwd = 1) +
   theme_classic() +
@@ -165,34 +166,30 @@ ggplot(cond.optstop, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(1,3,5,10,50))
 
-#### Optional Stopping 2 ####
+#### Optional Stopping 2: Varying n.min ####
 
-n.min <- 5
-n.max <- c(30, 50, 100, 300) #Var1
-step = c(1, 5, 10, 50) #Var2
+n.min <- c(5, 30, 50, 100) #Var 1
+n.max <- 300
+step <- c(1, 5, 10, 50) #Var 2
 
-cond.optstop <- expand.grid(n.max, step)
-cond.optstop$Var3 <- apply(cond.optstop, 1, function(x) {
-  if(x[2] > x[1]-5){
-    return(2)
-  } else {
-    return(length(seq(5, x[1], by = x[2])))
-  }
-})
-
-FP.rates <- sapply(simresults.optstop,
+cond.optstop_nmin <- expand.grid(n.min, step)
+FP.rates <- sapply(simresults.optstop_nmin,
                    function(x) {sum(x$ps.hack < 0.05) / nrow(x)})
-cond.optstop$FP.rates <- FP.rates
+cond.optstop_nmin$FP.rates <- FP.rates
 
-ggplot(cond.optstop, aes(Var3, FP.rates)) +
+ggplot(cond.optstop_nmin, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_point(size = 3) +
+  geom_line(aes(colour = as.factor(Var1)), lwd = 1) +
   theme_classic() +
   labs(title = "",
-       x = "Peeks",
-       y = "False Positive Rate") +
-  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
+       x = "Step Size",
+       y = "False Positive Rate",
+       color = bquote("N"["min"])) +
+  geom_hline(yintercept = 0.05, col = "grey") +
+  scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=30)) +
-  geom_hline(yintercept = 0.05, col = "grey")
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
+  scale_x_continuous(breaks = c(1,3,5,10,50))
 
 #### Outlier Exclusion ####
 
@@ -213,7 +210,7 @@ ggplot(cond.outHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_hline(yintercept = 0.05, col = "grey") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3), limits = c(0,0.3)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(3,5,12))
 
 #### Selective Reporting DV ####
@@ -241,16 +238,16 @@ ggplot(cond.multDVhack, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.f
   scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(3,5,10))
 
-#### Selective Reporting of IV ####
+#### Selective Reporting of IV: t-test ####
 
 nobs.group <- c(30, 50, 100, 300)
 nvar <- c(3, 5, 10)
 r <- c(0, 0.3, 0.8)
 
-cond.multIVhack <- expand.grid(nobs.group, nvar, r)
-cond.multIVhack$FP.rates <- findFPrate(simresults.multIVhack)
+cond.multIVhack_ttest <- expand.grid(nobs.group, nvar, r)
+cond.multIVhack_ttest$FP.rates <- findFPrate(simresults.multIVhack_ttest)
 
-ggplot(cond.multIVhack, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.factor(Var3))) +
+ggplot(cond.multIVhack_ttest, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.factor(Var3))) +
   geom_point(size = 3) +
   geom_line(aes(linetype = as.factor(Var3)), size = 1) +
   theme_classic() +
@@ -263,7 +260,32 @@ ggplot(cond.multIVhack, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.f
   geom_hline(yintercept = 0.05, col = "grey") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3), limits = c(0,0.3)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
+  scale_x_continuous(breaks = c(3,5,10))
+
+#### Selective Reporting of IV: regression ####
+
+nobs.group <- c(30, 50, 100, 300)
+nvar <- c(3, 5, 10)
+r <- c(0, 0.3, 0.8)
+
+cond.multIVhack_reg <- expand.grid(nobs.group, nvar, r)
+cond.multIVhack_reg$FP.rates <- findFPrate(simresults.multIVhack_reg)
+
+ggplot(cond.multIVhack_reg, aes(Var2, FP.rates, colour = as.factor(Var1), shape=as.factor(Var3))) +
+  geom_point(size = 3) +
+  geom_line(aes(linetype = as.factor(Var3)), size = 1) +
+  theme_classic() +
+  labs(title = "",
+       x = "Number of Independent Variables",
+       y = "False Positive Rate",
+       color = "Sample Size",
+       shape = "Correlation",
+       linetype = "Correlation" ) +
+  geom_hline(yintercept = 0.05, col = "grey") +
+  scale_color_manual(values=rev(wes_palette("Rushmore"))) +
+  theme(text = element_text(size=20)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(3,5,10))
 
 #### Exploit Statistical Analyses ####
@@ -283,7 +305,7 @@ ggplot(cond.statAnalysisHack, aes(Var1, FP.rates)) +
        y = "False Positive Rate") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.15), limits = c(0,0.15)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(30,50,100, 300))
 
 #### Subgroup Analyses ####
@@ -308,15 +330,15 @@ ggplot(cond.subgroupHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   scale_y_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3), limits = c(0,0.3))+
   scale_x_continuous(breaks = c(1,3,5))
 
-#### Variable Transformation ####
+#### Variable Transformation: No normality check ####
 
 nobs <- c(30, 50, 100, 300) #Var1
 transvar <- c(1:3) #Var2
 
-cond.varTransHack <- expand.grid(nobs, transvar)
-cond.varTransHack$FP.rates <- findFPrate(simresults.varTransHack)
+cond.varTransHack_nonormcheck <- expand.grid(nobs, transvar)
+cond.varTransHack_nonormcheck$FP.rates <- findFPrate(simresults.varTransHack_nonormtest)
 
-ggplot(cond.varTransHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
+ggplot(cond.varTransHack_nonormcheck, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_point(size = 3) +
   geom_line(aes(colour = as.factor(Var1)), size = 1) +
   theme_classic() +
@@ -327,10 +349,30 @@ ggplot(cond.varTransHack, aes(Var2, FP.rates, colour = as.factor(Var1))) +
   geom_hline(yintercept = 0.05, col = "grey") +
   scale_color_manual(values=rev(wes_palette("Rushmore"))) +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks = c(0, 0.05, 0.15, 0.25, 0.35), limits = c(0,0.4)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
   scale_x_continuous(breaks = c(1,2,3), labels = c("X", "Y", "X and Y"))
   
+#### Variable Transformation: With normality check ####
 
+nobs <- c(30, 50, 100, 300) #Var1
+transvar <- c(1:3) #Var2
+
+cond.varTransHack_normcheck <- expand.grid(nobs, transvar)
+cond.varTransHack_normcheck$FP.rates <- findFPrate(simresults.varTransHack_normtest)
+
+ggplot(cond.varTransHack_normcheck, aes(Var2, FP.rates, colour = as.factor(Var1))) +
+  geom_point(size = 3) +
+  geom_line(aes(colour = as.factor(Var1)), size = 1) +
+  theme_classic() +
+  labs(title = "",
+       x = "Transformed Variables",
+       y = "False Positive Rate",
+       color = "Sample Size") +
+  geom_hline(yintercept = 0.05, col = "grey") +
+  scale_color_manual(values=rev(wes_palette("Rushmore"))) +
+  theme(text = element_text(size=20)) +
+  scale_y_continuous(breaks = c(0, 0.1,0.2, 0.3, 0.4), limits = c(0,0.45)) +
+  scale_x_continuous(breaks = c(1,2,3), labels = c("X", "Y", "X and Y"))
 
 #### FP Rate Overview Plot ####
 
@@ -338,9 +380,9 @@ FPCombined <- matrix(NA, nrow=0, ncol=2)
 FPCombined <- rbind(FPCombined,
                     cbind(cond.multDVhack$FP.rates, 11))
 FPCombined <- rbind(FPCombined,
-                    cbind(cond.multIVhack$FP.rates, 10))
+                    cbind(c(cond.multIVhack_ttest$FP.rates, cond.multIVhack_reg$FP.rates), 10))
 FPCombined <- rbind(FPCombined,
-                    cbind(cond.optstop$FP.rates, 9))
+                    cbind(c(cond.optstop_nmax$FP.rates, cond.optstop_nmin$FP.rates), 9))
 FPCombined <- rbind(FPCombined,
                     cbind(cond.outHack$FP.rates, 8))
 FPCombined <- rbind(FPCombined,
@@ -348,7 +390,7 @@ FPCombined <- rbind(FPCombined,
 FPCombined <- rbind(FPCombined,
                     cbind(cond.compscoreHack$FP.rates, 6))
 FPCombined <- rbind(FPCombined,
-                    cbind(cond.varTransHack$FP.rates, 5))
+                    cbind(c(cond.varTransHack_normcheck$FP.rates, cond.varTransHack_nonormcheck$FP.rates), 5))
 FPCombined <- rbind(FPCombined,
                     cbind(cond.cutoffHack$FP.rates, 4))
 FPCombined <- rbind(FPCombined,

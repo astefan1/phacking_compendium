@@ -17,7 +17,7 @@ simmultiple.multDVhack <- function(par, strategy){
                  nvar = par[2],
                  r = par[3],
                  strategy = strategy,
-                 iter = 1000,
+                 iter = 10000,
                  alternative = "two.sided",
                  alpha = 0.05))
 }

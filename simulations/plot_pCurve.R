@@ -28,7 +28,7 @@ ps <- c(simresults.multDVhack$firstsig[[cond.plot[1]]]$ps.orig, ps)
 iter <- nrow(simresults.multDVhack$firstsig[[1]])
 nDV <- rep(c(1, cond.multDVhack[cond.plot,]$Var2), each=iter)
 
-pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/1000
+pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/10000
 pvals.intervals <- data.frame(pvals.intervals)
 pvals.intervals$ints <- c(1:10)
 pvals.intervals$title <- "first significant p-value"
@@ -58,7 +58,7 @@ ps <- c(simresults.multDVhack$smallestsig[[cond.plot[1]]]$ps.orig, ps)
 iter <- nrow(simresults.multDVhack$smallestsig[[1]])
 nDV <- rep(c(1, cond.multDVhack[cond.plot,]$Var2), each=iter)
 
-pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/1000
+pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/10000
 pvals.intervals <- data.frame(pvals.intervals)
 pvals.intervals$ints <- c(1:10)
 pvals.intervals$title <- "smallest significant p-value"
@@ -88,7 +88,7 @@ ps <- c(simresults.multDVhack$smallest[[cond.plot[1]]]$ps.orig, ps)
 iter <- nrow(simresults.multDVhack$smallest[[1]])
 nDV <- rep(c(1, cond.multDVhack[cond.plot,]$Var2), each=iter)
 
-pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/1000
+pvals.intervals <- simplify2array(tapply(ps, nDV, function(x) table(cut(x[x < 0.1], breaks = seq(0, 0.1, by = 0.01)))))/10000
 pvals.intervals <- data.frame(pvals.intervals)
 pvals.intervals$ints <- c(1:10)
 pvals.intervals$title <- "smallest p-value"

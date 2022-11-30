@@ -20,7 +20,7 @@ simmultiple.compscoreHack <- function(par, strategy){
                             rcomp = par[3],
                             ndelete = par[4],
                             strategy = strategy,
-                            iter = 1000,
+                            iter = 10000,
                             alpha = 0.05))
 }
 

@@ -186,6 +186,4 @@ sim.combined.reg <- function(nobs = 100, missing = 0.1, ncompv = 5, rcomp = 0.75
   
   return(res)
   
-  
 }
-

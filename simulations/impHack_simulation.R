@@ -15,7 +15,7 @@ simmultiple.impHack <- function(par, strategy){
                          missing = par[2],
                          which = sample(1:10, size = par[3]),
                          strategy = strategy,
-                         iter = 1000,
+                         iter = 10000,
                          alpha = 0.05))
                             
   

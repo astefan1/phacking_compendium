@@ -33,7 +33,7 @@ plotdat <- data.frame(ps=ps,
 plotdat$title <- "first significant p-value"
 
 ggplot(data=plotdat, aes(x = nDV, y = ps)) +
-  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.1) +
   geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +
@@ -56,7 +56,7 @@ plotdat2 <- data.frame(ps=ps2,
 plotdat2$title <- "smallest significant p-value"
 
 ggplot(data=plotdat2, aes(x = nDV, y = ps2)) +
-  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.1) +
   geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +
@@ -79,7 +79,7 @@ plotdat3 <- data.frame(ps=ps3,
 plotdat3$title <- "smallest p-value"
 
 ggplot(data=plotdat3, aes(x = nDV, y = ps3)) +
-  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.6) +
+  geom_jitter(aes(colour = nDV), shape = 16, position = position_jitter(0.2), alpha = 0.1) +
   geom_violin(fill = NA, aes(colour = nDV), lwd=1.5) +
   labs(x = "Number of dependent variables",
        y = "p-value") +

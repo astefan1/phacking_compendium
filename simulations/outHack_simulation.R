@@ -13,7 +13,7 @@ simmultiple.outHack <- function(par, strategy){
   data.frame(sim.outHack(nobs = par[1],
                          which = sample(1:12, size = par[2]),
                          strategy = strategy,
-                         iter = 1000,
+                         iter = 10000,
                          alpha = 0.05))
 }
 

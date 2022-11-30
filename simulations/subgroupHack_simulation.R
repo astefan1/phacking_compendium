@@ -13,7 +13,7 @@ simmultiple.subgroupHack <- function(par, strategy){
   data.frame(sim.subgroupHack(nobs.group = par[1],
                               nsubvars = par[2],
                                   strategy = strategy,
-                                  iter = 1000,
+                                  iter = 10000,
                                   alternative = "two.sided",
                                   alpha = 0.05
   ))

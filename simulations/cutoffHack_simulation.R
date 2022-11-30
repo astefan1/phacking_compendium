@@ -14,7 +14,7 @@ simresults.cutoffHack <- list()
 simmultiple.cutoffHack <- function(par, strategy){
   data.frame(sim.cutoffHack(nobs = par[1],
                             strategy = strategy,
-                            iter = 1000,
+                            iter = 10000,
                             alpha = 0.05))
                          
 }
