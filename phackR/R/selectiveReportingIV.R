@@ -163,7 +163,7 @@ sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "fi
     ps.orig[i] <- res[[i]][["ps"]][1]
     r2s.hack[i] <- res[[i]][["r2.final"]]
     r2s.orig[i] <- res[[i]][["r2s"]][1]
-    if(regression){
+    if(!regression){
       ds.hack[i] <- res[[i]][["d.final"]]
       ds.orig[i] <- res[[i]][["ds"]][1]
     }
