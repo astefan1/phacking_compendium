@@ -22,18 +22,18 @@ findFPrateR <- function(simresult, alpha = 0.005){
 FP.multDV <- max(unname(findFPrate(simresults.multDVhack)))
 FPR.multDV <- max(unname(findFPrateR(simresults.multDVhack)))
 
-FP.multIV <- max(unname(findFPrate(simresults.multIVhack)))
-FPR.multIV <- max(unname(findFPrateR(simresults.multIVhack)))
+FP.multIV <- max(unname(findFPrate(simresults.multIVhack_reg)))
+FPR.multIV <- max(unname(findFPrateR(simresults.multIVhack_reg)))
 
-FP.optstop <- max(sapply(simresults.optstop,
+FP.optstop <- max(sapply(simresults.optstop_nmin,
        function(x) {sum(x$ps.hack < 0.05) / nrow(x)}))
 
 # optional stopping requires re-simulating with alpha=0.005 because stopping
 # was determined on reaching 0.05
 # ----
 n.min <- 5
-n.max <- c(30, 50, 100, 300) #Var1
-step = c(1, 5, 10, 50) #Var2
+n.max <- c(300) #Var1
+step = c(1) #Var2
 
 cond.optstop <- expand.grid(n.max, step)
 
@@ -44,7 +44,7 @@ simmultiple.optstop <- function(par){
                          n.max = par[1],
                          step = par[2],
                          alternative = "two.sided",
-                         iter = 1000,
+                         iter = 10000,
                          alpha = 0.005))
   
 }
@@ -68,8 +68,8 @@ FPR.covHack <- max(unname(findFPrateR(simresults.covhack)))
 FP.compscoreHack <- max(unname(findFPrate(simresults.compscoreHack)))
 FPR.compscoreHack <- max(unname(findFPrateR(simresults.compscoreHack)))
 
-FP.varTransHack <- max(unname(findFPrate(simresults.varTransHack)))
-FPR.varTransHack <- max(unname(findFPrateR(simresults.varTransHack)))
+FP.varTransHack <- max(unname(findFPrate(simresults.varTransHack_nonormtest)))
+FPR.varTransHack <- max(unname(findFPrateR(simresults.varTransHack_nonormtest)))
 
 FP.cutoffHack <- max(unname(findFPrate(simresults.cutoffHack)))
 FPR.cutoffHack <- max(unname(findFPrateR(simresults.cutoffHack)))
