@@ -58,8 +58,12 @@ BF300_smallest <- getBFs(simdat=simresults.multDVhack, conddat=cond.multDVhack, 
 # Plot the legend ####
 # ------------------------------------------------------------------------------
 
+plot.new()
+legend(x = "topleft", legend = c("p-hacked", "original"), fill = c("#FFAE4A", "#5AB4BD"))
 
-# Data for plot
+# ------------------------------------------------------------------------------
+# BF plots ####
+# ------------------------------------------------------------------------------
 
 plotBFDist <- function(BFobj, conddat, nobs, r){
   
