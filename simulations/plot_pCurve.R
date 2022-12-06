@@ -99,7 +99,6 @@ plot_pDist <- function(simdat, conddat, nobs, Var3, Var4, strategy, xlab, iter=1
   
 }
 
-
 # ==============================================================================
 # Strategy 1: Multiple dependent variables
 # ==============================================================================
@@ -134,17 +133,9 @@ plot_pCurve(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=
 plot_pCurve(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallestsig", Var4=0)
 plot_pCurve(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallest", Var4=0)
 
-plot_pCurve(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="firstsig", Var4=0)
-plot_pCurve(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallestsig", Var4=0)
-plot_pCurve(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallest", Var4=0)
-
 plot_pDist(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="firstsig", Var4=0, xlab="Number of independent variables")
 plot_pDist(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallestsig", Var4=0, xlab="Number of independent variables")
 plot_pDist(simdat=simresults.multIVhack_ttest, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallest", Var4=0, xlab="Number of independent variables")
-
-plot_pDist(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="firstsig", Var4=0, xlab="Number of independent variables")
-plot_pDist(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallestsig", Var4=0, xlab="Number of independent variables")
-plot_pDist(simdat=simresults.multIVhack_reg, conddat = cond.multIVhack, nobs=100, Var3 = 0.3, strategy="smallest", Var4=0, xlab="Number of independent variables")
 
 # ==============================================================================
 # Strategy 3: Optional Stopping
@@ -177,9 +168,9 @@ plot_pCurve(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 
 plot_pCurve(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallestsig")
 plot_pCurve(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallest")
 
-plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="firstsig", xlab="Number of Outlier Exclusion Methods")
-plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallestsig", xlab="Number of Outlier Exclusion Methods")
-plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallest", xlab="Number of Outlier Exclusion Methods")
+plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="firstsig", xlab="Number of Outlier Exclusion Methods", valueNoHack = 0)
+plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallestsig", xlab="Number of Outlier Exclusion Methods", valueNoHack = 0)
+plot_pDist(simdat=simresults.outHack, conddat = cond.outHack, nobs=100, Var3 = 0, Var4 = 0, strategy="smallest", xlab="Number of Outlier Exclusion Methods", valueNoHack = 0)
 
 # ==============================================================================
 # Strategy 5: Controlling Covariates
