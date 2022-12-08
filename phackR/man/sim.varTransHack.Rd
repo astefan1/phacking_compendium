@@ -8,6 +8,7 @@ Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the origi
 sim.varTransHack(
   nobs,
   transvar,
+  testnorm = FALSE,
   strategy = "firstsig",
   alpha = 0.05,
   iter = 1000,
@@ -18,6 +19,8 @@ sim.varTransHack(
 \item{nobs}{Integer giving number of observations}
 
 \item{transvar}{Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)}
+
+\item{testnorm}{Should variables only be transformed after a significant test for normality of residuals?}
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 

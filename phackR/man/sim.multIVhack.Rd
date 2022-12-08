@@ -8,6 +8,7 @@ sim.multIVhack(
   nobs.group,
   nvar,
   r,
+  regression = FALSE,
   strategy = "firstsig",
   iter = 1000,
   alternative = "two.sided",
@@ -21,6 +22,8 @@ sim.multIVhack(
 \item{nvar}{Number of independent variables (columns) in the data frame}
 
 \item{r}{Desired correlation between the dependent variables (scalar)}
+
+\item{regression}{Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)}
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 

@@ -7,6 +7,7 @@
 #' @param nobs.group Scalar defining number of observations per group (or number of observations in predictors in regression)
 #' @param nvar Number of independent variables in the data frame
 #' @param r Desired correlation between the independent variables (scalar)
+#' @param regression Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)
 
 .sim.multIV <- function(nobs.group, nvar, r, regression = FALSE){
 
@@ -112,6 +113,7 @@
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of independent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
+#' @param regression Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param iter Number of simulation iterations
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater")

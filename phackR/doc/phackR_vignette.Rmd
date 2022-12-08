@@ -50,7 +50,7 @@ All p-hacking simulation functions come with the same default settings for commo
 ## Description of P-Hacking Strategies and Their Implementation
 
 ### Selective reporting of the dependent variable
-We simulate this p-hacking strategy using the t-test. The **simulated dataset** contains one discrete group variable with two levels (independent variable) and several continous variables (dependent variables). The correlation between the dependent variables can be set using the argument `r`. The size of the groups can be defined by `nobs.group` (either an integer for equally sized groups or a vector with two elements for groups of different sizes). The **p-hacking strategy** is implemented as follows: Compute t-test with every single of the dependent variables. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked $R^2$, and the original and p-hacked Cohen's d.
+We simulate this p-hacking strategy using the t-test. The **simulated dataset** contains one discrete group variable with two levels (independent variable) and several continuous variables (dependent variables). The correlation between the dependent variables can be set using the argument `r`. The size of the groups can be defined by `nobs.group` (either an integer for equally sized groups or a vector with two elements for groups of different sizes). The **p-hacking strategy** is implemented as follows: Compute t-test with every single of the dependent variables. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked $R^2$, and the original and p-hacked Cohen's d.
 
 The simulation code can be found in the file `selectiveReportingDV.R`.
 
@@ -63,7 +63,7 @@ sim.multDVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest",
 ```
 
 ### Selective reporting of the independent variable
-We simulate this p-hacking strategy using the t-test. The **simulated dataset** contains one control group variable and multiple treatment group variables (independent variables), thus it is in a wide format. The correlation between the treatment group variables can be set using the argument `r`. The size of the groups can be defined by `nobs.group`. Note that unequal sizes of groups are not possible here because the data set is in wide format. The **p-hacking strategy** is implemented as follows: Conduct an independent samples t-test with every single treatment variable and the control group variable. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values, the original and p-hacked $R^2$, and the original and p-hacked Cohen's d.
+This p-hacking strategy can be simulated using a t-test or a regression analysis with the provided function. For the t-test, the **simulated dataset** contains one control group variable and multiple treatment group variables (independent variables), thus it is in a wide format. The correlation between the treatment group variables can be set using the argument `r`. The size of the groups can be defined by `nobs.group`. Note that unequal sizes of groups are not possible here because the data set is in wide format. For the regression analysis, the simulated dataset contains one criterion (dependent) variable, and multiple predictor (independent) variables. The **p-hacking strategy** is implemented as follows for the t-test: Conduct an independent samples t-test with every single treatment variable and the control group variable. Then select the final p-value using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). For the regression analysis, the test is conducted with each predictor, then the final p-value is selected using one of the p-value selection strategies. The output contains the original and p-hacked p-values, the original and p-hacked $R^2$, and the original and p-hacked Cohen's d.
 
 The simulation code can be found in the file `selectiveReportingIV.R`.
 
@@ -71,8 +71,9 @@ The simulation code can be found in the file `selectiveReportingIV.R`.
 
 ```{r selectiveReportingIV}
 set.seed(1234)
-sim.multIVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest", 
-               iter = 10, alternative = "two.sided", alpha = 0.05)
+sim.multIVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest",
+               regression = FALSE, iter = 10, alternative = "two.sided", 
+               alpha = 0.05)
 ```
 
 ### Incorrect rounding
@@ -168,7 +169,7 @@ sim.compscoreHack(nobs = 30, ncompv = 5, rcomp = 0.7, ndelete = 3,
 ```
 
 ### Exploiting variable transformations
-We simulate this p-hacking strategy using univariate linear regression because most variable transformation strategies are not applicable to discrete variables. The **simulated dataset** contains two continuous variables that are not correlated with each other. The **p-hacking strategy** is implemented as follows: The original p-value is calculated as a simple univariate linear regression y ~ x. Then, the variables in the model are transformed. Using the argument `transvar` one can specify whether only x (`transvar = "x"`), only y (`transvar = "y"`) or both (`transvar = "xy"`) should be transformed. The respective variables are transformed using a log transformation, a square root transformation and the inverse. Then, linear regressions are computed for all transformations of the variables. The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked $R^2$.
+We simulate this p-hacking strategy using univariate linear regression because most variable transformation strategies are not applicable to discrete variables. The **simulated dataset** contains two continuous variables that are not correlated with each other. The **p-hacking strategy** is implemented as follows: The original p-value is calculated as a simple univariate linear regression y ~ x. Then, the variables in the model are transformed. Using the argument `transvar` one can specify whether only x (`transvar = "x"`), only y (`transvar = "y"`) or both (`transvar = "xy"`) should be transformed. The respective variables are transformed using a log transformation, a square root transformation and the inverse. The function offers the option that variables are only transformed conditional on a significant normality test of residuals (Shapiro-Wilk). This can be adjusted using the argument `testnorm`. Once the variables have been transformed, linear regressions are computed for all transformations of the variables. The final p-value is selected using one of the p-value selection strategies (first significant p-value, smallest significant p-value, smallest p-value). The output contains the original and p-hacked p-values as well as the original and p-hacked $R^2$.
 
 The simulation code can be found in the file `variableTransformation.R`.
 

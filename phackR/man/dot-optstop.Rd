@@ -36,5 +36,5 @@
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }
 \description{
-Outputs a p-hacked p-value and a non-p-hacked p-value based on the maximum sample size
+Returns a p-hacked p-value and a non-p-hacked p-value based on the maximum sample size
 }

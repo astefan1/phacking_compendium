@@ -4,7 +4,15 @@
 \alias{.varTransHack}
 \title{P-Hacking function variable transformation in univariate linear regression}
 \usage{
-.varTransHack(df, x, y, transvar, strategy = "firstsig", alpha = 0.05)
+.varTransHack(
+  df,
+  x,
+  y,
+  transvar,
+  testnorm = FALSE,
+  strategy = "firstsig",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{df}{Data frame containing x and y variables as columns}
@@ -14,6 +22,8 @@
 \item{y}{Location of y variable (criterion) in the data frame}
 
 \item{transvar}{Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)}
+
+\item{testnorm}{Should variables only be transformed after a significant test for normality of residuals?}
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 

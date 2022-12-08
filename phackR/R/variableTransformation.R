@@ -10,7 +10,7 @@
 #' @param x Location of x variable (predictor) in the data frame
 #' @param y Location of y variable (criterion) in the data frame
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
-#' @param testnorm
+#' @param testnorm Should variables only be transformed after a significant test for normality of residuals?
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 
@@ -81,6 +81,7 @@
 #' Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
 #' @param nobs Integer giving number of observations
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
+#' @param testnorm Should variables only be transformed after a significant test for normality of residuals?
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations

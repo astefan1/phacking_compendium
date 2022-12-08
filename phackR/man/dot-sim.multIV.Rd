@@ -4,14 +4,16 @@
 \alias{.sim.multIV}
 \title{Simulate dataset with multiple independent variables}
 \usage{
-.sim.multIV(nobs.group, nvar, r)
+.sim.multIV(nobs.group, nvar, r, regression = FALSE)
 }
 \arguments{
-\item{nobs.group}{Scalar defining number of observations per group}
+\item{nobs.group}{Scalar defining number of observations per group (or number of observations in predictors in regression)}
 
 \item{nvar}{Number of independent variables in the data frame}
 
 \item{r}{Desired correlation between the independent variables (scalar)}
+
+\item{regression}{Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)}
 }
 \description{
 Outputs data frame with multiple independent variables
