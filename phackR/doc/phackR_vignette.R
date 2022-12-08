@@ -14,8 +14,9 @@ sim.multDVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest",
 
 ## ----selectiveReportingIV-----------------------------------------------------
 set.seed(1234)
-sim.multIVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest", 
-               iter = 10, alternative = "two.sided", alpha = 0.05)
+sim.multIVhack(nobs.group = 30, nvar = 5, r = 0.3, strategy = "smallest",
+               regression = FALSE, iter = 10, alternative = "two.sided", 
+               alpha = 0.05)
 
 ## ----incorrectRounding--------------------------------------------------------
 set.seed(1234)
