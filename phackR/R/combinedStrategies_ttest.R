@@ -48,15 +48,18 @@
 .combined.t.hack <- function(df, roundinglevel = 0.051, alternative = "two.sided", strategy = "firstsig", alpha = 0.05){
   
   ####################### (1) Original p-value ###################
+
+  control.orig <- df[df$group == 1, "DV1"]
+  treatment.orig <- df[df$group == 2, "DV1"]
   
   # Original p-value and effect sizes
-  test.orig   <- stats::t.test(DV1 ~ group, 
-                             data = df, 
-                             var.equal = TRUE, 
-                             alternative = alternative)
-  p.orig      <- test.orig$p.value
-  r2.orig     <- .compR2t(df[df$group == 1, "DV1"], df[df$group == 2, "DV1"])
-  d.orig      <- .compCohensD(unname(test.orig$statistic), nrow(df)/2)
+  report.orig <- .report.twogroup(control = control.orig,
+                                  treatment = treatment.orig,
+                                  method = "t.equal",
+                                  alternative = alternative)
+  p.orig      <- report.orig[["p"]]
+  r2.orig     <- .compR2t(control.orig, treatment.orig)
+  d.orig      <- report.orig[["effect"]]
   
   # If original p-value is significant stop and return original p-value
   if(p.orig <= alpha) return(list(p.final = p.orig,
@@ -80,22 +83,26 @@
   ########### (2) Exploit statistical analysis options #################
   
   # Welch test
-  p.welch <- stats::t.test(DV1 ~ group, 
-                           data = df,
-                           var.equal = FALSE,
-                           alternative = alternative)$p.value
+  p.welch <- .report.twogroup(control = control.orig,
+                              treatment = treatment.orig,
+                              method = "t.welch",
+                              alternative = alternative)[["p"]]
   
   # Mann-Whitney / Wilcoxon test
-  p.wilcox <- stats::wilcox.test(DV1 ~ group,
-                                 alternative = alternative,
-                                 data = df)$p.value
+  p.wilcox <- .report.twogroup(control = control.orig,
+                               treatment = treatment.orig,
+                               method = "wilcox",
+                               alternative = alternative)[["p"]]
   
   # Yuen test with different levels of trimming
   p.yuen <- rep(NA, 4)
   trim <- c(0.1, 0.15, 0.2, 0.25)
   for(i in 1:4) {
-    p.yuen[i] <- WRS2::yuen(DV1 ~ group, tr = trim[i],
-                            data = df)$p.value
+    p.yuen[i] <- .report.twogroup(control = control.orig,
+                                  treatment = treatment.orig,
+                                  method = "yuen",
+                                  trim = trim[i],
+                                  alternative = alternative)[["p"]]
   }
   
   ps <- c(p.orig, p.welch, p.wilcox, p.yuen)
@@ -120,19 +127,20 @@
   r2s <- NULL
   
   for(i in 1:sum(grepl("DV", colnames(df)))){
-    
-    mod[[i]]  <- stats::t.test(df[,paste0("DV", i)] ~ df$group,
-                               var.equal = TRUE, 
-                               alternative = alternative)
+    control.current <- df[df$group == 1, paste0("DV", i)]
+    treatment.current <- df[df$group == 2, paste0("DV", i)]
+    mod[[i]]  <- .report.twogroup(control = control.current,
+                                  treatment = treatment.current,
+                                  method = "t.equal",
+                                  alternative = alternative)
                               
-    r2s[i]    <- .compR2t(df[df$group == 1, paste0("DV", i)], 
-                          df[df$group == 2, paste0("DV", i)])
+    r2s[i]    <- .compR2t(control.current, treatment.current)
                        
   }
   
-  ps <- unlist(simplify2array(mod)["p.value", ])
+  ps <- vapply(mod, function(x) x[["p"]], numeric(1))
   
-  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), nrow(df)/2)
+  ds <- vapply(mod, function(x) x[["effect"]], numeric(1))
   
   # Select final p-hacked p-value based on strategy
   p.final   <- .selectpvalue(ps = ps, strategy = strategy, alpha = roundinglevel)
@@ -208,16 +216,24 @@
   
   # Compute t-test for each subgroup of the subgroup variables
   for(i in 1:length(whichsub)){
-    
-    tmp <- dplyr::group_by_at(df, whichsub[i]) %>%
-      dplyr::do(as.data.frame(stats::t.test(.data$DV1 ~ .data$group, var.equal = TRUE, alternative = alternative)[c("p.value", "statistic")]))
-    tmp2 <- dplyr::group_by_at(df, whichsub[i]) %>%
-      dplyr::do(as.data.frame(table(.data$group)))
-    tmp3 <- dplyr::group_by_at(df, whichsub[i]) %>% do(as.data.frame(.compR2t(.data$DV1[.data$group == unique(.data$group)[1]], .data$DV1[.data$group == unique(.data$group)[2]])))
-    
-    ps[[i]] <- tmp[[2]]
-    ds[[i]] <- c(tmp[[3]][1]*sqrt(sum(1/tmp2[[3]][1:2])), tmp[[3]][2]*sqrt(sum(1/tmp2[[3]][3:4])))
-    r2s[[i]] <- tmp3[[2]]
+    subgroup.values <- sort(unique(df[, whichsub[i]]))
+    reports <- vector("list", length(subgroup.values))
+    r2.current <- rep(NA_real_, length(subgroup.values))
+
+    for(j in 1:length(subgroup.values)){
+      subset.df <- df[df[, whichsub[i]] == subgroup.values[j], , drop = FALSE]
+      control.sub <- subset.df[subset.df$group == 1, "DV1"]
+      treatment.sub <- subset.df[subset.df$group == 2, "DV1"]
+      reports[[j]] <- .report.twogroup(control = control.sub,
+                                       treatment = treatment.sub,
+                                       method = "t.equal",
+                                       alternative = alternative)
+      r2.current[j] <- .compR2t(control.sub, treatment.sub)
+    }
+
+    ps[[i]] <- vapply(reports, function(x) x[["p"]], numeric(1))
+    ds[[i]] <- vapply(reports, function(x) x[["effect"]], numeric(1))
+    r2s[[i]] <- r2.current
     
   }
   

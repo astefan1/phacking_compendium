@@ -4,7 +4,14 @@
 \alias{.sim.multIV}
 \title{Simulate dataset with multiple independent variables}
 \usage{
-.sim.multIV(nobs.group, nvar, r, regression = FALSE)
+.sim.multIV(
+  nobs.group,
+  nvar,
+  r,
+  regression = FALSE,
+  effect = 0,
+  heterogeneity = 0
+)
 }
 \arguments{
 \item{nobs.group}{Scalar defining number of observations per group (or number of observations in predictors in regression)}
@@ -14,6 +21,10 @@
 \item{r}{Desired correlation between the independent variables (scalar)}
 
 \item{regression}{Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)}
+
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
 }
 \description{
 Outputs data frame with multiple independent variables

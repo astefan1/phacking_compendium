@@ -19,7 +19,7 @@ In the literature, p-hacking has typically been described as being comprised of 
 Here, we provide an overview of different p-hacking strategies that have been mentioned in the literature, together with a Shiny app that lets users explore the effects of p-hacking on the distribution of hypothesis testing results.
 
 ## Exploring the Effects of P-Hacking
-Each tab of this Shiny app lets the user explore the effects of a different p-hacking strategy. All tabs have the same structure: First, we describe the p-hacking strategy, and how we applied it in our simulations. Below, we present simulation results, specifically the distribution of p-values, the distribution of effect sizes (if applicable), and the rate of false positive results. On a panel on the right side, the user can adjust the settings of the simulation, including the severity of the p-hacking.
+Each tab of this Shiny app lets the user explore the effects of a different p-hacking strategy. All tabs have the same structure: First, we describe the p-hacking strategy, and how we applied it in our simulations. Below, we present simulation results, specifically the distribution of p-values, the distribution of effect sizes (if applicable), and the rate of significant results. If the true effect size is set to 0 and the heterogeneity is set to 0, this rate corresponds to the false positive rate. Otherwise, it should be interpreted as the rejection rate, that is, the rate of significant results. On a panel on the right side, the user can adjust the settings of the simulation, including the severity of the p-hacking.
 
 ### Common Settings
 Several settings are common to the simulation of (almost) all p-hacking strategies. To avoid unnecessary repetition, we will describe these settings here.
@@ -28,7 +28,13 @@ Several settings are common to the simulation of (almost) all p-hacking strategi
 In all simulation functions, it is necessary to specify how the final p-value is determined. There are three options: *first significant* simulates a situation where the researcher conducts a series of hypothesis tests, and stops as soon as the result is significant, that is, at the first significant p-value. In a comment on Simonsohn et al. (2014), Ulrich and Miller (2015) argued that researchers might instead engage in "ambitious" p-hacking, where the researcher conducts a series of hypothesis tests and selects the smallest significant p-value from the set. This strategy is implemented in the *smallest significant* option. Simonsohn (private comm.) argues that there might exist a third p-hacking strategy where the researcher tries a number of different analysis options, and selects the smallest p-value, no matter if it is significant or not. This strategy is implemented in the option *smallest*. The default strategy is *first significant*.
 
 #### True effect size
-The true effect size in all simulations is equal to zero. 
+The true effect size can be specified in all simulations. If the true effect size is set to 0 and the heterogeneity is set to 0, the simulations operate in the false-positive regime. Otherwise, the app shows the rate of significant results rather than a false positive rate.
+
+#### Heterogeneity
+The heterogeneity setting determines how much the true effect size varies across simulated studies. A heterogeneity of 0 means that all simulated studies share the same true effect size. Larger values imply that the study-specific true effects vary around the specified mean effect size.
+
+#### Effect size scale
+The meaning of the effect size depends on the type of hypothesis test. In tabs based on group comparisons, effect size and heterogeneity are specified on the standardized mean-difference scale. In tabs based on regression or correlation analyses, effect size and heterogeneity are specified on the Fisher-z scale. In the tab on controlling for covariates, the effect size still refers to the group effect and is therefore also specified on the standardized mean-difference scale.
 
 #### Significance level
 The significance level &alpha; determines the significance level for each hypothesis test. For example, if the significance level is set to &alpha; = 0.05 (the default), the simulation assumes that a researcher would call the result of a hypothesis test significant if p < 0.05.
@@ -37,7 +43,7 @@ The significance level &alpha; determines the significance level for each hypoth
 The *iterations* option determines the number of iterations in the simulation. The default setting is 1000.
 
 #### Alternative
-Whenever the simulations are based on t-tests, the option *alternative* can be specified. This option relates to the sidedness of the alternative hypothesis in the t-test. It can either be *two-sided* or *greater*. The default setting is *two-sided*.
+Whenever the simulations are based on t-tests, the option *alternative* can be specified. This option relates to the sidedness of the alternative hypothesis in the t-test. It can either be *two-sided* or the one-sided positive-effect option. In the one-sided case, the simulation tests whether the treatment group exceeds the control group, that is, whether the true effect is positive. The default setting is *two-sided*.
 
 #### Number of observations
 The number of observations determines the sample size in the test. In the case of a t-test, the specified number refers to the observations *per group*. In the case of a linear regression, the specified number refers to the overall sample size. 

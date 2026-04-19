@@ -2,8 +2,7 @@
 % Please edit documentation in R/exploitCovariates.R
 \name{sim.covhack}
 \alias{sim.covhack}
-\title{Simulate p-Hacking with multiple covariates
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
+\title{Simulate p-Hacking with multiple covariates}
 \usage{
 sim.covhack(
   nobs.group,
@@ -12,6 +11,8 @@ sim.covhack(
   rcovdv,
   interactions = FALSE,
   strategy = "firstsig",
+  effect = 0,
+  heterogeneity = 0,
   alpha = 0.05,
   iter = 1000,
   shinyEnv = FALSE
@@ -30,6 +31,10 @@ sim.covhack(
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
+\item{effect}{Mean effect size across studies on the standardized mean-difference scale}
+
+\item{heterogeneity}{Between-study heterogeneity on the standardized mean-difference scale}
+
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
@@ -37,6 +42,5 @@ sim.covhack(
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
-Simulate p-Hacking with multiple covariates
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 }

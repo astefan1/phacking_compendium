@@ -10,48 +10,56 @@
 #' @param group Scalar defining location of the group vector in the data frame
 #' @param dv Scalar defining location of dependent variable in the data frame
 #' @param roundinglevel Highest p-value that is rounded down to 0.05
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
 .roundhack <- function(df, group, dv, roundinglevel, alternative = "two.sided", alpha = 0.05){
 
-  # Compute t-test
-  pval <- stats::t.test(df[,dv] ~ df[,group],
-                        var.equal = TRUE, alternative = alternative)$p.value
-  r2val <- .compR2t(df[,dv][(df[,group] == unique(df[,group])[1])],
-                    df[,dv][(df[,group] == unique(df[,group])[2])])
+  control <- df[,dv][df[,group] == unique(df[,group])[1]]
+  treatment <- df[,dv][df[,group] == unique(df[,group])[2]]
+  report.initial <- .report.twogroup(control = control,
+                                     treatment = treatment,
+                                     method = "t.equal",
+                                     alternative = alternative)
+  r2val <- .compR2t(control, treatment)
 
   # P-hack p-value
-  if(pval > alpha && pval < roundinglevel){
+  if(report.initial[["p"]] > alpha && report.initial[["p"]] < roundinglevel){
     p.final <- alpha
   } else {
-    p.final <- pval
+    p.final <- report.initial[["p"]]
   }
 
-  ps <- c(pval, p.final)
+  report.final <- report.initial
+  report.final[["p"]] <- p.final
 
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2val,
-              r2s = rep(r2val, 2)))
+  return(list(ps.hack = p.final,
+              ps.orig = report.initial[["p"]],
+              r2s.hack = r2val,
+              r2s.orig = r2val,
+              report.initial = report.initial,
+              report.final = report.final))
 
 }
 
 #' Simulate p-hacking with incorrect rounding
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param roundinglevel Highest p-value that is rounded down to alpha
+#' @param effect Mean effect size across studies
+#' @param heterogeneity Between-study heterogeneity
 #' @param iter Number of iterations
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.roundhack <- function(roundinglevel, effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.data(nobs.group = 30)
+    dat[[i]] <- .sim.data(nobs.group = 30, effect = effect, heterogeneity = heterogeneity)
   }
 
   # Apply p-hacking procedure to each dataset
@@ -71,20 +79,7 @@ sim.roundhack <- function(roundinglevel, iter = 1000, alternative = "two.sided",
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-  }
-
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig"))
 
 }

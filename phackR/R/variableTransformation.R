@@ -30,8 +30,10 @@
 
   Xtrans <- matrix(NA, nrow = nrow(df))
   Xtrans[,1] <- x
+  xlabels <- "x.orig"
   Ytrans <- matrix(NA, nrow = nrow(df))
   Ytrans[,1] <- y
+  ylabels <- "y.orig"
 
   if(transvar != "y" && normality == FALSE){
     Xtrans <- cbind(Xtrans,
@@ -39,6 +41,7 @@
                     sqrt(x+abs(min(x))+1e-10),       # square root transformation
                     1/x                              # inverse
     )
+    xlabels <- c(xlabels, "x.log", "x.sqrt", "x.inv")
   }
 
 
@@ -48,52 +51,55 @@
                     sqrt(y+abs(min(y))+1e-10),       # square root transformation
                     1/y                              # inverse
     )
+    ylabels <- c(ylabels, "y.log", "y.sqrt", "y.inv")
   }
 
   # Calculate p-values for all transformed variables
 
-  ps <- matrix(NA, nrow = dim(Xtrans)[2], ncol = dim(Ytrans)[2])
-  r2s <- matrix(NA, nrow = dim(Xtrans)[2], ncol = dim(Ytrans)[2])
+  analyses <- list()
 
   for(i in 1:ncol(Xtrans)){
     for(j in 1:ncol(Ytrans)){
-      mod <- summary(stats::lm(Ytrans[,j] ~ Xtrans[,i]))
-      ps[i,j] <- mod$coefficients[2, 4]
-      r2s[i,j] <- mod$r.squared
+      report <- .report.association(x = Xtrans[,i], y = Ytrans[,j],
+                                    method = paste(xlabels[i], ylabels[j], sep = "_"))
+      analyses[[length(analyses)+1]] <- list(report = report,
+                                             r2 = tanh(report[["effect"]])^2)
     }
   }
 
-  ps <- as.vector(ps)
-  r2s <- as.vector(r2s)
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
 
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- unique(r2s[ps == p.final])
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
 
 }
 
 #' Simulate p-hacking with variable transformations
-#' Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param nobs Integer giving number of observations
 #' @param transvar Which variables should be transformed? Either "x" (for x variable), "y" (for y variable), or "xy" (for both)
 #' @param testnorm Should variables only be transformed after a significant test for normality of residuals?
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
+#' @param effect Mean effect size across studies on the Fisher-z scale
+#' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.varTransHack <- function(nobs, transvar, testnorm = FALSE, strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.varTransHack <- function(nobs, transvar, testnorm = FALSE, strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0)
+    dat[[i]] <- .sim.association(nobs = nobs, effect = effect, heterogeneity = heterogeneity)
   }
 
   # Apply p-hacking procedure to each dataset
@@ -118,20 +124,7 @@ sim.varTransHack <- function(nobs, transvar, testnorm = FALSE, strategy = "first
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-  }
-
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig"))
 
 }

@@ -4,7 +4,18 @@
 \alias{.sim.covariates}
 \title{Simulate data with (correlated) covariates}
 \usage{
-.sim.covariates(nobs.group, ncov, rcov, rcovdv, mu = 0, sd = 1, missing = 0)
+.sim.covariates(
+  nobs.group,
+  ncov,
+  rcov,
+  rcovdv,
+  effect = 0,
+  heterogeneity = 0,
+  mu = 0,
+  sd = 1,
+  missing = 0,
+  theta = NULL
+)
 }
 \arguments{
 \item{nobs.group}{Vector with number of observations per group}
@@ -14,6 +25,10 @@
 \item{rcov}{Correlation between the covariates}
 
 \item{rcovdv}{Correlation between covariates and dependent variable}
+
+\item{effect}{Mean effect size across studies on the standardized mean-difference scale}
+
+\item{heterogeneity}{Between-study heterogeneity on the standardized mean-difference scale}
 
 \item{mu}{Mean of the random data}
 

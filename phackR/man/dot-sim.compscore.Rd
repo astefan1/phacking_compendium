@@ -4,7 +4,7 @@
 \alias{.sim.compscore}
 \title{Simulate data: Correlated composite score raw variables and one non-correlated dependent variable}
 \usage{
-.sim.compscore(nobs, ncompv, rcomp)
+.sim.compscore(nobs, ncompv, rcomp, effect = 0, heterogeneity = 0)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}
@@ -12,6 +12,10 @@
 \item{ncompv}{Integer giving number of variables to build the composite score}
 
 \item{rcomp}{Correlation between the composite score variables}
+
+\item{effect}{Mean effect size across studies on the Fisher-z scale}
+
+\item{heterogeneity}{Between-study heterogeneity on the Fisher-z scale}
 }
 \description{
 Simulate data: Correlated composite score raw variables and one non-correlated dependent variable

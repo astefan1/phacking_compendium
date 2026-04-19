@@ -390,218 +390,123 @@
   x <- df[,x]
   y <- df[,y]
 
-  # initialize p value list (one level for each outlier method)
-  ps <- vector("list", 12)
-  r2s <- vector("list", 12)
+  analyses <- list()
+
+  .report.outliers <- function(dat, label){
+
+    if(is.matrix(dat)) dat <- list(dat)
+
+    out <- vector("list", length(dat))
+    for(i in 1:length(dat)){
+      report <- .report.association(x = dat[[i]][,1], y = dat[[i]][,2],
+                                    method = paste0(label, ".", i))
+      out[[i]] <- list(report = report,
+                       r2 = tanh(report[["effect"]])^2)
+    }
+
+    out
+
+  }
 
   #### Go through each outlier detection method and calculate p values ####
 
+  report.orig <- .report.association(x = x, y = y, method = "lm.original")
+  analyses[[1]] <- list(report = report.orig,
+                        r2 = tanh(report.orig[["effect"]])^2)
+
   # Boxplot
   if(1 %in% which){
-
-    dat <- .out.boxplot(x, y)
-    ps[[1]] <- rep(NA, length(dat))
-    r2s[[1]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[1]][i] <- mod$coefficients[2,4]
-      r2s[[1]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.boxplot(x, y), "out.boxplot"))
   }
 
   # Stem & Leaf
   if(2 %in% which){
-
-    dat <- .out.stemleaf(x, y)
-    ps[[2]] <- rep(NA, length(dat))
-    r2s[[2]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[2]][i] <- mod$coefficients[2,4]
-      r2s[[2]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.stemleaf(x, y), "out.stemleaf"))
   }
 
   # Standard deviation
   if(3 %in% which){
-
-    dat <- .out.sdrule(x, y)
-    ps[[3]] <- rep(NA, length(dat))
-    r2s[[3]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[3]][i] <- mod$coefficients[2,4]
-      r2s[[3]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.sdrule(x, y), "out.sdrule"))
   }
 
   # Percentile
   if(4 %in% which){
-
-    dat <- .out.percentrule(x, y)
-    ps[[4]] <- rep(NA, length(dat))
-    r2s[[4]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[4]][i] <- mod$coefficients[2,4]
-      r2s[[4]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.percentrule(x, y), "out.percentrule"))
   }
 
   # Studentized residuals
   if(5 %in% which){
-
-    dat <- .out.residual(x, y, type = "stud")
-    ps[[5]] <- rep(NA, length(dat))
-    r2s[[5]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[5]][i] <- mod$coefficients[2,4]
-      r2s[[5]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.residual(x, y, type = "stud"), "out.residual.stud"))
   }
 
   # Standardized residuals
   if(6 %in% which){
-
-    dat <- .out.residual(x, y, type = "stan")
-    ps[[6]] <- rep(NA, length(dat))
-    r2s[[6]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[6]][i] <- mod$coefficients[2,4]
-      r2s[[6]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.residual(x, y, type = "stan"), "out.residual.stan"))
   }
 
   # DFBETA
   if(7 %in% which){
-
-    dat <- .out.dfbeta(x, y)
-    ps[[7]] <- rep(NA, length(dat))
-    r2s[[7]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[7]][i] <- mod$coefficients[2,4]
-      r2s[[7]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.dfbeta(x, y), "out.dfbeta"))
   }
 
   # DFFITS
   if(8 %in% which){
-
-    dat <- .out.dffits(x, y)
-    ps[[8]] <- rep(NA, length(dat))
-    r2s[[8]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[8]][i] <- mod$coefficients[2,4]
-      r2s[[8]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.dffits(x, y), "out.dffits"))
   }
 
   # Cook's distance
   if(9 %in% which){
-
-    dat <- .out.cook(x, y)
-    ps[[9]] <- rep(NA, length(dat))
-    r2s[[9]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[9]][i] <- mod$coefficients[2,4]
-      r2s[[9]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.cook(x, y), "out.cook"))
   }
 
   # Mahalanobis distance
   if(10 %in% which){
-
-    dat <- .out.mahalanobis(x, y)
-    ps[[10]] <- rep(NA, length(dat))
-    r2s[[10]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[10]][i] <- mod$coefficients[2,4]
-      r2s[[10]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.mahalanobis(x, y), "out.mahalanobis"))
   }
 
   # Leverage levels
   if(11 %in% which){
-
-    dat <- .out.leverage(x, y)
-    ps[[11]] <- rep(NA, length(dat))
-    r2s[[11]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[11]][i] <- mod$coefficients[2,4]
-      r2s[[11]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.leverage(x, y), "out.leverage"))
   }
 
   # Covariance ratio
   if(12 %in% which){
-
-    dat <- .out.covratio(x, y)
-    ps[[12]] <- rep(NA, length(dat))
-    r2s[[12]] <- rep(NA, length(dat))
-
-    for(i in 1:length(dat)){
-      mod <- summary(stats::lm(dat[[i]][,2] ~ dat[[i]][,1]))
-      ps[[12]][i] <- mod$coefficients[2,4]
-      r2s[[12]][i] <- mod$r.squared
-    }
+    analyses <- c(analyses, .report.outliers(.out.covratio(x, y), "out.covratio"))
   }
 
-  # Compute original p value
-  mod <- summary(stats::lm(y ~ x))
-  p.orig <- mod$coefficients[2,4]
-  r2.orig <- mod$r.squared
-
   # Combine all p values and remove NAs
-  ps <- c(p.orig, unlist(ps))
-  ps <- ps[!is.na(ps)]
-  r2s <- c(r2.orig, unlist(r2s))
-  r2s <- r2s[!is.na(ps)]
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
 
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- unique(r2s[ps == p.final])
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
 
 }
 
 #' Simulate p-Hacking with different sorts of outlier definition
-#' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param nobs Integer giving number of observations
 #' @param which Which outlier detection methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: boxplot, 2: stem&leaf, 3: standard deviation, 4: percentile, 5: studentized residuals, 6: standardized residuals, 7: DFBETA, 8: DFFITS, 9: Cook's D, 10: Mahalanobis distance, 11: Leverage values, 12: Covariance ratio)
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
+#' @param effect Mean effect size across studies on the Fisher-z scale
+#' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0)
+    dat[[i]] <- .sim.association(nobs = nobs, effect = effect, heterogeneity = heterogeneity)
   }
 
   # If which = "random
@@ -624,21 +529,6 @@ sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", alpha = 0.
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-  ps.all <- list()
-
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-    #ps.all[[i]] <- res[[i]][["ps"]]
-  }
-
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig"))
 }

@@ -4,7 +4,7 @@
 \alias{.sim.multDV}
 \title{Simulate dataset with multiple dependent variables}
 \usage{
-.sim.multDV(nobs.group, nvar, r)
+.sim.multDV(nobs.group, nvar, r, effect = 0, heterogeneity = 0)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
@@ -12,6 +12,10 @@
 \item{nvar}{Number of dependent variables in the data frame}
 
 \item{r}{Desired correlation between the dependent variables (scalar)}
+
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
 }
 \description{
 Outputs data frame with a grouping variable and multiple correlated dependent variables

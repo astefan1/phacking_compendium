@@ -2,12 +2,13 @@
 % Please edit documentation in R/exploitCutoffs.R
 \name{sim.cutoffHack}
 \alias{sim.cutoffHack}
-\title{Simulate p-Hacking for exploiting cutoff values
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations}
+\title{Simulate p-Hacking for exploiting cutoff values}
 \usage{
 sim.cutoffHack(
   nobs,
   strategy = "firstsig",
+  effect = 0,
+  heterogeneity = 0,
   alpha = 0.05,
   iter = 1000,
   shinyEnv = FALSE
@@ -18,6 +19,10 @@ sim.cutoffHack(
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
+\item{effect}{Mean effect size across studies on the Fisher-z scale}
+
+\item{heterogeneity}{Between-study heterogeneity on the Fisher-z scale}
+
 \item{alpha}{Significance level of the t-test}
 
 \item{iter}{Number of simulation iterations}
@@ -25,6 +30,5 @@ sim.cutoffHack(
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
-Simulate p-Hacking for exploiting cutoff values
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 }

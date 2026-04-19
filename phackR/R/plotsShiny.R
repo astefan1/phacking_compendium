@@ -8,7 +8,7 @@
 #' @importFrom ggplot2 ggplot geom_histogram aes theme_light xlab ggtitle theme element_text geom_vline scale_fill_manual layer_scales ylab geom_segment geom_col scale_x_continuous scale_y_continuous waiver
 #' @importFrom rlang .data
 #' @importFrom dplyr all_of mutate
-#' @importFrom magrittr "%$%"
+#' @importFrom magrittr "%$%" "%>%"
 
 pplots <- function(simdat, alpha){
 

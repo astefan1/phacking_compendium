@@ -4,12 +4,16 @@
 \alias{.sim.subgroup}
 \title{Simulate data with subgroups}
 \usage{
-.sim.subgroup(nobs.group, nsubvars)
+.sim.subgroup(nobs.group, nsubvars, effect = 0, heterogeneity = 0)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
 
 \item{nsubvars}{Integer specifying number of variables for potential subgroups}
+
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
 }
 \description{
 Outputs data frame with multiple binary variables from which subgroups can be extracted

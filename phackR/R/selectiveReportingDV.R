@@ -7,8 +7,10 @@
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of dependent variables in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
+#' @param effect Mean effect size across studies
+#' @param heterogeneity Between-study heterogeneity
 
-.sim.multDV <- function(nobs.group, nvar, r){
+.sim.multDV <- function(nobs.group, nvar, r, effect = 0, heterogeneity = 0){
 
   # Observations per group
   if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
@@ -18,6 +20,8 @@
 
   # Generate dependent variables
   dvs <- .sim.multcor(nobs = sum(nobs.group), nvar = nvar, r = r)
+  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  dvs[(nobs.group[1]+1):sum(nobs.group), ] <- dvs[(nobs.group[1]+1):sum(nobs.group), ] + theta
 
   # Generate data frame
   res <- cbind(group, dvs)
@@ -31,7 +35,7 @@
 #' @param dvs Vector defining the DV columns (will be checked in given order)
 #' @param group Scalar defining grouping column
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test
 #' @importFrom stats t.test
 
@@ -40,53 +44,58 @@
   # Prepare data frame
   dvs <- as.matrix(df[, dvs], ncol = length(dvs))
   group <- df[, group]
-  mod <- list()
-  r2s <- NULL
+  analyses <- list()
 
   # Compute t-tests
   for(i in 1:ncol(dvs)){
-
-    mod[[i]] <- stats::t.test(dvs[, i] ~ group,
-                           var.equal = TRUE, alternative = alternative)
-    r2s[i] <- .compR2t(dvs[group == unique(group)[1], i],
-                       dvs[group == unique(group)[2], i])
+    control <- dvs[group == unique(group)[1], i]
+    treatment <- dvs[group == unique(group)[2], i]
+    report <- .report.twogroup(control = control,
+                               treatment = treatment,
+                               method = "t.equal",
+                               alternative = alternative)
+    analyses[[i]] <- list(report = report,
+                          r2 = .compR2t(control, treatment),
+                          d = .compCohensDStat(statistic = report[["stat"]],
+                                               n1 = length(control),
+                                               n2 = length(treatment)))
   }
 
-  ps <- unlist(simplify2array(mod)["p.value", ])
-  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), length(df[, group])/2)
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- unique(r2s[ps == p.final])
-  d.final <- unique(ds[ps == p.final])
-
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s,
-              d.final = d.final,
-              ds = ds))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              ds.hack = analyses[[final.index]][["d"]],
+              ds.orig = analyses[[1]][["d"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
 
 }
 
 #' Simulate p-Hacking with multiple dependent variables
-#' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of dependent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
+#' @param effect Mean effect size across studies
+#' @param heterogeneity Between-study heterogeneity
 #' @param iter Number of simulation iterations
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.multDV(nobs.group = nobs.group, nvar = nvar, r = r)
+    dat[[i]] <- .sim.multDV(nobs.group = nobs.group, nvar = nvar, r = r,
+                            effect = effect, heterogeneity = heterogeneity)
   }
 
   # Apply p-hacking procedure to each dataset
@@ -108,24 +117,7 @@ sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", iter = 10
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-  ds.hack <- NULL
-  ds.orig <- NULL
-
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-    ds.hack[i] <- res[[i]][["d.final"]]
-    ds.orig[i] <- res[[i]][["ds"]][1]
-  }
-
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig, ds.hack, ds.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig", "ds.hack", "ds.orig"))
 }
 

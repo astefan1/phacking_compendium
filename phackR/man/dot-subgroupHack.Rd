@@ -23,7 +23,7 @@
 
 \item{subvars}{Vector specifying the location of the subgroup variables in the data frame}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.}
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 

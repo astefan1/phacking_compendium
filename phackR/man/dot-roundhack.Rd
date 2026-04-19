@@ -22,7 +22,7 @@
 
 \item{roundinglevel}{Highest p-value that is rounded down to 0.05}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }

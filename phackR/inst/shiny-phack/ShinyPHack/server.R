@@ -8,6 +8,10 @@ function(input, output) {
   # Initiate variable to store simulation results
   sims <- reactiveValues()
 
+  .escol <- function(simdat, column){
+    match(column, colnames(as.data.frame(simdat)))
+  }
+
   # ------------------- Composite Scores ---------------------------------------
 
   output$uindeleteCompScores <- renderUI({
@@ -22,10 +26,10 @@ function(input, output) {
   output$compScoresPlot5 = renderPlot(startplots$compscorePlotES$esnohack)
 
   observeEvent(input$calcCompScores > 0, {
-      ifelse(length(input$uindeleteCompScores)==0, ndelete<-2, ndelete<-input$uindeleteCompScores)
-      res1 <- sim.compscoreHack(nobs=input$nobsCompScores, ncompv=input$ncompvCompScores, rcomp=input$rcompCompScores, ndelete=ndelete, strategy = input$strategyCompScores, alpha = input$alphaCompScores, iter = input$iterCompScores, shinyEnv=TRUE)
+      ifelse(length(input$ndeleteCompScores)==0, ndelete<-2, ndelete<-input$ndeleteCompScores)
+      res1 <- sim.compscoreHack(nobs=input$nobsCompScores, ncompv=input$ncompvCompScores, rcomp=input$rcompCompScores, ndelete=ndelete, strategy = input$strategyCompScores, effect = input$effectCompScores, heterogeneity = input$heterogeneityCompScores, alpha = input$alphaCompScores, iter = input$iterCompScores, shinyEnv=TRUE)
       compscorePlot <- phackR:::pplots(simdat=res1, alpha=input$alphaCompScores)
-      compscorePlotES <- phackR:::esplots(simdat=res1, EScolumn.hack=3, EScolumn.orig=4)
+      compscorePlotES <- phackR:::esplots(simdat=res1, EScolumn.hack=.escol(res1, "r2s.hack"), EScolumn.orig=.escol(res1, "r2s.orig"))
       compscore.fprate.p <- paste0(round(sum(res1[,"ps.hack"] < input$alphaCompScores)/input$iterCompScores*100, 2), " %")
       compscore.fprate.o <- paste0(round(sum(res1[,"ps.orig"] < input$alphaCompScores)/input$iterCompScores*100, 2), " %")
       output$compScoresPlot = renderPlot(compscorePlot$pcomp)
@@ -54,10 +58,10 @@ function(input, output) {
   observeEvent(input$calcExpCov > 0, {
     if(input$interactExpCov == "Yes") interactions <- TRUE
     else if(input$interactExpCov == "No") interactions <- FALSE
-    res2 <- sim.covhack(nobs.group = input$nobsExpCov, ncov = input$ncovExpCov, rcov = input$rcovExpCov, rcovdv = input$rcovdvExpCov, interactions = interactions, strategy = input$strategyExpCov, alpha = input$alphaExpCov, iter = input$iterExpCov, shinyEnv=TRUE)
+    res2 <- sim.covhack(nobs.group = input$nobsExpCov, ncov = input$ncovExpCov, rcov = input$rcovExpCov, rcovdv = input$rcovdvExpCov, interactions = interactions, strategy = input$strategyExpCov, effect = input$effectExpCov, heterogeneity = input$heterogeneityExpCov, alpha = input$alphaExpCov, iter = input$iterExpCov, shinyEnv=TRUE)
     expCovPlot <- phackR:::pplots(simdat=res2, alpha=input$alphaExpCov)
-    expCovES <- phackR:::esplots(simdat=res2, EScolumn.hack=3, EScolumn.orig=4, titles = c(expression("Distribution of p-hacked effect sizes "*eta^2),
-                                                                                 expression("Distribution of original effect sizes "*eta^2)))
+    expCovES <- phackR:::esplots(simdat=res2, EScolumn.hack=.escol(res2, "eta2s.hack"), EScolumn.orig=.escol(res2, "eta2s.orig"), titles = c(expression("Distribution of p-hacked effect sizes "*eta^2),
+                                                                                                                                                   expression("Distribution of original effect sizes "*eta^2)))
     expcov.fprate.p <- paste0(round(sum(res2[,"ps.hack"] < input$alphaExpCov)/input$iterExpCov*100, 2), " %")
     expcov.fprate.o <- paste0(round(sum(res2[,"ps.orig"] < input$alphaExpCov)/input$iterExpCov*100, 2), " %")
     output$expCovPlot = renderPlot(expCovPlot$pcomp)
@@ -84,9 +88,9 @@ function(input, output) {
   output$expCutPlot5 = renderPlot(startplots$expCutES$esnohack)
 
   observeEvent(input$calcExpCut > 0, {
-    res3 <- sim.cutoffHack(nobs = input$nobsExpCut, strategy = input$strategyExpCut, alpha = input$alphaExpCut, iter = input$iterExpCut, shinyEnv=TRUE)
+    res3 <- sim.cutoffHack(nobs = input$nobsExpCut, strategy = input$strategyExpCut, effect = input$effectExpCut, heterogeneity = input$heterogeneityExpCut, alpha = input$alphaExpCut, iter = input$iterExpCut, shinyEnv=TRUE)
     expCutPlot <- phackR:::pplots(simdat=res3, alpha=input$alphaExpCut)
-    expCutES <- phackR:::esplots(simdat=res3, EScolumn.hack=3, EScolumn.orig=4)
+    expCutES <- phackR:::esplots(simdat=res3, EScolumn.hack=.escol(res3, "r2s.hack"), EScolumn.orig=.escol(res3, "r2s.orig"))
     expcut.fprate.p <- paste0(round(sum(res3[,"ps.hack"] < input$alphaExpCut)/input$iterExpCut*100, 2), " %")
     expcut.fprate.o <- paste0(round(sum(res3[,"ps.orig"] < input$alphaExpCut)/input$iterExpCut*100, 2), " %")
     output$expCutPlot = renderPlot(expCutPlot$pcomp)
@@ -113,9 +117,9 @@ function(input, output) {
   output$favImpPlot5 = renderPlot(startplots$favImpES$esnohack)
 
   observeEvent(input$calcfavImp > 0, {
-    res4 <- sim.impHack(nobs = input$nobsfavImp, missing = input$missingfavImp, which = as.numeric(input$whichImpfavImp), strategy = input$strategyfavImp, alpha = input$alphafavImp, iter = input$iterfavImp, shinyEnv = TRUE)
+    res4 <- sim.impHack(nobs = input$nobsfavImp, missing = input$missingfavImp, which = as.numeric(input$whichImpfavImp), strategy = input$strategyfavImp, effect = input$effectfavImp, heterogeneity = input$heterogeneityfavImp, alpha = input$alphafavImp, iter = input$iterfavImp, shinyEnv = TRUE)
     favImpPlot <- phackR:::pplots(simdat=res4, alpha=input$alphafavImp)
-    favImpES <- phackR:::esplots(simdat=res4, EScolumn.hack=3, EScolumn.orig=4)
+    favImpES <- phackR:::esplots(simdat=res4, EScolumn.hack=.escol(res4, "r2s.hack"), EScolumn.orig=.escol(res4, "r2s.orig"))
     favimp.fprate.p <- paste0(round(sum(res4[,"ps.hack"] < input$alphafavImp)/input$iterfavImp*100, 2), " %")
     favimp.fprate.o <- paste0(round(sum(res4[,"ps.orig"] < input$alphafavImp)/input$iterfavImp*100, 2), " %")
     output$favImpPlot = renderPlot(favImpPlot$pcomp)
@@ -142,9 +146,9 @@ function(input, output) {
   output$roundingPlot5 = renderPlot(startplots$roundingES$esnohack)
 
   observeEvent(input$calcRounding > 0, {
-    res5 <- sim.roundhack(roundinglevel = input$levelRounding+input$alphaRounding, iter = input$iterRounding, alternative = input$altRounding, alpha = input$alphaRounding, shinyEnv = TRUE)
+    res5 <- sim.roundhack(roundinglevel = input$levelRounding+input$alphaRounding, effect = input$effectRounding, heterogeneity = input$heterogeneityRounding, iter = input$iterRounding, alternative = input$altRounding, alpha = input$alphaRounding, shinyEnv = TRUE)
     roundingPlot <- phackR:::pplots(simdat=res5, alpha=input$alphaRounding)
-    roundingES <- phackR:::esplots(simdat=res5, EScolumn.hack=3, EScolumn.orig=4)
+    roundingES <- phackR:::esplots(simdat=res5, EScolumn.hack=.escol(res5, "r2s.hack"), EScolumn.orig=.escol(res5, "r2s.orig"))
     rounding.fprate.p <- paste0(sum(round(res5[,"ps.hack"] <= input$alphaRounding)/input$iterRounding*100, 2), " %")
     rounding.fprate.o <- paste0(sum(round(res5[,"ps.orig"] <= input$alphaRounding)/input$iterRounding*100, 2), " %")
     output$roundingPlot = renderPlot(roundingPlot$pcomp)
@@ -173,11 +177,11 @@ function(input, output) {
   output$optStopPlot7 = renderPlot(startplots$optstopESd$esnohack)
 
   observeEvent(input$calcOptStop > 0, {
-    res6 <- sim.optstop(n.min = input$nminOptStop, n.max = input$nmaxOptStop, step = input$stepOptStop, alternative = input$altOptStop, iter = input$iterOptStop, alpha = input$alphaOptStop, shinyEnv = TRUE)
+    res6 <- sim.optstop(n.min = input$nminOptStop, n.max = input$nmaxOptStop, step = input$stepOptStop, effect = input$effectOptStop, heterogeneity = input$heterogeneityOptStop, alternative = input$altOptStop, iter = input$iterOptStop, alpha = input$alphaOptStop, shinyEnv = TRUE)
     optstopPlot <- phackR:::pplots(simdat = res6, alpha = input$alphaOptStop)
-    optstopESr2 <- phackR:::esplots(simdat=res6, EScolumn.hack=3, EScolumn.orig=4)
-    optstopESd <- phackR:::esplots(simdat=res6, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
-                                                                                    expression("Distribution of original effect sizes "*delta)))
+    optstopESr2 <- phackR:::esplots(simdat=res6, EScolumn.hack=.escol(res6, "r2s.hack"), EScolumn.orig=.escol(res6, "r2s.orig"))
+    optstopESd <- phackR:::esplots(simdat=res6, EScolumn.hack=.escol(res6, "ds.hack"), EScolumn.orig=.escol(res6, "ds.orig"), titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                                                                                    expression("Distribution of original effect sizes "*delta)))
     optstop.fprate.p <- paste0(round(sum(res6[,"ps.hack"] <= input$alphaOptStop)/input$iterOptStop*100, 2), " %")
     optstop.fprate.o <- paste0(round(sum(res6[,"ps.orig"] <= input$alphaOptStop)/input$iterOptStop*100, 2), " %")
     output$optStopPlot <- renderPlot(optstopPlot$pcomp)
@@ -205,9 +209,9 @@ function(input, output) {
   output$outExclPlot5 = renderPlot(startplots$outExclES$esnohack)
 
   observeEvent(input$calcOutExcl > 0, {
-    res7 <- sim.outHack(nobs = input$nobsOutExcl, which = as.numeric(input$whichOutExcl), strategy = input$strategyOutExcl, alpha = input$alphaOutExcl, iter = input$iterOutExcl, shinyEnv = TRUE)
+    res7 <- sim.outHack(nobs = input$nobsOutExcl, which = as.numeric(input$whichOutExcl), strategy = input$strategyOutExcl, effect = input$effectOutExcl, heterogeneity = input$heterogeneityOutExcl, alpha = input$alphaOutExcl, iter = input$iterOutExcl, shinyEnv = TRUE)
     outExclPlot <- phackR:::pplots(simdat = res7, alpha = input$alphaOutExcl)
-    outExclES <- phackR:::esplots(simdat = res7, EScolumn.hack = 3, EScolumn.orig = 4)
+    outExclES <- phackR:::esplots(simdat = res7, EScolumn.hack = .escol(res7, "r2s.hack"), EScolumn.orig = .escol(res7, "r2s.orig"))
     outExcl.fprate.p <- paste0(round(sum(res7[,"ps.hack"] <= input$alphaOutExcl)/input$iterOutExcl*100, 2), " %")
     outExcl.fprate.o <- paste0(round(sum(res7[,"ps.orig"] <= input$alphaOutExcl)/input$iterOutExcl*100, 2), " %")
     output$outExclPlot <- renderPlot(outExclPlot$pcomp)
@@ -237,11 +241,11 @@ function(input, output) {
   output$SRDVPlot7 = renderPlot(startplots$SRDVESd$esnohack)
 
   observeEvent(input$calcSRDV > 0, {
-    res9 <- sim.multDVhack(nobs.group = input$nobsSRDV, nvar = input$nvarSRDV, r = input$rSRDV, strategy = input$strategySRDV, iter = input$iterSRDV, alternative = input$altSRDV, alpha = input$alphaSRDV, shinyEnv = TRUE)
+    res9 <- sim.multDVhack(nobs.group = input$nobsSRDV, nvar = input$nvarSRDV, r = input$rSRDV, strategy = input$strategySRDV, effect = input$effectSRDV, heterogeneity = input$heterogeneitySRDV, iter = input$iterSRDV, alternative = input$altSRDV, alpha = input$alphaSRDV, shinyEnv = TRUE)
     SRDVPlot <- phackR:::pplots(simdat = res9, alpha = input$alphaSRDV)
-    SRDVESr2 <- phackR:::esplots(simdat=res9, EScolumn.hack=3, EScolumn.orig=4)
-    SRDVESd <- phackR:::esplots(simdat=res9, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
-                                                                                    expression("Distribution of original effect sizes "*delta)))
+    SRDVESr2 <- phackR:::esplots(simdat=res9, EScolumn.hack=.escol(res9, "r2s.hack"), EScolumn.orig=.escol(res9, "r2s.orig"))
+    SRDVESd <- phackR:::esplots(simdat=res9, EScolumn.hack=.escol(res9, "ds.hack"), EScolumn.orig=.escol(res9, "ds.orig"), titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                                                                                 expression("Distribution of original effect sizes "*delta)))
     SRDV.fprate.p <- paste0(round(sum(res9[,"ps.hack"] <= input$alphaSRDV)/input$iterSRDV*100, 2), " %")
     SRDV.fprate.o <- paste0(round(sum(res9[,"ps.orig"] <= input$alphaSRDV)/input$iterSRDV*100, 2), " %")
     output$SRDVPlot <- renderPlot(SRDVPlot$pcomp)
@@ -272,11 +276,11 @@ function(input, output) {
   output$SRIVPlot7 = renderPlot(startplots$SRIVESd$esnohack)
 
   observeEvent(input$calcSRIV > 0, {
-    res10 <- sim.multDVhack(nobs.group = input$nobsSRIV, nvar = input$nvarSRIV, r = input$rSRIV, strategy = input$strategySRIV, iter = input$iterSRIV, alternative = input$altSRIV, alpha = input$alphaSRIV, shinyEnv = TRUE)
+    res10 <- sim.multIVhack(nobs.group = input$nobsSRIV, nvar = input$nvarSRIV, r = input$rSRIV, regression = FALSE, strategy = input$strategySRIV, effect = input$effectSRIV, heterogeneity = input$heterogeneitySRIV, iter = input$iterSRIV, alternative = input$altSRIV, alpha = input$alphaSRIV, shinyEnv = TRUE)
     SRIVPlot <- phackR:::pplots(simdat = res10, alpha = input$alphaSRIV)
-    SRIVESr2 <- phackR:::esplots(simdat=res10, EScolumn.hack=3, EScolumn.orig=4)
-    SRIVESd <- phackR:::esplots(simdat=res10, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
-                                                                                 expression("Distribution of original effect sizes "*delta)))
+    SRIVESr2 <- phackR:::esplots(simdat=res10, EScolumn.hack=.escol(res10, "r2s.hack"), EScolumn.orig=.escol(res10, "r2s.orig"))
+    SRIVESd <- phackR:::esplots(simdat=res10, EScolumn.hack=.escol(res10, "ds.hack"), EScolumn.orig=.escol(res10, "ds.orig"), titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                                                                              expression("Distribution of original effect sizes "*delta)))
     SRIV.fprate.p <- paste0(round(sum(res10[,"ps.hack"] <= input$alphaSRIV)/input$iterSRIV*100, 2), " %")
     SRIV.fprate.o <- paste0(round(sum(res10[,"ps.orig"] <= input$alphaSRIV)/input$iterSRIV*100, 2), " %")
     output$SRIVPlot <- renderPlot(SRIVPlot$pcomp)
@@ -303,7 +307,7 @@ function(input, output) {
   output$statAnalysisFPOrig = renderText(startplots$statAnalysis.fprate.o)
 
   observeEvent(input$calcStatAnalysis > 0, {
-    res11 <- sim.statAnalysisHack(nobs.group = input$nobsStatAnalysis, strategy = input$strategyStatAnalysis, alternative = input$altStatAnalysis, alpha = input$alphaStatAnalysis, iter = input$iterStatAnalysis, shinyEnv = TRUE)
+    res11 <- sim.statAnalysisHack(nobs.group = input$nobsStatAnalysis, strategy = input$strategyStatAnalysis, effect = input$effectStatAnalysis, heterogeneity = input$heterogeneityStatAnalysis, alternative = input$altStatAnalysis, alpha = input$alphaStatAnalysis, iter = input$iterStatAnalysis, shinyEnv = TRUE)
     statAnalysisPlot <- phackR:::pplots(simdat = res11, alpha = input$alphaStatAnalysis)
     statAnalysis.fprate.p <- paste0(round(sum(res11[,"ps.hack"] <= input$alphaStatAnalysis)/input$iterStatAnalysis*100, 2), " %")
     statAnalysis.fprate.o <- paste0(round(sum(res11[,"ps.orig"] <= input$alphaStatAnalysis)/input$iterStatAnalysis*100, 2), " %")
@@ -331,11 +335,11 @@ function(input, output) {
   output$subgroupPlot7 = renderPlot(startplots$subgroupESd$esnohack)
 
   observeEvent(input$calcSubgroup > 0, {
-    res12 <- sim.subgroupHack(nobs.group = input$nobsSubgroup, nsubvars = input$nsubvarsSubgroup, alternative = input$altSubgroup, strategy = input$strategySubgroup, alpha = input$alphaSubgroup, iter = input$iterSubgroup, shinyEnv = TRUE)
+    res12 <- sim.subgroupHack(nobs.group = input$nobsSubgroup, nsubvars = input$nsubvarsSubgroup, effect = input$effectSubgroup, heterogeneity = input$heterogeneitySubgroup, alternative = input$altSubgroup, strategy = input$strategySubgroup, alpha = input$alphaSubgroup, iter = input$iterSubgroup, shinyEnv = TRUE)
     subgroupPlot <- phackR:::pplots(simdat = res12, alpha = input$alphaSubgroup)
-    subgroupESr2 <- phackR:::esplots(simdat=res12, EScolumn.hack=3, EScolumn.orig=4)
-    subgroupESd <- phackR:::esplots(simdat=res12, EScolumn.hack=5, EScolumn.orig=6, titles = c(expression("Distribution of p-hacked effect sizes "*delta),
-                                                                                 expression("Distribution of original effect sizes "*delta)))
+    subgroupESr2 <- phackR:::esplots(simdat=res12, EScolumn.hack=.escol(res12, "r2s.hack"), EScolumn.orig=.escol(res12, "r2s.orig"))
+    subgroupESd <- phackR:::esplots(simdat=res12, EScolumn.hack=.escol(res12, "ds.hack"), EScolumn.orig=.escol(res12, "ds.orig"), titles = c(expression("Distribution of p-hacked effect sizes "*delta),
+                                                                                                                                              expression("Distribution of original effect sizes "*delta)))
     subgroup.fprate.p <- paste0(round(sum(res12[,"ps.hack"] <= input$alphaSubgroup)/input$iterSubgroup*100, 2), " %")
     subgroup.fprate.o <- paste0(round(sum(res12[,"ps.orig"] <= input$alphaSubgroup)/input$iterSubgroup*100, 2), " %")
     output$subgroupPlot <- renderPlot(subgroupPlot$pcomp)
@@ -364,9 +368,9 @@ function(input, output) {
   output$varTransPlot5 = renderPlot(startplots$varTransES$esnohack)
 
   observeEvent(input$calcVarTrans > 0, {
-    res13 <- sim.varTransHack(nobs = input$nobsVarTrans, transvar = input$transvarVarTrans, strategy = input$strategyVarTrans, alpha = input$alphaVarTrans, iter = input$iterVarTrans, shinyEnv = TRUE)
+    res13 <- sim.varTransHack(nobs = input$nobsVarTrans, transvar = input$transvarVarTrans, strategy = input$strategyVarTrans, effect = input$effectVarTrans, heterogeneity = input$heterogeneityVarTrans, alpha = input$alphaVarTrans, iter = input$iterVarTrans, shinyEnv = TRUE)
     varTransPlot <- phackR:::pplots(simdat = res13, alpha = input$alphaVarTrans)
-    varTransES <- phackR:::esplots(simdat = res13, EScolumn.hack = 3, EScolumn.orig = 4)
+    varTransES <- phackR:::esplots(simdat = res13, EScolumn.hack = .escol(res13, "r2s.hack"), EScolumn.orig = .escol(res13, "r2s.orig"))
     varTrans.fprate.p <- paste0(round(sum(res13[,"ps.hack"] <= input$alphaVarTrans)/input$iterVarTrans*100, 2), " %")
     varTrans.fprate.o <- paste0(round(sum(res13[,"ps.orig"] <= input$alphaVarTrans)/input$iterVarTrans*100, 2), " %")
     output$varTransPlot <- renderPlot(varTransPlot$pcomp)

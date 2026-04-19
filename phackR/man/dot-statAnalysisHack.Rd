@@ -22,7 +22,7 @@
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.}
 
 \item{alpha}{Significance level of the t-test}
 }

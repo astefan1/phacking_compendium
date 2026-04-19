@@ -4,10 +4,16 @@
 \alias{.sim.data}
 \title{Generic sampling function}
 \usage{
-.sim.data(nobs.group)
+.sim.data(nobs.group, effect = 0, heterogeneity = 0, theta = NULL)
 }
 \arguments{
 \item{nobs.group}{Number of observations per group. Either a scalar or a vector with two elements.}
+
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
+
+\item{theta}{Study-specific true effect size}
 }
 \description{
 Outputs a data frame with two columns

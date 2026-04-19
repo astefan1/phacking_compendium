@@ -7,6 +7,8 @@
 sim.statAnalysisHack(
   nobs.group,
   strategy = "firstsig",
+  effect = 0,
+  heterogeneity = 0,
   alternative = "two.sided",
   alpha = 0.05,
   iter = 1000,
@@ -18,7 +20,11 @@ sim.statAnalysisHack(
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
+
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.}
 
 \item{alpha}{Significance level of the t-test}
 
@@ -27,5 +33,5 @@ sim.statAnalysisHack(
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 }

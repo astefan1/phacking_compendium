@@ -22,7 +22,7 @@
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). For the regression path, \code{"greater"} tests a positive association.}
 
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 }

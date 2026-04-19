@@ -8,22 +8,33 @@
 #' @param nvar Number of independent variables in the data frame
 #' @param r Desired correlation between the independent variables (scalar)
 #' @param regression Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)
+#' @param effect Mean effect size across studies
+#' @param heterogeneity Between-study heterogeneity
 
-.sim.multIV <- function(nobs.group, nvar, r, regression = FALSE){
+.sim.multIV <- function(nobs.group, nvar, r, regression = FALSE, effect = 0, heterogeneity = 0){
+
+  if(regression){
+    return(.sim.multregression(nobs = nobs.group, nvar = nvar, r = r,
+                               effect = effect, heterogeneity = heterogeneity))
+  }
 
   # Observations per group
   if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
 
-  # Simulate control group / criterion variable
+  # Simulate control group
   control <- rnorm(nobs.group[1])
-  if(regression) criterion <- control
 
   # Simulate multiple experimental groups / predictor variables
   ivs <- .sim.multcor(nobs = nobs.group[2], nvar = nvar, r = r)
+  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  ivs <- ivs + theta
 
   # Generate data frame
-  res <- cbind(control, ivs)
-  if(regression) colnames(res)[1] <- "criterion"
+  nrows <- max(length(control), nrow(ivs))
+  control.pad <- c(control, rep(NA, nrows-length(control)))
+  ivs.pad <- matrix(NA, nrow = nrows, ncol = ncol(ivs))
+  ivs.pad[1:nrow(ivs), ] <- as.matrix(ivs)
+  res <- cbind(control.pad, ivs.pad)
 
   return(res)
 
@@ -35,7 +46,7 @@
 #' @param ivs Location of the independent variables (treatment groups) in the (wide) data frame
 #' @param control Location of the control group in the (wide) data frame
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). For the t-test path, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
@@ -45,29 +56,32 @@
   control <- df[, control]
 
   # Prepare dataset
-  mod <- list()
-  r2s <- rep(NA, length(ivs))
+  analyses <- list()
 
   # Compute t-tests
   for(i in 1:length(ivs)){
-    mod[[i]] <- stats::t.test(control, treatm[,i], var.equal = TRUE, alternative = alternative)
-    r2s[i] <- .compR2t(control, treatm[,i])
+    report <- .report.twogroup(control = control,
+                               treatment = treatm[,i],
+                               method = "t.equal",
+                               alternative = alternative)
+    analyses[[i]] <- list(report = report,
+                          r2 = .compR2t(control, treatm[,i]),
+                          d = .compCohensDStat(statistic = report[["stat"]],
+                                               n1 = length(control),
+                                               n2 = length(treatm[,i])))
   }
 
-  ps <- unlist(simplify2array(mod)["p.value", ])
-  ds <- .compCohensD(unlist(simplify2array(mod)["statistic", ]), length(control))
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- r2s[ps == p.final]
-  d.final <- ds[ps == p.final]
-
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s,
-              d.final = d.final,
-              ds = ds))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              ds.hack = analyses[[final.index]][["d"]],
+              ds.orig = analyses[[1]][["d"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
 
 }
 
@@ -77,7 +91,7 @@
 #' @param ivs Location of the independent variables (predictors) in the data frame
 #' @param control Location of the criterion in the data frame
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). For the regression path, \code{"greater"} tests a positive association.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @importFrom stats t.test
 
@@ -87,50 +101,60 @@
   criterion <- df[, control]
   
   # Prepare dataset
-  ps <- rep(NA, length(ivs))
-  r2s <- rep(NA, length(ivs))
+  analyses <- list()
   
   # Compute regressions
   for(i in 1:length(ivs)){
-    mod <- summary(stats::lm(criterion ~ predictors[,i]))
-    ps[i] <- mod$coefficients[2, 4]
-    r2s[i] <- mod$r.squared
+    report <- .report.association(x = predictors[,i], y = criterion,
+                                  method = paste0("lm.predictor.", i),
+                                  alternative = alternative)
+    analyses[[i]] <- list(report = report,
+                          r2 = tanh(report[["effect"]])^2)
   }
   
-  # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- r2s[ps == p.final]
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
   
 }
 
 #' Simulate p-Hacking with multiple independent variables
-#' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param nobs.group Vector giving number of observations per group
 #' @param nvar Number of independent variables (columns) in the data frame
 #' @param r Desired correlation between the dependent variables (scalar)
 #' @param regression Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
+#' @param effect Mean effect size across studies. For \code{regression = FALSE}, this is on the standardized mean-difference scale. For \code{regression = TRUE}, it is on the Fisher-z scale.
+#' @param heterogeneity Between-study heterogeneity. For \code{regression = FALSE}, this is on the standardized mean-difference scale. For \code{regression = TRUE}, it is on the Fisher-z scale.
 #' @param iter Number of simulation iterations
-#' @param alternative Direction of the t-test ("two.sided", "less", "greater")
+#' @param alternative Direction of the t-test ("two.sided", "less", "greater"). For \code{regression = FALSE}, \code{"greater"} tests whether the treatment or second group exceeds the control or first group. For \code{regression = TRUE}, it tests a positive association.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "firstsig", iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.multIV(nobs.group = nobs.group, nvar = nvar, r = r, regression=regression)
+    dat[[i]] <- .sim.multIV(nobs.group = nobs.group, nvar = nvar, r = r,
+                            regression = regression, effect = effect,
+                            heterogeneity = heterogeneity)
   }
 
   # Apply p-hacking procedure to each dataset
-  .multIVhack <- ifelse(regression, .multIVhack_reg, .multIVhack_ttest)
+  if(regression){
+    .multIVhack <- .multIVhack_reg
+  } else {
+    .multIVhack <- .multIVhack_ttest
+  }
   
   .multIVhacklist <- function(x){
     .multIVhack(df = x, ivs = c(2:(nvar+1)), control = 1,
@@ -153,27 +177,12 @@ sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "fi
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-  ds.hack <- NULL
-  ds.orig <- NULL
-
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-    if(!regression){
-      ds.hack[i] <- res[[i]][["d.final"]]
-      ds.orig[i] <- res[[i]][["ds"]][1]
-    }
+  if(regression){
+    return(.combine.phase1.results(res = res,
+                                   legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig")))
   }
 
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
-  if(!regression) res <- cbind(res, ds.hack, ds.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig", "ds.hack", "ds.orig"))
 
 }

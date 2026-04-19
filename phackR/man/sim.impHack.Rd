@@ -9,6 +9,8 @@ sim.impHack(
   missing,
   which = c(1:10),
   strategy = "firstsig",
+  effect = 0,
+  heterogeneity = 0,
   alpha = 0.05,
   iter = 1000,
   shinyEnv = FALSE
@@ -23,6 +25,10 @@ sim.impHack(
 
 \item{strategy}{String value: One out of "firstsig", "smallest", "smallest.sig"}
 
+\item{effect}{Mean effect size across studies on the Fisher-z scale}
+
+\item{heterogeneity}{Between-study heterogeneity on the Fisher-z scale}
+
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{iter}{Number of simulation iterations}
@@ -30,5 +36,5 @@ sim.impHack(
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
-Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 }

@@ -2,13 +2,15 @@
 % Please edit documentation in R/optionalStopping.R
 \name{sim.optstop}
 \alias{sim.optstop}
-\title{Simulate p-hacking with incorrect rounding}
+\title{Simulate p-hacking with optional stopping}
 \usage{
 sim.optstop(
   n.min,
   n.max,
   step = 1,
   peek = NULL,
+  effect = 0,
+  heterogeneity = 0,
   alternative = "two.sided",
   iter = 1000,
   alpha = 0.05,
@@ -24,7 +26,11 @@ sim.optstop(
 
 \item{peek}{Determines how often one peeks at the data. Overrides step argument if not NULL.}
 
-\item{alternative}{Direction of the t-test ("two.sided", "less", "greater")}
+\item{effect}{Mean effect size across studies}
+
+\item{heterogeneity}{Between-study heterogeneity}
+
+\item{alternative}{Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.}
 
 \item{iter}{Number of iterations}
 
@@ -33,5 +39,5 @@ sim.optstop(
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
 }
 \description{
-Simulate p-hacking with incorrect rounding
+Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 }

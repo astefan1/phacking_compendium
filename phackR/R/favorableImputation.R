@@ -54,124 +54,130 @@
   # Stop if imputation methods are not defined
   stopifnot(any(c(1:10) %in% which))
 
-  # Initialize result vector
-  ps <- rep(NA, 10)
-  r2s <- rep(NA, 10)
+  analyses <- list()
 
   # p-value when missing values are deleted
   if(1 %in% which){
-    mod1 <- summary(stats::lm(y ~ x, na.action = "na.omit"))
-    ps[1] <- mod1$coefficients[2, 4]
-    r2s[1] <- mod1$r.squared
+    report <- .report.association(x = x, y = y, method = "delete.missing")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Mean imputation
   if(2 %in% which){
     newx <- .easyimpute(x, mean, na.rm = T)
     newy <- .easyimpute(y, mean, na.rm = T)
-    mod2 <- summary(stats::lm(newy ~ newx))
-    ps[2] <- mod2$coefficients[2, 4]
-    r2s[2] <- mod2$r.squared
+    report <- .report.association(x = newx, y = newy, method = "impute.mean")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Median imputation
   if(3 %in% which){
-    newx <- .easyimpute(x, mean, na.rm = T)
-    newy <- .easyimpute(y, mean, na.rm = T)
-    mod3 <- summary(stats::lm(newy ~ newx))
-    ps[3] <- mod3$coefficients[2, 4]
-    r2s[3] <- mod3$r.squared
+    newx <- .easyimpute(x, median, na.rm = T)
+    newy <- .easyimpute(y, median, na.rm = T)
+    report <- .report.association(x = newx, y = newy, method = "impute.median")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Mode imputation
   if(4 %in% which){
     newx <- .easyimpute(x, .estimate_mode)
     newy <- .easyimpute(y, .estimate_mode)
-    mod4 <- summary(stats::lm(newy ~ newx))
-    ps[4] <- mod4$coefficients[2, 4]
-    r2s[4] <- mod4$r.squared
+    report <- .report.association(x = newx, y = newy, method = "impute.mode")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): predictive mean matchihng
   dfnew <- as.data.frame(cbind(x, y))
   if(5 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "pmm", silent = TRUE, print = FALSE)
-    mod5 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[5] <- mod5$coefficients[2, 4]
-    r2s[5] <- mod5$r.squared
+    dat5 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat5$x, y = dat5$y, method = "mice.pmm")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): Weighted predictive mean matching
   if(6 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "midastouch", silent = TRUE, print = FALSE)
-    mod6 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[6] <- mod6$coefficients[2, 4]
-    r2s[6] <- mod6$r.squared
+    dat6 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat6$x, y = dat6$y, method = "mice.midastouch")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): Sample from observed values
   if(7 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "sample", silent = TRUE, print = FALSE)
-    mod7 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[7] <- mod7$coefficients[2, 4]
-    r2s[7] <- mod7$r.squared
+    dat7 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat7$x, y = dat7$y, method = "mice.sample")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): Bayesian linear regression
   if(8 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "norm", silent = TRUE, print = FALSE)
-    mod8 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[8] <- mod8$coefficients[2, 4]
-    r2s[8] <- mod8$r.squared
+    dat8 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat8$x, y = dat8$y, method = "mice.norm")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression ignoring model error
   if(9 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "norm.nob", silent = TRUE, print = FALSE)
-    mod9 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[9] <- mod9$coefficients[2, 4]
-    r2s[9] <- mod9$r.squared
+    dat9 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat9$x, y = dat9$y, method = "mice.norm.nob")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
   # Multivariate imputations by chained equations ("mice" package): Linear regression predicted values
   if(10 %in% which){
     imp <- mice::mice(dfnew, m = 1, method = "norm.predict", silent = TRUE, print = FALSE)
-    mod10 <- summary(stats::lm(y ~ x, data = mice::complete(imp, 1)))
-    ps[10] <- mod10$coefficients[2, 4]
-    r2s[10] <- mod10$r.squared
+    dat10 <- mice::complete(imp, 1)
+    report <- .report.association(x = dat10$x, y = dat10$y, method = "mice.norm.predict")
+    analyses[[length(analyses)+1]] <- list(report = report,
+                                           r2 = tanh(report[["effect"]])^2)
   }
 
-  ps <- ps[!is.na(ps)]
-  r2s <- r2s[!is.na(r2s)]
+  ps <- vapply(analyses, function(x) x[["report"]][["p"]], numeric(1))
 
   # Select final p-hacked p-value based on strategy
-  p.final <- .selectpvalue(ps = ps, strategy = strategy, alpha = alpha)
-  r2.final <- unique(r2s[ps == p.final])
+  final.index <- .selectanalysis(ps = ps, strategy = strategy, alpha = alpha)
 
-  return(list(p.final = p.final,
-              ps = ps,
-              r2.final = r2.final,
-              r2s = r2s))
+  return(list(ps.hack = analyses[[final.index]][["report"]][["p"]],
+              ps.orig = analyses[[1]][["report"]][["p"]],
+              r2s.hack = analyses[[final.index]][["r2"]],
+              r2s.orig = analyses[[1]][["r2"]],
+              report.initial = analyses[[1]][["report"]],
+              report.final = analyses[[final.index]][["report"]]))
 
 }
 
 #' Simulate p-Hacking with different sorts of outlier definition missing value imputation
-#' @description Outputs a matrix containing the p-hacked p-values (\code{ps.hack}) and the original p-values (\code{ps.orig}) from all iterations
+#' @description Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations
 #' @param nobs Integer giving number of observations
 #' @param missing Percentage of missing values (e.g., 0.1 for 10 percent)
 #' @param which Which imputation methods?  Either 5 random methods are chosen ("random") or a numeric vector containing the chosen methods (1: delete missing, 2: mean imputation, 3: median imputation, 4: mode imputation, 5: predictive mean matching, 6: weighted predictive mean matching, 7: sample from observed values, 8: Bayesian linear regression, 9: linear regression ignoring model error, 10: linear regression predicted values)
 #' @param strategy String value: One out of "firstsig", "smallest", "smallest.sig"
+#' @param effect Mean effect size across studies on the Fisher-z scale
+#' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
 #' @export
 
-sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.multcor(nobs = nobs, nvar = 2, r = 0, missing = missing)
+    dat[[i]] <- .sim.association(nobs = nobs, effect = effect, heterogeneity = heterogeneity, missing = missing)
   }
 
   if(any(which == "random")) which <- sample(c(1:10), 5)
@@ -199,21 +205,8 @@ sim.impHack <- function(nobs, missing, which = c(1:10), strategy = "firstsig", a
     })
   }
 
-  ps.hack <- NULL
-  ps.orig <- NULL
-  r2s.hack <- NULL
-  r2s.orig <- NULL
-  ps.all <- list()
-  for(i in 1:iter){
-    ps.hack[i] <- res[[i]][["p.final"]]
-    ps.orig[i] <- res[[i]][["ps"]][1]
-    r2s.hack[i] <- res[[i]][["r2.final"]]
-    r2s.orig[i] <- res[[i]][["r2s"]][1]
-  }
-
-  res <- cbind(ps.hack, ps.orig, r2s.hack, r2s.orig)
-
-  return(res)
+  .combine.phase1.results(res = res,
+                          legacy.fields = c("ps.hack", "ps.orig", "r2s.hack", "r2s.orig"))
 
 }
 
