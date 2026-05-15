@@ -499,14 +499,17 @@
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 
-sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.outHack <- function(nobs, which = c(1:12), strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.association(nobs = nobs, effect = effect, heterogeneity = heterogeneity)
+    dat[[i]] <- .sim.association(nobs = nobs, effect = effect,
+                                 heterogeneity = heterogeneity,
+                                 empirical = empirical)
   }
 
   # If which = "random

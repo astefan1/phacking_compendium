@@ -4,7 +4,14 @@
 \alias{.sim.multDV}
 \title{Simulate dataset with multiple dependent variables}
 \usage{
-.sim.multDV(nobs.group, nvar, r, effect = 0, heterogeneity = 0)
+.sim.multDV(
+  nobs.group,
+  nvar,
+  r,
+  effect = 0,
+  heterogeneity = 0,
+  empirical = FALSE
+)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
@@ -16,6 +23,8 @@
 \item{effect}{Mean effect size across studies}
 
 \item{heterogeneity}{Between-study heterogeneity}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Outputs data frame with a grouping variable and multiple correlated dependent variables

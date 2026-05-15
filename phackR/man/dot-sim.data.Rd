@@ -4,7 +4,13 @@
 \alias{.sim.data}
 \title{Generic sampling function}
 \usage{
-.sim.data(nobs.group, effect = 0, heterogeneity = 0, theta = NULL)
+.sim.data(
+  nobs.group,
+  effect = 0,
+  heterogeneity = 0,
+  theta = NULL,
+  empirical = FALSE
+)
 }
 \arguments{
 \item{nobs.group}{Number of observations per group. Either a scalar or a vector with two elements.}
@@ -14,6 +20,8 @@
 \item{heterogeneity}{Between-study heterogeneity}
 
 \item{theta}{Study-specific true effect size}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Outputs a data frame with two columns

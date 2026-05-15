@@ -81,15 +81,17 @@
 #' @param iter Number of iterations
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 #'
 
-sim.optstop <- function(n.min, n.max, step = 1, peek = NULL, effect = 0, heterogeneity = 0, alternative = "two.sided", iter = 1000, alpha = 0.05, shinyEnv = FALSE){
+sim.optstop <- function(n.min, n.max, step = 1, peek = NULL, effect = 0, heterogeneity = 0, alternative = "two.sided", iter = 1000, alpha = 0.05, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.data(nobs.group = n.max, effect = effect, heterogeneity = heterogeneity)
+    dat[[i]] <- .sim.data(nobs.group = n.max, effect = effect,
+                          heterogeneity = heterogeneity, empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset

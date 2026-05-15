@@ -4,7 +4,15 @@
 \alias{.sim.multregression}
 \title{Simulate one criterion and multiple predictors with shared study-level association}
 \usage{
-.sim.multregression(nobs, nvar, r, effect = 0, heterogeneity = 0, theta = NULL)
+.sim.multregression(
+  nobs,
+  nvar,
+  r,
+  effect = 0,
+  heterogeneity = 0,
+  theta = NULL,
+  empirical = FALSE
+)
 }
 \arguments{
 \item{nobs}{Number of observations}
@@ -18,6 +26,8 @@
 \item{heterogeneity}{Between-study heterogeneity on the Fisher-z scale}
 
 \item{theta}{Study-specific true effect size}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Simulate one criterion and multiple predictors with shared study-level association

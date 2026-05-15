@@ -9,8 +9,9 @@
 #' @param r Desired correlation between the dependent variables (scalar)
 #' @param effect Mean effect size across studies
 #' @param heterogeneity Between-study heterogeneity
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.sim.multDV <- function(nobs.group, nvar, r, effect = 0, heterogeneity = 0){
+.sim.multDV <- function(nobs.group, nvar, r, effect = 0, heterogeneity = 0, empirical = FALSE){
 
   # Observations per group
   if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
@@ -20,8 +21,15 @@
 
   # Generate dependent variables
   dvs <- .sim.multcor(nobs = sum(nobs.group), nvar = nvar, r = r)
-  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
   dvs[(nobs.group[1]+1):sum(nobs.group), ] <- dvs[(nobs.group[1]+1):sum(nobs.group), ] + theta
+  if(isTRUE(empirical)){
+    dvs[(nobs.group[1]+1):sum(nobs.group), 1] <- .set_observed_smd(
+      control = dvs[1:nobs.group[1], 1],
+      treatment = dvs[(nobs.group[1]+1):sum(nobs.group), 1],
+      effect = theta
+    )
+  }
 
   # Generate data frame
   res <- cbind(group, dvs)
@@ -87,15 +95,17 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 
-sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.multDVhack <- function(nobs.group, nvar, r, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
     dat[[i]] <- .sim.multDV(nobs.group = nobs.group, nvar = nvar, r = r,
-                            effect = effect, heterogeneity = heterogeneity)
+                            effect = effect, heterogeneity = heterogeneity,
+                            empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset

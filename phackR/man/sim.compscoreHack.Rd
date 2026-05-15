@@ -14,7 +14,8 @@ sim.compscoreHack(
   heterogeneity = 0,
   alpha = 0.05,
   iter = 1000,
-  shinyEnv = FALSE
+  shinyEnv = FALSE,
+  empirical = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ sim.compscoreHack(
 \item{iter}{Number of simulation iterations}
 
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations

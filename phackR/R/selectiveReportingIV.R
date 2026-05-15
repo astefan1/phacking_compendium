@@ -10,12 +10,14 @@
 #' @param regression Should the simulation be conducted for a regression analysis (TRUE) or a t-test? (FALSE)
 #' @param effect Mean effect size across studies
 #' @param heterogeneity Between-study heterogeneity
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.sim.multIV <- function(nobs.group, nvar, r, regression = FALSE, effect = 0, heterogeneity = 0){
+.sim.multIV <- function(nobs.group, nvar, r, regression = FALSE, effect = 0, heterogeneity = 0, empirical = FALSE){
 
   if(regression){
     return(.sim.multregression(nobs = nobs.group, nvar = nvar, r = r,
-                               effect = effect, heterogeneity = heterogeneity))
+                               effect = effect, heterogeneity = heterogeneity,
+                               empirical = empirical))
   }
 
   # Observations per group
@@ -26,8 +28,13 @@
 
   # Simulate multiple experimental groups / predictor variables
   ivs <- .sim.multcor(nobs = nobs.group[2], nvar = nvar, r = r)
-  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
   ivs <- ivs + theta
+  if(isTRUE(empirical)){
+    ivs[,1] <- .set_observed_smd(control = control,
+                                  treatment = ivs[,1],
+                                  effect = theta)
+  }
 
   # Generate data frame
   nrows <- max(length(control), nrow(ivs))
@@ -137,16 +144,18 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater"). For \code{regression = FALSE}, \code{"greater"} tests whether the treatment or second group exceeds the control or first group. For \code{regression = TRUE}, it tests a positive association.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 
-sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.multIVhack <- function(nobs.group, nvar, r, regression=FALSE, strategy = "firstsig", effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
     dat[[i]] <- .sim.multIV(nobs.group = nobs.group, nvar = nvar, r = r,
                             regression = regression, effect = effect,
-                            heterogeneity = heterogeneity)
+                            heterogeneity = heterogeneity,
+                            empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset

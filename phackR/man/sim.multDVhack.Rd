@@ -14,7 +14,8 @@ sim.multDVhack(
   iter = 1000,
   alternative = "two.sided",
   alpha = 0.05,
-  shinyEnv = FALSE
+  shinyEnv = FALSE,
+  empirical = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ sim.multDVhack(
 \item{alpha}{Significance level of the t-test (default: 0.05)}
 
 \item{shinyEnv}{Is the function run in a Shiny session? TRUE/FALSE}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Outputs a data frame containing the p-hacked p-values (\code{ps.hack}), the original p-values (\code{ps.orig}), and a normalized reporting block from all iterations

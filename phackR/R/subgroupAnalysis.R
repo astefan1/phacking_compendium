@@ -8,10 +8,12 @@
 #' @param nsubvars Integer specifying number of variables for potential subgroups
 #' @param effect Mean effect size across studies
 #' @param heterogeneity Between-study heterogeneity
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.sim.subgroup <- function(nobs.group, nsubvars, effect = 0, heterogeneity = 0){
+.sim.subgroup <- function(nobs.group, nsubvars, effect = 0, heterogeneity = 0, empirical = FALSE){
 
-  dat <- .sim.data(nobs.group = nobs.group, effect = effect, heterogeneity = heterogeneity)
+  dat <- .sim.data(nobs.group = nobs.group, effect = effect, heterogeneity = heterogeneity,
+                   empirical = empirical)
 
   # Observations per group and total observations
   if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
@@ -97,15 +99,17 @@
 #' @param alpha Significance level of the t-test
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 
-sim.subgroupHack <- function(nobs.group, nsubvars, effect = 0, heterogeneity = 0, alternative = "two.sided", strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE){
+sim.subgroupHack <- function(nobs.group, nsubvars, effect = 0, heterogeneity = 0, alternative = "two.sided", strategy = "firstsig", alpha = 0.05, iter = 1000, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
     dat[[i]] <- .sim.subgroup(nobs.group = nobs.group, nsubvars = nsubvars,
-                              effect = effect, heterogeneity = heterogeneity)
+                              effect = effect, heterogeneity = heterogeneity,
+                              empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset

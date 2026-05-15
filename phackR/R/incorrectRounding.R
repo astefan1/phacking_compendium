@@ -52,14 +52,16 @@
 #' @param alternative Direction of the t-test ("two.sided", "less", "greater"). Here, \code{"greater"} tests whether the treatment or second group exceeds the control or first group.
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @export
 
-sim.roundhack <- function(roundinglevel, effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE){
+sim.roundhack <- function(roundinglevel, effect = 0, heterogeneity = 0, iter = 1000, alternative = "two.sided", alpha = 0.05, shinyEnv = FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
-    dat[[i]] <- .sim.data(nobs.group = 30, effect = effect, heterogeneity = heterogeneity)
+    dat[[i]] <- .sim.data(nobs.group = 30, effect = effect,
+                          heterogeneity = heterogeneity, empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset

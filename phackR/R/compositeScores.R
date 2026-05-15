@@ -8,14 +8,16 @@
 #' @param rcomp Correlation between the composite score variables
 #' @param effect Mean effect size across studies on the Fisher-z scale
 #' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.sim.compscore <- function(nobs, ncompv, rcomp, effect = 0, heterogeneity = 0){
+.sim.compscore <- function(nobs, ncompv, rcomp, effect = 0, heterogeneity = 0, empirical = FALSE){
 
   iv <- .sim.multcor(nobs = nobs, nvar = ncompv, r = rcomp)
-  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
   rho <- .fisherz_to_r(theta)
   compscore <- scale(rowMeans(iv))[,1]
   dv <- rho*compscore + sqrt(1-rho^2)*rnorm(nobs, 0, 1)
+  if(isTRUE(empirical)) dv <- .set_observed_fisherz(x = compscore, y = dv, effect = theta)
 
   res <- cbind(dv, iv)
 
@@ -100,17 +102,19 @@
 #' @param alpha Significance level of the t-test (default: 0.05)
 #' @param iter Number of simulation iterations
 #' @param shinyEnv Is the function run in a Shiny session? TRUE/FALSE
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @importFrom pbapply pblapply
 #' @importFrom shiny withProgress incProgress
 #' @export
 
-sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv=FALSE){
+sim.compscoreHack <- function(nobs, ncompv, rcomp, ndelete, strategy = "firstsig", effect = 0, heterogeneity = 0, alpha = 0.05, iter = 1000, shinyEnv=FALSE, empirical = FALSE){
 
   # Simulate as many datasets as desired iterations
   dat <- list()
   for(i in 1:iter){
     dat[[i]] <- .sim.compscore(nobs = nobs, ncompv = ncompv, rcomp = rcomp,
-                               effect = effect, heterogeneity = heterogeneity)
+                               effect = effect, heterogeneity = heterogeneity,
+                               empirical = empirical)
   }
 
   # Apply p-hacking procedure to each dataset (with progress bar within or outside Shiny)

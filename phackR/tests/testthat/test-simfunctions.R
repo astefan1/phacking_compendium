@@ -416,6 +416,199 @@ test_that("Correlation-family heterogeneity remains reproducible and non-degener
 
 })
 
+test_that("Empirical data generators match requested initial effects", {
+
+  tol <- 1e-10
+
+  set.seed(2040)
+  smd <- phackR:::.sim.data(nobs.group = c(30, 30), effect = 0.5,
+                            heterogeneity = 10, empirical = TRUE)
+  expect_equal(
+    phackR:::.report.twogroup(control = smd[smd[,1] == 1, 2],
+                              treatment = smd[smd[,1] == 2, 2])$effect,
+    0.5,
+    tolerance = tol
+  )
+
+  set.seed(2041)
+  assoc <- phackR:::.sim.association(nobs = 40, effect = 0.4,
+                                     heterogeneity = 10, empirical = TRUE)
+  expect_equal(
+    phackR:::.report.association(x = assoc[,1], y = assoc[,2])$effect,
+    0.4,
+    tolerance = tol
+  )
+
+  set.seed(2042)
+  multdv <- phackR:::.sim.multDV(nobs.group = c(30, 30), nvar = 4, r = 0.3,
+                                 effect = 0.5, heterogeneity = 10,
+                                 empirical = TRUE)
+  expect_equal(
+    phackR:::.report.twogroup(control = multdv[multdv[,1] == 1, 2],
+                              treatment = multdv[multdv[,1] == 2, 2])$effect,
+    0.5,
+    tolerance = tol
+  )
+
+  set.seed(2043)
+  multiv <- phackR:::.sim.multIV(nobs.group = c(30, 30), nvar = 4, r = 0.3,
+                                 effect = 0.5, heterogeneity = 10,
+                                 empirical = TRUE)
+  expect_equal(
+    phackR:::.report.twogroup(control = multiv[,1],
+                              treatment = multiv[,2])$effect,
+    0.5,
+    tolerance = tol
+  )
+
+  set.seed(2044)
+  multiv.reg <- phackR:::.sim.multIV(nobs.group = 40, nvar = 4, r = 0.2,
+                                     regression = TRUE, effect = 0.4,
+                                     heterogeneity = 10, empirical = TRUE)
+  expect_equal(
+    phackR:::.report.association(x = multiv.reg[,2],
+                                 y = multiv.reg[,1])$effect,
+    0.4,
+    tolerance = tol
+  )
+
+  set.seed(2045)
+  covdat <- phackR:::.sim.covariates(nobs.group = c(30, 30), ncov = 3,
+                                     rcov = 0.2, rcovdv = 0.5,
+                                     effect = 0.5, heterogeneity = 10,
+                                     empirical = TRUE)
+  expect_equal(
+    phackR:::.report.twogroup(control = covdat[covdat[,1] == 1, 2],
+                              treatment = covdat[covdat[,1] == 2, 2])$effect,
+    0.5,
+    tolerance = tol
+  )
+
+  set.seed(2046)
+  compscore <- phackR:::.sim.compscore(nobs = 40, ncompv = 5, rcomp = 0.5,
+                                       effect = 0.4, heterogeneity = 10,
+                                       empirical = TRUE)
+  expect_equal(
+    phackR:::.report.association(x = rowMeans(compscore[, 2:6]),
+                                 y = compscore[,1])$effect,
+    0.4,
+    tolerance = tol
+  )
+
+})
+
+test_that("Empirical simulators ignore heterogeneity and expose exact initial effects", {
+
+  empirical.checks <- list(
+    sim.compscoreHack = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.compscoreHack(
+        nobs = 40, ncompv = 5, rcomp = 0.5, ndelete = 1,
+        effect = 0.4, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.covhack = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.covhack(
+        nobs.group = 30, ncov = 3, rcov = 0.2, rcovdv = 0.5,
+        effect = 0.5, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.cutoffHack = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.cutoffHack(
+        nobs = 40, effect = 0.4, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.impHack = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.impHack(
+        nobs = 50, missing = 0.1, which = 1,
+        effect = 0.4, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.multDVhack = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.multDVhack(
+        nobs.group = 30, nvar = 4, r = 0.3,
+        effect = 0.5, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.multIVhack_ttest = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.multIVhack(
+        nobs.group = 30, nvar = 4, r = 0.3,
+        effect = 0.5, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.multIVhack_regression = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.multIVhack(
+        nobs.group = 40, nvar = 4, r = 0.2, regression = TRUE,
+        effect = 0.4, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.optstop = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.optstop(
+        n.min = 10, n.max = 30, step = 5,
+        effect = 0.5, heterogeneity = heterogeneity,
+        empirical = TRUE, iter = 5)
+    ),
+    sim.outHack = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.outHack(
+        nobs = 40, which = 1, effect = 0.4,
+        heterogeneity = heterogeneity, empirical = TRUE, iter = 5)
+    ),
+    sim.roundhack = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.roundhack(
+        roundinglevel = 0.06, effect = 0.5,
+        heterogeneity = heterogeneity, empirical = TRUE, iter = 5)
+    ),
+    sim.statAnalysisHack = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.statAnalysisHack(
+        nobs.group = 30, effect = 0.5,
+        heterogeneity = heterogeneity, empirical = TRUE, iter = 5)
+    ),
+    sim.subgroupHack = list(
+      effect = 0.5,
+      call = function(heterogeneity) sim.subgroupHack(
+        nobs.group = 30, nsubvars = 3, effect = 0.5,
+        heterogeneity = heterogeneity, empirical = TRUE, iter = 5)
+    ),
+    sim.varTransHack = list(
+      effect = 0.4,
+      call = function(heterogeneity) sim.varTransHack(
+        nobs = 40, transvar = "xy", effect = 0.4,
+        heterogeneity = heterogeneity, empirical = TRUE, iter = 5)
+    )
+  )
+
+  for(i in seq_along(empirical.checks)){
+    spec <- empirical.checks[[i]]
+    set.seed(2046 + i)
+    hetero0 <- spec$call(0)
+    set.seed(2046 + i)
+    hetero10 <- spec$call(10)
+
+    expect_equal(
+      hetero10,
+      hetero0,
+      info = paste("heterogeneity ignored:", names(empirical.checks)[i])
+    )
+    expect_equal(
+      hetero10$effect.initial,
+      rep(spec$effect, 5),
+      tolerance = 1e-10,
+      info = paste("initial effect:", names(empirical.checks)[i])
+    )
+  }
+
+})
+
 test_that("Correlation-family non-null effects increase original rejection rates", {
 
   set.seed(2030)

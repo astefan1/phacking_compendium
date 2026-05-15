@@ -14,7 +14,8 @@
   mu = 0,
   sd = 1,
   missing = 0,
-  theta = NULL
+  theta = NULL,
+  empirical = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,10 @@
 \item{sd}{Standard deviation of the random data}
 
 \item{missing}{Proportion of missing values per variable (e.g., 0.2 = 20 percent)}
+
+\item{theta}{Study-specific true effect size}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Simulates a dependent variable that correlates with multiple (correlated) covariates as well as an independent IV

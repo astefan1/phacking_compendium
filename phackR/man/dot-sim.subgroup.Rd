@@ -4,7 +4,13 @@
 \alias{.sim.subgroup}
 \title{Simulate data with subgroups}
 \usage{
-.sim.subgroup(nobs.group, nsubvars, effect = 0, heterogeneity = 0)
+.sim.subgroup(
+  nobs.group,
+  nsubvars,
+  effect = 0,
+  heterogeneity = 0,
+  empirical = FALSE
+)
 }
 \arguments{
 \item{nobs.group}{Vector giving number of observations per group}
@@ -14,6 +20,8 @@
 \item{effect}{Mean effect size across studies}
 
 \item{heterogeneity}{Between-study heterogeneity}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Outputs data frame with multiple binary variables from which subgroups can be extracted

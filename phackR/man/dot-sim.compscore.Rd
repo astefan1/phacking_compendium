@@ -4,7 +4,14 @@
 \alias{.sim.compscore}
 \title{Simulate data: Correlated composite score raw variables and one non-correlated dependent variable}
 \usage{
-.sim.compscore(nobs, ncompv, rcomp, effect = 0, heterogeneity = 0)
+.sim.compscore(
+  nobs,
+  ncompv,
+  rcomp,
+  effect = 0,
+  heterogeneity = 0,
+  empirical = FALSE
+)
 }
 \arguments{
 \item{nobs}{Integer giving number of observations}
@@ -16,6 +23,8 @@
 \item{effect}{Mean effect size across studies on the Fisher-z scale}
 
 \item{heterogeneity}{Between-study heterogeneity on the Fisher-z scale}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Simulate data: Correlated composite score raw variables and one non-correlated dependent variable

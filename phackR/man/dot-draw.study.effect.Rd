@@ -4,12 +4,14 @@
 \alias{.draw.study.effect}
 \title{Draw one study-level effect size}
 \usage{
-.draw.study.effect(effect = 0, heterogeneity = 0)
+.draw.study.effect(effect = 0, heterogeneity = 0, empirical = FALSE)
 }
 \arguments{
 \item{effect}{Mean effect size across studies}
 
 \item{heterogeneity}{Between-study heterogeneity}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Draw one study-level effect size

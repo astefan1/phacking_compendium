@@ -46,10 +46,17 @@
 #' Draw one study-level effect size
 #' @param effect Mean effect size across studies
 #' @param heterogeneity Between-study heterogeneity
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.draw.study.effect <- function(effect = 0, heterogeneity = 0){
+.draw.study.effect <- function(effect = 0, heterogeneity = 0, empirical = FALSE){
 
   stopifnot(length(effect) == 1)
+  stopifnot(length(empirical) == 1)
+
+  if(isTRUE(empirical)){
+    return(effect)
+  }
+
   stopifnot(length(heterogeneity) == 1)
   stopifnot(heterogeneity >= 0)
 
@@ -61,20 +68,101 @@
 
 }
 
+#' Shift treatment values to a requested observed standardized mean difference
+#' @param control Control group values
+#' @param treatment Treatment group values
+#' @param effect Requested observed standardized mean difference
+
+.set_observed_smd <- function(control, treatment, effect){
+
+  control.finite <- is.finite(control)
+  treatment.finite <- is.finite(treatment)
+  control.clean <- control[control.finite]
+  treatment.clean <- treatment[treatment.finite]
+
+  n1 <- length(control.clean)
+  n2 <- length(treatment.clean)
+
+  if(n1 < 2 || n2 < 2){
+    stop("At least two finite observations per group are required for empirical effect calibration.")
+  }
+
+  sp <- sqrt((((n1-1)*stats::var(control.clean)) + ((n2-1)*stats::var(treatment.clean)))/(n1+n2-2))
+
+  if(!is.finite(sp) || sp == 0){
+    stop("Non-zero pooled standard deviation is required for empirical effect calibration.")
+  }
+
+  adjustment <- effect*sp - (mean(treatment.clean)-mean(control.clean))
+  treatment[treatment.finite] <- treatment[treatment.finite] + adjustment
+
+  treatment
+
+}
+
+#' Transform a response to a requested observed Fisher-z association
+#' @param x Predictor values
+#' @param y Response values
+#' @param effect Requested observed Fisher-z effect
+
+.set_observed_fisherz <- function(x, y, effect){
+
+  complete <- is.finite(x) & is.finite(y)
+  n <- sum(complete)
+
+  if(n < 4){
+    stop("At least four finite paired observations are required for empirical effect calibration.")
+  }
+
+  rho <- .fisherz_to_r(effect)
+  x.centered <- x[complete] - mean(x[complete])
+  x.norm <- sqrt(sum(x.centered^2))
+
+  if(!is.finite(x.norm) || x.norm == 0){
+    stop("Non-zero predictor variance is required for empirical effect calibration.")
+  }
+
+  z.centered <- y[complete] - mean(y[complete])
+  z.centered <- z.centered - (sum(z.centered*x.centered)/sum(x.centered^2))*x.centered
+  z.norm <- sqrt(sum(z.centered^2))
+
+  if(!is.finite(z.norm) || z.norm == 0){
+    z.centered <- stats::rnorm(n)
+    z.centered <- z.centered - mean(z.centered)
+    z.centered <- z.centered - (sum(z.centered*x.centered)/sum(x.centered^2))*x.centered
+    z.norm <- sqrt(sum(z.centered^2))
+  }
+
+  if(!is.finite(z.norm) || z.norm == 0){
+    stop("Could not construct an orthogonal residual for empirical effect calibration.")
+  }
+
+  y.sd <- stats::sd(y[complete])
+  if(!is.finite(y.sd) || y.sd == 0) y.sd <- 1
+
+  y.unit <- rho*(x.centered/x.norm) + sqrt(pmax(1-rho^2, 0))*(z.centered/z.norm)
+  y[complete] <- mean(y[complete]) + y.sd*sqrt(n-1)*y.unit
+
+  y
+
+}
+
 #' Generic sampling function
 #' @description Outputs a data frame with two columns
 #' @param nobs.group Number of observations per group. Either a scalar or a vector with two elements.
 #' @param effect Mean effect size across studies
 #' @param heterogeneity Between-study heterogeneity
 #' @param theta Study-specific true effect size
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @importFrom stats rnorm
 
-.sim.data <- function(nobs.group, effect = 0, heterogeneity = 0, theta = NULL){
+.sim.data <- function(nobs.group, effect = 0, heterogeneity = 0, theta = NULL, empirical = FALSE){
 
   if(length(nobs.group) == 1) nobs.group <- rep(nobs.group, 2)
-  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
   V1 <- stats::rnorm(nobs.group[1], 0, 1)
   V2 <- stats::rnorm(nobs.group[2], theta, 1)
+  if(isTRUE(empirical)) V2 <- .set_observed_smd(control = V1, treatment = V2, effect = theta)
   group <- c(rep(1, nobs.group[1]), rep(2, nobs.group[2]))
 
   res <- cbind(group, c(V1, V2))
@@ -208,12 +296,15 @@
 #' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
 #' @param theta Study-specific true effect size
 #' @param missing Proportion of missing values per variable
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 
-.sim.association <- function(nobs, effect = 0, heterogeneity = 0, theta = NULL, missing = 0){
+.sim.association <- function(nobs, effect = 0, heterogeneity = 0, theta = NULL, missing = 0, empirical = FALSE){
 
-  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
 
-  .sim.multcor(nobs = nobs, nvar = 2, r = .fisherz_to_r(theta), missing = missing)
+  res <- .sim.multcor(nobs = nobs, nvar = 2, r = .fisherz_to_r(theta), missing = missing)
+  if(isTRUE(empirical)) res[,2] <- .set_observed_fisherz(x = res[,1], y = res[,2], effect = theta)
+  res
 
 }
 
@@ -224,12 +315,13 @@
 #' @param effect Mean Fisher-z effect size across studies
 #' @param heterogeneity Between-study heterogeneity on the Fisher-z scale
 #' @param theta Study-specific true effect size
+#' @param empirical Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.
 #' @importFrom stats rnorm
 
-.sim.multregression <- function(nobs, nvar, r, effect = 0, heterogeneity = 0, theta = NULL){
+.sim.multregression <- function(nobs, nvar, r, effect = 0, heterogeneity = 0, theta = NULL, empirical = FALSE){
 
   if(length(nobs) > 1) nobs <- nobs[1]
-  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity)
+  if(is.null(theta)) theta <- .draw.study.effect(effect = effect, heterogeneity = heterogeneity, empirical = empirical)
 
   rho <- .fisherz_to_r(theta)
   R <- matrix(rep(r, (nvar+1)^2), nrow = nvar+1)
@@ -246,6 +338,7 @@
   random.normal <- matrix(stats::rnorm((nvar+1)*nobs), nrow = nvar+1, ncol = nobs)
   X <- as.data.frame(t(cholR %*% random.normal))
   colnames(X)[1] <- "criterion"
+  if(isTRUE(empirical)) X[,1] <- .set_observed_fisherz(x = X[,2], y = X[,1], effect = theta)
 
   return(X)
 

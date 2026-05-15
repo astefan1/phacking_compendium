@@ -9,7 +9,8 @@
   effect = 0,
   heterogeneity = 0,
   theta = NULL,
-  missing = 0
+  missing = 0,
+  empirical = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@
 \item{theta}{Study-specific true effect size}
 
 \item{missing}{Proportion of missing values per variable}
+
+\item{empirical}{Should the observed initial effect be fixed to \code{effect}? If \code{TRUE}, \code{heterogeneity} is ignored.}
 }
 \description{
 Simulate two continuous variables with a study-level association
